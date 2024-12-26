@@ -1,21 +1,49 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { toast } from '@/components/ui/use-toast';
 
 export const FaceScanner = ({ onImageCapture }: { onImageCapture: (image: string) => void }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isStreaming, setIsStreaming] = useState(false);
 
+  useEffect(() => {
+    // Cleanup function to stop the camera when component unmounts
+    return () => {
+      if (videoRef.current?.srcObject) {
+        const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+        tracks.forEach(track => track.stop());
+      }
+    };
+  }, []);
+
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const constraints = {
+        video: {
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        setIsStreaming(true);
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play();
+          setIsStreaming(true);
+        };
       }
     } catch (err) {
       console.error("Error accessing camera:", err);
+      toast({
+        title: "Camera Error",
+        description: "Unable to access the camera. Please make sure you've granted camera permissions.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -24,10 +52,14 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (image: string
       const canvas = document.createElement('canvas');
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
-      canvas.getContext('2d')?.drawImage(videoRef.current, 0, 0);
-      const image = canvas.toDataURL('image/jpeg');
-      onImageCapture(image);
-      stopCamera();
+      const ctx = canvas.getContext('2d');
+      
+      if (ctx) {
+        ctx.drawImage(videoRef.current, 0, 0);
+        const image = canvas.toDataURL('image/jpeg', 0.8);
+        onImageCapture(image);
+        stopCamera();
+      }
     }
   };
 
@@ -35,6 +67,7 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (image: string
     if (videoRef.current?.srcObject) {
       const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
       tracks.forEach(track => track.stop());
+      videoRef.current.srcObject = null;
       setIsStreaming(false);
     }
   };
