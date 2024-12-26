@@ -14,8 +14,8 @@ const Index = () => {
   const [capturedImages, setCapturedImages] = useState<CapturedImages | null>(null);
   const [analysis, setAnalysis] = useState<any>(null);
   
-  // Replace with your actual booking URL
-  const BOOKING_URL = "https://your-booking-url.com";
+  // Replace this URL with your actual booking platform URL (Calendly, Acuity, etc.)
+  const BOOKING_URL = "https://calendly.com/your-business";
 
   const handleImageCapture = async (images: CapturedImages) => {
     setCapturedImages(images);
@@ -35,7 +35,6 @@ const Index = () => {
       ]
     };
     
-    // Add a slight delay to simulate processing
     setTimeout(() => {
       setAnalysis(mockAnalysis);
       toast({
@@ -49,8 +48,8 @@ const Index = () => {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'My Med Spa Analysis',
-          text: 'Check out my personalized med spa treatment recommendations!',
+          title: 'Consult Club Analysis',
+          text: 'Check out my personalized treatment recommendations!',
           url: window.location.href
         });
       } else {
