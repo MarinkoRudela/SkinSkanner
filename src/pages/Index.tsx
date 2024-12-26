@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FaceScanner } from '@/components/FaceScanner';
 import { Analysis } from '@/components/Analysis';
+import { Header } from '@/components/Header';
 import { toast } from '@/components/ui/use-toast';
-import { motion } from 'framer-motion';
 
 interface CapturedImages {
   front?: string;
@@ -68,19 +68,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
       <div className="container max-w-4xl mx-auto px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
-          <h1 className="text-3xl md:text-4xl font-bold text-medspa-800 mb-4">
-            Virtual Face Analysis
-          </h1>
-          <p className="text-medspa-600 text-lg max-w-2xl mx-auto">
-            Get personalized treatment recommendations based on your unique features
-          </p>
-        </motion.div>
-
+        <Header />
         <div className="space-y-8">
           {!analysis && (
             <FaceScanner onImageCapture={handleImageCapture} />
