@@ -4,30 +4,45 @@ import { Analysis } from '@/components/Analysis';
 import { toast } from '@/components/ui/use-toast';
 import { motion } from 'framer-motion';
 
+interface CapturedImages {
+  front?: string;
+  left?: string;
+  right?: string;
+}
+
 const Index = () => {
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [capturedImages, setCapturedImages] = useState<CapturedImages | null>(null);
   const [analysis, setAnalysis] = useState<any>(null);
   
   // Replace with your actual booking URL
   const BOOKING_URL = "https://your-booking-url.com";
 
-  const handleImageCapture = async (image: string) => {
-    setCapturedImage(image);
-    // Simulate AI analysis - replace with actual AI integration
+  const handleImageCapture = async (images: CapturedImages) => {
+    setCapturedImages(images);
+    // Simulate AI analysis - replace with actual GPT integration
     const mockAnalysis = {
       concerns: [
         "Fine lines around eyes",
         "Uneven skin texture",
-        "Minor sun damage"
+        "Minor sun damage",
+        "Slight volume loss in cheeks"
       ],
       recommendations: [
         "Hydrafacial treatment for skin rejuvenation",
         "LED light therapy for collagen stimulation",
-        "Custom skincare routine with SPF protection"
+        "Custom skincare routine with SPF protection",
+        "Consider dermal fillers for cheek enhancement"
       ]
     };
     
-    setAnalysis(mockAnalysis);
+    // Add a slight delay to simulate processing
+    setTimeout(() => {
+      setAnalysis(mockAnalysis);
+      toast({
+        title: "Analysis Complete",
+        description: "We've analyzed your photos and prepared personalized recommendations."
+      });
+    }, 1500);
   };
 
   const handleShare = async () => {
@@ -39,7 +54,6 @@ const Index = () => {
           url: window.location.href
         });
       } else {
-        // Fallback for browsers that don't support Web Share API
         await navigator.clipboard.writeText(window.location.href);
         toast({
           title: "Link copied to clipboard",
