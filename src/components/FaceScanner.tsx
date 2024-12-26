@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Camera } from 'lucide-react';
+import React, { useState } from 'react';
+import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
@@ -14,150 +14,124 @@ interface CapturedImages {
 }
 
 export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: CapturedImages) => void }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isStreaming, setIsStreaming] = useState(false);
   const [currentView, setCurrentView] = useState<ViewType>('front');
   const [capturedImages, setCapturedImages] = useState<CapturedImages>({});
 
-  useEffect(() => {
-    return () => {
-      if (videoRef.current?.srcObject) {
-        const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
-        tracks.forEach(track => track.stop());
-      }
-    };
-  }, []);
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-  const startCamera = async () => {
-    try {
-      const constraints = {
-        video: {
-          facingMode: 'user',
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current?.play();
-          setIsStreaming(true);
-        };
-      }
-    } catch (err) {
-      console.error("Error accessing camera:", err);
+    if (!file.type.startsWith('image/')) {
       toast({
-        title: "Camera Error",
-        description: "Unable to access the camera. Please make sure you've granted camera permissions.",
+        title: "Invalid file type",
+        description: "Please upload an image file.",
         variant: "destructive"
       });
+      return;
     }
-  };
 
-  const captureImage = () => {
-    if (videoRef.current) {
-      const canvas = document.createElement('canvas');
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      const ctx = canvas.getContext('2d');
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const imageData = e.target?.result as string;
       
-      if (ctx) {
-        ctx.drawImage(videoRef.current, 0, 0);
-        const image = canvas.toDataURL('image/jpeg', 0.8);
-        
-        const newCapturedImages = {
-          ...capturedImages,
-          [currentView]: image
-        };
-        
-        setCapturedImages(newCapturedImages);
+      const newCapturedImages = {
+        ...capturedImages,
+        [currentView]: imageData
+      };
+      
+      setCapturedImages(newCapturedImages);
 
-        if (currentView === 'front') {
-          setCurrentView('left');
-          toast({
-            title: "Great!",
-            description: "Now, please turn your head to show your left side."
-          });
-        } else if (currentView === 'left') {
-          setCurrentView('right');
-          toast({
-            title: "Perfect!",
-            description: "Finally, please turn your head to show your right side."
-          });
-        } else {
-          onImageCapture(newCapturedImages);
-          stopCamera();
-        }
+      if (currentView === 'front') {
+        setCurrentView('left');
+        toast({
+          title: "Front view uploaded!",
+          description: "Now, please upload a photo of your left side."
+        });
+      } else if (currentView === 'left') {
+        setCurrentView('right');
+        toast({
+          title: "Left view uploaded!",
+          description: "Finally, please upload a photo of your right side."
+        });
+      } else {
+        onImageCapture(newCapturedImages);
+        toast({
+          title: "Upload complete!",
+          description: "Analyzing your photos..."
+        });
       }
-    }
-  };
+    };
 
-  const stopCamera = () => {
-    if (videoRef.current?.srcObject) {
-      const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
-      tracks.forEach(track => track.stop());
-      videoRef.current.srcObject = null;
-      setIsStreaming(false);
-    }
+    reader.readAsDataURL(file);
   };
 
   const getViewInstructions = () => {
     switch (currentView) {
       case 'front':
-        return "Please look directly at the camera";
+        return "Please upload a front view photo";
       case 'left':
-        return "Turn your head to show your left side";
+        return "Please upload a left side view photo";
       case 'right':
-        return "Turn your head to show your right side";
+        return "Please upload a right side view photo";
     }
   };
 
   return (
     <Card className="p-6 w-full max-w-md mx-auto bg-white rounded-xl shadow-lg">
       <div className="space-y-4">
-        {!isStreaming ? (
-          <Button 
-            onClick={startCamera}
-            className="w-full bg-medspa-600 hover:bg-medspa-700 text-white"
-          >
-            <Camera className="mr-2 h-4 w-4" />
-            Start Camera
-          </Button>
-        ) : (
-          <div className="space-y-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center text-lg font-medium text-medspa-800"
-            >
-              {getViewInstructions()}
-            </motion.div>
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              className="w-full rounded-lg"
-            />
-            <div className="flex gap-2">
-              <Button 
-                onClick={captureImage}
-                className="flex-1 bg-medspa-600 hover:bg-medspa-700 text-white"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center text-lg font-medium text-medspa-800"
+        >
+          {getViewInstructions()}
+        </motion.div>
+
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            {['front', 'left', 'right'].map((view) => (
+              <div
+                key={view}
+                className={`aspect-square rounded-lg border-2 ${
+                  capturedImages[view as ViewType]
+                    ? 'border-medspa-600'
+                    : view === currentView
+                    ? 'border-dashed border-medspa-400'
+                    : 'border-gray-200'
+                } flex items-center justify-center overflow-hidden`}
               >
-                Capture {currentView} view
-              </Button>
-              <Button 
-                onClick={stopCamera}
-                variant="outline"
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-            </div>
+                {capturedImages[view as ViewType] ? (
+                  <img
+                    src={capturedImages[view as ViewType]}
+                    alt={`${view} view`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-sm text-gray-500 text-center p-2">
+                    {view} view
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
-        )}
+
+          <div className="flex justify-center">
+            <Button
+              onClick={() => document.getElementById('fileInput')?.click()}
+              className="bg-medspa-600 hover:bg-medspa-700 text-white"
+            >
+              <Upload className="mr-2 h-4 w-4" />
+              Upload {currentView} view
+            </Button>
+            <input
+              id="fileInput"
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+          </div>
+        </div>
       </div>
     </Card>
   );
