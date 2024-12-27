@@ -14,21 +14,19 @@ const Login = () => {
     password: "",
   });
 
-  // Check for existing session on component mount
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/?config=true");
+        navigate("/dashboard");
       }
     };
 
     checkSession();
 
-    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        navigate("/?config=true");
+        navigate("/dashboard");
       }
     });
 
@@ -60,7 +58,7 @@ const Login = () => {
           title: "Success!",
           description: "You have been logged in successfully.",
         });
-        navigate("/?config=true");
+        navigate("/dashboard");
       }
     } catch (error: any) {
       console.error("Detailed login error:", error);
