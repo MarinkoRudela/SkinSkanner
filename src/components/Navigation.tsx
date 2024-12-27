@@ -1,8 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { Settings, LogIn, UserPlus, Home } from "lucide-react";
+import { Settings, LogIn, UserPlus, Home, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Navigation = ({ session }: { session: any }) => {
   const navigate = useNavigate();
@@ -39,58 +45,43 @@ export const Navigation = ({ session }: { session: any }) => {
   };
 
   return (
-    <div className="absolute top-4 right-4 flex gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2"
-        onClick={() => navigate("/")}
-      >
-        <Home className="h-4 w-4" />
-        Scan
-      </Button>
-      
-      {!session ? (
-        <>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-            onClick={() => navigate("/signup")}
-          >
-            <UserPlus className="h-4 w-4" />
-            Sign Up
+    <div className="absolute top-4 right-4">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="icon">
+            <Menu className="h-4 w-4" />
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-            onClick={() => navigate("/login")}
-          >
-            <LogIn className="h-4 w-4" />
-            Login
-          </Button>
-        </>
-      ) : (
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-            onClick={handleConfigClick}
-          >
-            <Settings className="h-4 w-4" />
-            Settings
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleLogout}
-          >
-            Logout
-          </Button>
-        </div>
-      )}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuItem onClick={() => navigate("/")}>
+            <Home className="mr-2 h-4 w-4" />
+            Scan
+          </DropdownMenuItem>
+          
+          {!session ? (
+            <>
+              <DropdownMenuItem onClick={() => navigate("/signup")}>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Sign Up
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/login")}>
+                <LogIn className="mr-2 h-4 w-4" />
+                Login
+              </DropdownMenuItem>
+            </>
+          ) : (
+            <>
+              <DropdownMenuItem onClick={handleConfigClick}>
+                <Settings className="mr-2 h-4 w-4" />
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
+                Logout
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };
