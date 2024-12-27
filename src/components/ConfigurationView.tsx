@@ -70,6 +70,18 @@ export const ConfigurationView = ({
             </div>
           </div>
         </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Share on Social Media</h3>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-600">Your unique link to share:</p>
+            <div className="bg-gray-50 p-4 rounded">
+              <pre className="text-sm overflow-x-auto">
+                {`${window.location.origin}?business=${session.user.id}`}
+              </pre>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
