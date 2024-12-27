@@ -30,6 +30,12 @@ serve(async (req) => {
       throw new Error('No email found')
     }
 
+    // Get the plan type from the request body
+    const { planType } = await req.json()
+    if (!planType) {
+      throw new Error('No plan type specified')
+    }
+
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     })
@@ -55,19 +61,34 @@ serve(async (req) => {
     }
 
     console.log('Creating payment session...')
-    const session = await stripe.checkout.sessions.create({
+    
+    let sessionConfig = {
       customer: customer_id,
       customer_email: customer_id ? undefined : email,
-      line_items: [
-        {
-          price: 'YOUR_PRICE_ID', // Replace with your actual price ID
-          quantity: 1,
-        },
-      ],
-      mode: 'subscription',
       success_url: `${req.headers.get('origin')}/dashboard`,
       cancel_url: `${req.headers.get('origin')}/signup`,
-    })
+      line_items: [{
+        quantity: 1,
+        price: planType === 'lifetime' ? 'YOUR_LIFETIME_PRICE_ID' : 'YOUR_MONTHLY_PRICE_ID',
+      }],
+    }
+
+    if (planType === 'monthly') {
+      sessionConfig = {
+        ...sessionConfig,
+        mode: 'subscription',
+        subscription_data: {
+          trial_period_days: 30,
+        },
+      }
+    } else {
+      sessionConfig = {
+        ...sessionConfig,
+        mode: 'payment',
+      }
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig)
 
     console.log('Payment session created:', session.id)
     return new Response(

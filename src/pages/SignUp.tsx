@@ -5,10 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Header } from "@/components/Header";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const SignUp = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [planType, setPlanType] = useState("monthly");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -34,7 +37,10 @@ const SignUp = () => {
 
       if (authData.session) {
         const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
-          body: { email: formData.email }
+          body: { 
+            email: formData.email,
+            planType: planType
+          }
         });
 
         if (checkoutError) throw checkoutError;
@@ -64,10 +70,30 @@ const SignUp = () => {
         <Header />
         <div className="mt-8 bg-white p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold mb-6 text-center">Business Owner Sign Up</h2>
-          <div className="mb-6">
-            <p className="text-center text-gray-600">
-              Start your 30-day trial for $100/month
-            </p>
+          <div className="mb-6 space-y-4">
+            <RadioGroup
+              defaultValue="monthly"
+              value={planType}
+              onValueChange={setPlanType}
+              className="grid grid-cols-2 gap-4"
+            >
+              <div className="flex items-center space-x-2 border p-4 rounded-lg cursor-pointer hover:bg-gray-50">
+                <RadioGroupItem value="monthly" id="monthly" />
+                <Label htmlFor="monthly" className="cursor-pointer">
+                  <div className="font-semibold">Monthly Plan</div>
+                  <div className="text-sm text-gray-500">$100/month</div>
+                  <div className="text-xs text-green-600">30-day free trial</div>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2 border p-4 rounded-lg cursor-pointer hover:bg-gray-50">
+                <RadioGroupItem value="lifetime" id="lifetime" />
+                <Label htmlFor="lifetime" className="cursor-pointer">
+                  <div className="font-semibold">Lifetime Access</div>
+                  <div className="text-sm text-gray-500">$999 one-time</div>
+                  <div className="text-xs text-green-600">Best value</div>
+                </Label>
+              </div>
+            </RadioGroup>
           </div>
           <form onSubmit={handleSignUp} className="space-y-4">
             <div>
@@ -108,7 +134,7 @@ const SignUp = () => {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Processing..." : "Sign Up & Subscribe"}
+              {loading ? "Processing..." : "Sign Up & Continue to Payment"}
             </Button>
             <p className="text-center text-sm text-gray-600 mt-4">
               Already have an account?{" "}
