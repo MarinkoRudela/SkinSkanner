@@ -28,7 +28,7 @@ export const Navigation = ({ session }: { session: any }) => {
             variant="outline"
             size="sm"
             className="flex items-center gap-2"
-            onClick={() => navigate("?config=true")}
+            onClick={() => navigate("/signup")}
           >
             <UserPlus className="h-4 w-4" />
             Sign Up
@@ -37,7 +37,7 @@ export const Navigation = ({ session }: { session: any }) => {
             variant="outline"
             size="sm"
             className="flex items-center gap-2"
-            onClick={() => navigate("?config=true")}
+            onClick={() => navigate("/?config=true")}
           >
             <LogIn className="h-4 w-4" />
             Login
