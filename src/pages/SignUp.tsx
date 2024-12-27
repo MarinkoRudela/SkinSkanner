@@ -7,11 +7,13 @@ import { toast } from "@/components/ui/use-toast";
 import { Header } from "@/components/Header";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Navigation } from "@/components/Navigation";
 
 const SignUp = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [planType, setPlanType] = useState("monthly");
+  const [session, setSession] = useState<any>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -66,6 +68,7 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
+      <Navigation session={session} />
       <div className="container max-w-md mx-auto px-4 py-8">
         <Header />
         <div className="mt-8 bg-white p-8 rounded-lg shadow-lg">
