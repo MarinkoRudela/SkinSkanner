@@ -31,7 +31,10 @@ const SignUp = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Signup error:", error);
+        throw error;
+      }
 
       if (data) {
         toast({
@@ -41,6 +44,7 @@ const SignUp = () => {
         navigate("/login");
       }
     } catch (error: any) {
+      console.error("Detailed error:", error);
       toast({
         title: "Error",
         description: error.message,
@@ -102,7 +106,7 @@ const SignUp = () => {
               Already have an account?{" "}
               <button
                 type="button"
-                onClick={() => navigate("/?config=true")}
+                onClick={() => navigate("/login")}
                 className="text-blue-600 hover:underline"
               >
                 Log in
