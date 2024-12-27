@@ -5,10 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Header } from "@/components/Header";
+import { Navigation } from "@/components/Navigation";
 
 const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [session, setSession] = useState<any>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -17,6 +19,7 @@ const Login = () => {
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
       if (session) {
         navigate("/dashboard");
       }
@@ -25,6 +28,7 @@ const Login = () => {
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
       if (session) {
         navigate("/dashboard");
       }
@@ -74,6 +78,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
+      <Navigation session={session} />
       <div className="container max-w-md mx-auto px-4 py-8">
         <Header />
         <div className="mt-8 bg-white p-8 rounded-lg shadow-lg">
