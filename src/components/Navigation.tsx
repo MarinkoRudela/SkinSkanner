@@ -20,6 +20,24 @@ export const Navigation = ({ session }: { session: any }) => {
     navigate(`?${searchParams.toString()}`);
   };
 
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      toast({
+        title: "Success",
+        description: "You have been logged out successfully",
+      });
+      navigate("/");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="absolute top-4 right-4 flex gap-2">
       {!session ? (
@@ -37,22 +55,31 @@ export const Navigation = ({ session }: { session: any }) => {
             variant="outline"
             size="sm"
             className="flex items-center gap-2"
-            onClick={() => navigate("/?config=true")}
+            onClick={() => navigate("/login")}
           >
             <LogIn className="h-4 w-4" />
             Login
           </Button>
         </>
       ) : (
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2"
-          onClick={handleConfigClick}
-        >
-          <Settings className="h-4 w-4" />
-          Settings
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+            onClick={handleConfigClick}
+          >
+            <Settings className="h-4 w-4" />
+            Settings
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        </div>
       )}
     </div>
   );
