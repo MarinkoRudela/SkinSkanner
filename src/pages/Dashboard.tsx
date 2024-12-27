@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { ConfigurationView } from "@/components/ConfigurationView";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
