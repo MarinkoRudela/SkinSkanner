@@ -89,7 +89,7 @@ const SignUp = () => {
                 <RadioGroupItem value="lifetime" id="lifetime" />
                 <Label htmlFor="lifetime" className="cursor-pointer">
                   <div className="font-semibold">Lifetime Access</div>
-                  <div className="text-sm text-gray-500">$999 one-time</div>
+                  <div className="text-sm text-gray-500">$1999 one-time</div>
                   <div className="text-xs text-green-600">Best value</div>
                 </Label>
               </div>
