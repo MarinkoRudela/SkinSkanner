@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { FaceScanner } from '@/components/FaceScanner';
 import { Analysis } from '@/components/Analysis';
 import { Header } from '@/components/Header';
+import { Navigation } from '@/components/Navigation';
+import { ConfigurationView } from '@/components/ConfigurationView';
 import { toast } from '@/components/ui/use-toast';
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
 
 interface CapturedImages {
   front?: string;
@@ -20,9 +19,7 @@ const Index = () => {
   const [session, setSession] = useState<any>(null);
   const [bookingUrl, setBookingUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
   
-  // Check for authentication status changes
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -44,7 +41,6 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Fetch business settings for authenticated users
   const fetchBusinessSettings = async () => {
     try {
       const { data, error } = await supabase
@@ -53,7 +49,7 @@ const Index = () => {
         .single();
 
       if (error) {
-        if (error.code !== 'PGRST116') { // No rows returned is ok for new users
+        if (error.code !== 'PGRST116') {
           console.error('Error fetching business settings:', error);
           toast({
             title: "Error",
@@ -69,7 +65,6 @@ const Index = () => {
     }
   };
 
-  // Update booking URL for authenticated users
   const updateBookingUrl = async (url: string) => {
     if (!session) return;
 
@@ -144,100 +139,39 @@ const Index = () => {
     }
   };
 
-  // Show loading state
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
-  // Show auth UI for configuration mode when not logged in
   const isConfigMode = new URLSearchParams(window.location.search).get('config') === 'true';
-  if (isConfigMode && !session) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
-        <div className="container max-w-md mx-auto px-4 py-8">
-          <Header />
-          <div className="mt-8 bg-white p-8 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-6 text-center">Business Owner Login</h2>
-            <Auth 
-              supabaseClient={supabase}
-              appearance={{ theme: ThemeSupa }}
-              theme="light"
-              providers={[]}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
-      <div className="container max-w-4xl mx-auto px-4 py-8">
+      <div className="container max-w-4xl mx-auto px-4 py-8 relative">
+        <Navigation session={session} />
         <Header />
         
-        {isConfigMode && session && (
-          <div className="mb-8 p-6 bg-white rounded-lg shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Business Configuration</h2>
-            <div className="space-y-6">
-              <div>
-                <label htmlFor="bookingUrl" className="block text-sm font-medium text-gray-700 mb-1">
-                  Booking URL
-                </label>
-                <input
-                  type="url"
-                  id="bookingUrl"
-                  className="w-full p-2 border rounded"
-                  value={bookingUrl}
-                  onChange={(e) => updateBookingUrl(e.target.value)}
-                  placeholder="Enter your booking platform URL"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  Enter the URL where clients can book appointments (e.g., your Calendly or Acuity link)
-                </p>
-              </div>
+        {isConfigMode ? (
+          <ConfigurationView 
+            session={session}
+            bookingUrl={bookingUrl}
+            updateBookingUrl={updateBookingUrl}
+          />
+        ) : (
+          <div className="space-y-8">
+            {!analysis && (
+              <FaceScanner onImageCapture={handleImageCapture} />
+            )}
 
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Integration Guide</h3>
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-600">To embed this application on your website:</p>
-                  <div className="bg-gray-50 p-4 rounded">
-                    <pre className="text-sm overflow-x-auto">
-                      {`<iframe
-  src="${window.location.origin}"
-  width="100%"
-  height="800px"
-  frameborder="0"
-></iframe>`}
-                    </pre>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-600">Share directly on social media:</p>
-                  <button
-                    onClick={handleShare}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-medspa-600 hover:bg-medspa-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-medspa-500"
-                  >
-                    Share Application
-                  </button>
-                </div>
-              </div>
-            </div>
+            {analysis && (
+              <Analysis
+                analysis={analysis}
+                bookingUrl={bookingUrl}
+                onShare={handleShare}
+              />
+            )}
           </div>
         )}
-
-        <div className="space-y-8">
-          {!analysis && (
-            <FaceScanner onImageCapture={handleImageCapture} />
-          )}
-
-          {analysis && (
-            <Analysis
-              analysis={analysis}
-              bookingUrl={bookingUrl}
-              onShare={handleShare}
-            />
-          )}
-        </div>
       </div>
     </div>
   );
