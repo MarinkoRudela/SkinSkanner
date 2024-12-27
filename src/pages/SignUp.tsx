@@ -27,25 +27,18 @@ const SignUp = () => {
           data: {
             business_name: formData.businessName,
           },
+          emailRedirectTo: `${window.location.origin}/login`
         },
       });
 
       if (error) throw error;
 
       if (data) {
-        // Update the profiles table with business name
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .update({ business_name: formData.businessName })
-          .eq("id", data.user?.id);
-
-        if (profileError) throw profileError;
-
         toast({
           title: "Success!",
           description: "Please check your email to verify your account.",
         });
-        navigate("/?config=true");
+        navigate("/login");
       }
     } catch (error: any) {
       toast({
