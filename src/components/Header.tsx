@@ -42,7 +42,7 @@ export const Header = () => {
           className="h-16 mx-auto mb-4"
         />
       )}
-      <h1 className="text-3xl md:text-4xl font-bold text-medspa-800 mb-2">
+      <h1 className="text-3xl md:text-4xl font-bold text-medspa-800 mb-4">
         {brandName}
       </h1>
       <p className="text-lg text-medspa-600 italic">
