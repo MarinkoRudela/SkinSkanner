@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Settings, LogIn } from "lucide-react";
+import { Settings, LogIn, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
@@ -23,15 +23,26 @@ export const Navigation = ({ session }: { session: any }) => {
   return (
     <div className="absolute top-4 right-4 flex gap-2">
       {!session ? (
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2"
-          onClick={() => navigate("?config=true")}
-        >
-          <LogIn className="h-4 w-4" />
-          Login
-        </Button>
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+            onClick={() => navigate("?config=true")}
+          >
+            <UserPlus className="h-4 w-4" />
+            Sign Up
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+            onClick={() => navigate("?config=true")}
+          >
+            <LogIn className="h-4 w-4" />
+            Login
+          </Button>
+        </>
       ) : (
         <Button
           variant="outline"
