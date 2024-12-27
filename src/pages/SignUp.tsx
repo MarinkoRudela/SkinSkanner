@@ -81,7 +81,7 @@ const SignUp = () => {
                 <RadioGroupItem value="monthly" id="monthly" />
                 <Label htmlFor="monthly" className="cursor-pointer">
                   <div className="font-semibold">Monthly Plan</div>
-                  <div className="text-sm text-gray-500">$100/month</div>
+                  <div className="text-sm text-gray-500">$99/month</div>
                   <div className="text-xs text-green-600">30-day free trial</div>
                 </Label>
               </div>
