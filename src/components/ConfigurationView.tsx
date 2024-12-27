@@ -2,6 +2,9 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "./Header";
+import { Button } from "./ui/button";
+import { toast } from "./ui/use-toast";
+import { useState } from "react";
 
 interface ConfigurationViewProps {
   session: any;
@@ -14,6 +17,28 @@ export const ConfigurationView = ({
   bookingUrl,
   updateBookingUrl,
 }: ConfigurationViewProps) => {
+  const [localBookingUrl, setLocalBookingUrl] = useState(bookingUrl);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      await updateBookingUrl(localBookingUrl);
+      toast({
+        title: "Success",
+        description: "Your booking URL has been updated.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   if (!session) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
@@ -41,14 +66,22 @@ export const ConfigurationView = ({
           <label htmlFor="bookingUrl" className="block text-sm font-medium text-gray-700 mb-1">
             Booking URL
           </label>
-          <input
-            type="url"
-            id="bookingUrl"
-            className="w-full p-2 border rounded"
-            value={bookingUrl}
-            onChange={(e) => updateBookingUrl(e.target.value)}
-            placeholder="Enter your booking platform URL"
-          />
+          <div className="flex gap-2">
+            <input
+              type="url"
+              id="bookingUrl"
+              className="flex-1 p-2 border rounded"
+              value={localBookingUrl}
+              onChange={(e) => setLocalBookingUrl(e.target.value)}
+              placeholder="Enter your booking platform URL"
+            />
+            <Button 
+              onClick={handleSave}
+              disabled={isSaving || localBookingUrl === bookingUrl}
+            >
+              {isSaving ? "Saving..." : "Save"}
+            </Button>
+          </div>
           <p className="text-sm text-gray-500 mt-1">
             Enter the URL where clients can book appointments (e.g., your Calendly or Acuity link)
           </p>
@@ -67,6 +100,24 @@ export const ConfigurationView = ({
   frameborder="0"
 ></iframe>`}
               </pre>
+              <Button
+                variant="outline"
+                className="mt-2"
+                onClick={() => {
+                  navigator.clipboard.writeText(`<iframe
+  src="${window.location.origin}"
+  width="100%"
+  height="800px"
+  frameborder="0"
+></iframe>`);
+                  toast({
+                    title: "Copied!",
+                    description: "Integration code copied to clipboard",
+                  });
+                }}
+              >
+                Copy Code
+              </Button>
             </div>
           </div>
         </div>
@@ -79,6 +130,19 @@ export const ConfigurationView = ({
               <pre className="text-sm overflow-x-auto">
                 {`${window.location.origin}?business=${session.user.id}`}
               </pre>
+              <Button
+                variant="outline"
+                className="mt-2"
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}?business=${session.user.id}`);
+                  toast({
+                    title: "Copied!",
+                    description: "Share link copied to clipboard",
+                  });
+                }}
+              >
+                Copy Link
+              </Button>
             </div>
           </div>
         </div>
