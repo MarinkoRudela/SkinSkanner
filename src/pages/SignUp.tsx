@@ -20,31 +20,34 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           data: {
             business_name: formData.businessName,
           },
-          emailRedirectTo: `${window.location.origin}/login`
         },
       });
 
-      if (error) {
-        console.error("Signup error:", error);
-        throw error;
+      if (authError) throw authError;
+
+      if (authData.session) {
+        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
+          body: { email: formData.email }
+        });
+
+        if (checkoutError) throw checkoutError;
+
+        if (checkoutData.url) {
+          window.location.href = checkoutData.url;
+        } else {
+          throw new Error('No checkout URL returned');
+        }
       }
 
-      if (data) {
-        toast({
-          title: "Success!",
-          description: "Please check your email to verify your account.",
-        });
-        navigate("/login");
-      }
     } catch (error: any) {
-      console.error("Detailed error:", error);
+      console.error("Error:", error);
       toast({
         title: "Error",
         description: error.message,
@@ -61,6 +64,11 @@ const SignUp = () => {
         <Header />
         <div className="mt-8 bg-white p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold mb-6 text-center">Business Owner Sign Up</h2>
+          <div className="mb-6">
+            <p className="text-center text-gray-600">
+              Start your 30-day trial for $100/month
+            </p>
+          </div>
           <form onSubmit={handleSignUp} className="space-y-4">
             <div>
               <label htmlFor="businessName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -100,7 +108,7 @@ const SignUp = () => {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing up..." : "Sign Up"}
+              {loading ? "Processing..." : "Sign Up & Subscribe"}
             </Button>
             <p className="text-center text-sm text-gray-600 mt-4">
               Already have an account?{" "}
