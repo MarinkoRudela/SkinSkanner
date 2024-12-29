@@ -20,22 +20,22 @@ serve(async (req) => {
       throw new Error('Missing required images');
     }
 
-    const perplexityApiKey = Deno.env.get('PERPLEXITY_API_KEY');
-    if (!perplexityApiKey) {
-      console.error('Perplexity API key is not configured');
-      throw new Error('Perplexity API key is not configured');
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openaiApiKey) {
+      console.error('OpenAI API key is not configured');
+      throw new Error('OpenAI API key is not configured');
     }
 
-    console.log('Preparing Perplexity request...');
+    console.log('Preparing OpenAI request...');
     
-    const perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
+    const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${perplexityApiKey}`,
+        'Authorization': `Bearer ${openaiApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-sonar-small-128k-online',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
@@ -81,24 +81,24 @@ serve(async (req) => {
       }),
     });
 
-    if (!perplexityResponse.ok) {
-      const errorText = await perplexityResponse.text();
-      console.error('Perplexity API error:', perplexityResponse.status, perplexityResponse.statusText);
+    if (!openaiResponse.ok) {
+      const errorText = await openaiResponse.text();
+      console.error('OpenAI API error:', openaiResponse.status, openaiResponse.statusText);
       console.error('Error details:', errorText);
-      throw new Error(`Perplexity API error: ${perplexityResponse.status} ${perplexityResponse.statusText}`);
+      throw new Error(`OpenAI API error: ${openaiResponse.status} ${openaiResponse.statusText}`);
     }
 
-    const perplexityData = await perplexityResponse.json();
-    console.log('Received response from Perplexity:', perplexityData);
+    const openaiData = await openaiResponse.json();
+    console.log('Received response from OpenAI:', openaiData);
 
-    if (!perplexityData.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response format from Perplexity');
+    if (!openaiData.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response format from OpenAI');
     }
 
     // Parse and validate the analysis
     let analysis;
     try {
-      analysis = JSON.parse(perplexityData.choices[0].message.content);
+      analysis = JSON.parse(openaiData.choices[0].message.content);
       
       if (!analysis.concerns || !analysis.recommendations || 
           !Array.isArray(analysis.concerns) || !Array.isArray(analysis.recommendations) ||
