@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { FaceScanner } from '@/components/FaceScanner';
-import { Analysis } from '@/components/Analysis';
 import { Header } from '@/components/Header';
 import { Navigation } from '@/components/Navigation';
-import { ConfigurationView } from '@/components/ConfigurationView';
+import { ConfigSection } from '@/components/config/ConfigSection';
+import { ScannerSection } from '@/components/scanner/ScannerSection';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
-interface CapturedImages {
-  front?: string;
-  left?: string;
-  right?: string;
-}
-
 const Index = () => {
-  const [capturedImages, setCapturedImages] = useState<CapturedImages | null>(null);
-  const [analysis, setAnalysis] = useState<any>(null);
   const [session, setSession] = useState<any>(null);
   const [bookingUrl, setBookingUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -93,41 +84,6 @@ const Index = () => {
     }
   };
 
-  const handleImageCapture = async (images: CapturedImages) => {
-    setCapturedImages(images);
-    const mockAnalysis = {
-      concerns: [
-        "Fine lines around eyes",
-        "Uneven skin texture",
-        "Minor sun damage",
-        "Slight volume loss in cheeks"
-      ],
-      recommendations: [
-        "Hydrafacial treatment for skin rejuvenation",
-        "LED light therapy for collagen stimulation",
-        "Custom skincare routine with SPF protection",
-        "Consider dermal fillers for cheek enhancement"
-      ]
-    };
-    
-    setTimeout(() => {
-      setAnalysis(mockAnalysis);
-      toast({
-        title: "Analysis Complete",
-        description: "We've analyzed your photos and prepared personalized recommendations."
-      });
-    }, 1500);
-  };
-
-  const handleScanAgain = () => {
-    setCapturedImages(null);
-    setAnalysis(null);
-    toast({
-      title: "Ready for New Scan",
-      description: "Please upload your photos for a new analysis."
-    });
-  };
-
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
@@ -141,25 +97,21 @@ const Index = () => {
         <Header />
         
         {isConfigMode ? (
-          <ConfigurationView 
+          <ConfigSection 
             session={session}
             bookingUrl={bookingUrl}
             updateBookingUrl={updateBookingUrl}
           />
         ) : (
-          <div className="space-y-8">
-            {!analysis && (
-              <FaceScanner onImageCapture={handleImageCapture} />
-            )}
-
-            {analysis && (
-              <Analysis
-                analysis={analysis}
-                bookingUrl={bookingUrl}
-                onScanAgain={handleScanAgain}
-              />
-            )}
-          </div>
+          <ScannerSection 
+            bookingUrl={bookingUrl}
+            onScanAgain={() => {
+              toast({
+                title: "Ready for New Scan",
+                description: "Please upload your photos for a new analysis."
+              });
+            }}
+          />
         )}
       </div>
     </div>
