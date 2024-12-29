@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaceScanner } from '@/components/FaceScanner';
 import { Analysis } from '@/components/Analysis';
 import { toast } from '@/components/ui/use-toast';
@@ -16,9 +16,9 @@ interface ScannerSectionProps {
 }
 
 export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps) => {
-  const [capturedImages, setCapturedImages] = React.useState<CapturedImages | null>(null);
-  const [analysis, setAnalysis] = React.useState<any>(null);
-  const [isAnalyzing, setIsAnalyzing] = React.useState(false);
+  const [capturedImages, setCapturedImages] = useState<CapturedImages | null>(null);
+  const [analysis, setAnalysis] = useState<any>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleImageCapture = async (images: CapturedImages) => {
     setCapturedImages(images);
