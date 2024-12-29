@@ -39,7 +39,9 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
       setAnalysis(mockAnalysis);
       toast({
         title: "Analysis Complete",
-        description: "We've analyzed your photos and prepared personalized recommendations."
+        description: "We've analyzed your photos and prepared personalized recommendations.",
+        duration: 3000,
+        className: "top-center-toast"
       });
     }, 1500);
   };
@@ -49,7 +51,9 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
     setAnalysis(null);
     toast({
       title: "Ready for New Scan",
-      description: "Please upload your photos for a new analysis."
+      description: "Please upload your photos for a new analysis.",
+      duration: 3000,
+      className: "top-center-toast"
     });
   };
 

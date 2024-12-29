@@ -95,3 +95,8 @@
   content: '';
   @apply absolute top-0 left-1/2 w-px h-4 bg-primary/30 -translate-x-1/2 -translate-y-4;
 }
+
+/* Toast positioning */
+.top-center-toast {
+  @apply fixed top-20 left-1/2 -translate-x-1/2 !important;
+}
