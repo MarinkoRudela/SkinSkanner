@@ -53,7 +53,7 @@ export const Header = ({ brandName: propsBrandName, logoUrl: propsLogoUrl }: Hea
         {brandName}
       </h1>
       <p className="text-lg text-muted-foreground">
-        Because radiant skin is just a scan away
+        Because radiant skin is just a skan away
       </p>
     </header>
   );
