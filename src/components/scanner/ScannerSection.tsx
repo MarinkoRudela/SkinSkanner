@@ -25,23 +25,23 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
     setIsAnalyzing(true);
     
     try {
+      // Get the current session
       const { data: { session } } = await supabase.auth.getSession();
       
-      const response = await fetch('https://hyqidjgbnmdiirdhgtgs.supabase.co/functions/v1/analyze-skin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token}`,
-        },
-        body: JSON.stringify({ images }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Analysis failed');
+      if (!session) {
+        throw new Error('No active session');
       }
 
-      const analysisResult = await response.json();
-      setAnalysis(analysisResult);
+      // Call the Edge Function with proper authentication
+      const { data, error } = await supabase.functions.invoke('analyze-skin', {
+        body: { images },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setAnalysis(data);
       
       toast({
         title: "Analysis Complete",
