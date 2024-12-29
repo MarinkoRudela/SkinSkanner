@@ -30,28 +30,33 @@ serve(async (req) => {
           {
             role: 'system',
             content: `You are a professional skin analysis AI assistant. Analyze the provided facial images and:
-            1. Identify potential skin concerns
+            1. Identify 3-4 potential skin concerns
             2. Provide specific treatment recommendations for each concern
             3. Keep responses concise and professional
             4. Format output as JSON with 'concerns' and 'recommendations' arrays that match 1:1
             Example format: 
             {
-              "concerns": ["Concern 1", "Concern 2"],
-              "recommendations": ["Treatment 1 for Concern 1", "Treatment 2 for Concern 2"]
+              "concerns": ["Uneven skin tone", "Fine lines"],
+              "recommendations": ["Vitamin C serum for pigmentation", "Retinol treatment for fine lines"]
             }`
           },
           {
             role: 'user',
-            content: `Please analyze these facial images from different angles and provide skin care recommendations. Images: ${images.front}, ${images.left}, ${images.right}`
+            content: `Please analyze these facial images from different angles and provide skin care recommendations. Front view: ${images.front}, Left side: ${images.left}, Right side: ${images.right}`
           }
         ],
       }),
     });
 
-    const data = await response.json();
-    const analysis = JSON.parse(data.choices[0].message.content);
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
+    }
 
+    const data = await response.json();
     console.log('Analysis completed successfully');
+    
+    // Parse the GPT response to ensure it's valid JSON
+    const analysis = JSON.parse(data.choices[0].message.content);
 
     return new Response(JSON.stringify(analysis), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
