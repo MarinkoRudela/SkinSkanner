@@ -31,18 +31,27 @@ serve(async (req) => {
 
     // Clean and validate base64 images
     const cleanBase64 = (dataUrl: string) => {
-      const base64Regex = /^data:image\/[a-z]+;base64,/;
-      return base64Regex.test(dataUrl) ? dataUrl : `data:image/jpeg;base64,${dataUrl}`;
+      // Remove any existing data URL prefix
+      const base64Data = dataUrl.replace(/^data:image\/[a-z]+;base64,/, '');
+      // Validate base64
+      try {
+        atob(base64Data);
+      } catch (e) {
+        console.error('Invalid base64 data:', e);
+        throw new Error('Invalid image data');
+      }
+      return `data:image/jpeg;base64,${base64Data}`;
     };
 
+    console.log('Cleaning and validating image data...');
     const imageUrls = {
       front: cleanBase64(images.front),
       left: cleanBase64(images.left),
       right: cleanBase64(images.right)
     };
 
-    console.log('Prepared image URLs for OpenAI');
-    console.log('Sending request to OpenAI...');
+    console.log('Images validated successfully');
+    console.log('Preparing OpenAI request...');
     
     const openAIRequest = {
       model: "gpt-4-vision-preview",
@@ -92,8 +101,8 @@ serve(async (req) => {
       ]
     };
 
-    console.log('OpenAI request prepared:', JSON.stringify(openAIRequest, null, 2));
-
+    console.log('Sending request to OpenAI API...');
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -103,9 +112,11 @@ serve(async (req) => {
       body: JSON.stringify(openAIRequest),
     });
 
+    console.log('OpenAI API response status:', response.status);
+    
     if (!response.ok) {
-      console.error('OpenAI API error:', response.status, response.statusText);
       const errorText = await response.text();
+      console.error('OpenAI API error:', response.status, response.statusText);
       console.error('Error details:', errorText);
       throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
     }
