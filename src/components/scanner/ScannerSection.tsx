@@ -44,6 +44,15 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
     }, 1500);
   };
 
+  const handleScanAgain = () => {
+    setCapturedImages(null);
+    setAnalysis(null);
+    toast({
+      title: "Ready for New Scan",
+      description: "Please upload your photos for a new analysis."
+    });
+  };
+
   return (
     <div className="space-y-8">
       {!analysis && (
@@ -54,7 +63,7 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
         <Analysis
           analysis={analysis}
           bookingUrl={bookingUrl}
-          onScanAgain={onScanAgain}
+          onScanAgain={handleScanAgain}
         />
       )}
     </div>
