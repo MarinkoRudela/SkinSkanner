@@ -1,44 +1,54 @@
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
-export const Header = () => {
-  const [brandName, setBrandName] = useState('Skin Scanner AI');
-  const [logoUrl, setLogoUrl] = useState('');
+interface HeaderProps {
+  brandName?: string;
+  logoUrl?: string;
+}
+
+export const Header = ({ brandName: propsBrandName, logoUrl: propsLogoUrl }: HeaderProps) => {
+  const [brandName, setBrandName] = useState<string>("Skin Skanner AI");
+  const [logoUrl, setLogoUrl] = useState<string>("");
 
   useEffect(() => {
     const fetchBranding = async () => {
-      // Get business ID from URL if present
-      const urlParams = new URLSearchParams(window.location.search);
-      const businessId = urlParams.get('business');
-
-      if (businessId) {
-        const { data, error } = await supabase
+      try {
+        const { data: profile, error } = await supabase
           .from('profiles')
           .select('brand_name, logo_url')
-          .eq('id', businessId)
-          .single();
+          .maybeSingle();
 
-        if (!error && data) {
-          if (data.brand_name) setBrandName(data.brand_name);
-          if (data.logo_url) setLogoUrl(data.logo_url);
+        if (error) {
+          console.error('Error fetching branding:', error);
+          return;
         }
+
+        if (profile) {
+          setBrandName(profile.brand_name || "Skin Skanner AI");
+          setLogoUrl(profile.logo_url || "");
+        }
+      } catch (error) {
+        console.error('Error:', error);
       }
     };
 
-    fetchBranding();
-  }, []);
+    // If no props are provided, fetch from Supabase
+    if (!propsBrandName && !propsLogoUrl) {
+      fetchBranding();
+    } else {
+      // Use props if provided
+      setBrandName(propsBrandName || "Skin Skanner AI");
+      setLogoUrl(propsLogoUrl || "");
+    }
+  }, [propsBrandName, propsLogoUrl]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="text-center mb-8"
-    >
+    <header className="text-center py-8">
       {logoUrl && (
-        <img 
-          src={logoUrl} 
-          alt={brandName} 
+        <img
+          src={logoUrl}
+          alt={`${brandName} logo`}
           className="h-16 mx-auto mb-4"
         />
       )}
@@ -48,6 +58,6 @@ export const Header = () => {
       <p className="text-lg text-medspa-600 italic">
         Because radiant skin is just a scan away
       </p>
-    </motion.div>
+    </header>
   );
 };
