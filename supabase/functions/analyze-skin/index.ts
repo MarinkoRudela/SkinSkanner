@@ -9,18 +9,24 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log('Starting skin analysis...');
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { 
+      headers: corsHeaders,
+      status: 200
+    });
   }
 
   try {
-    console.log('Starting skin analysis...');
-    
     if (!openAIApiKey) {
       console.error('OpenAI API key is not configured');
       throw new Error('OpenAI API key is not configured');
     }
+
+    console.log('Request method:', req.method);
+    console.log('Request headers:', Object.fromEntries(req.headers.entries()));
 
     const { images } = await req.json();
     console.log('Received request with images:', Object.keys(images));
@@ -54,7 +60,7 @@ serve(async (req) => {
     console.log('Preparing OpenAI request...');
     
     const openAIRequest = {
-      model: "gpt-4-vision-preview",
+      model: "gpt-4o-mini",
       max_tokens: 1000,
       messages: [
         {
@@ -147,7 +153,11 @@ serve(async (req) => {
     console.log('Analysis completed successfully:', analysis);
 
     return new Response(JSON.stringify(analysis), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'application/json'
+      },
+      status: 200
     });
   } catch (error) {
     console.error('Error in analyze-skin function:', error);
@@ -156,7 +166,10 @@ serve(async (req) => {
       details: 'Failed to analyze skin images'
     }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'application/json'
+      }
     });
   }
 });
