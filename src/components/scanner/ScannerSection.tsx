@@ -3,6 +3,7 @@ import { FaceScanner } from '@/components/FaceScanner';
 import { Analysis } from '@/components/Analysis';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 interface CapturedImages {
   front?: string;
@@ -19,6 +20,7 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
   const [capturedImages, setCapturedImages] = React.useState<CapturedImages | null>(null);
   const [analysis, setAnalysis] = React.useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleImageCapture = async (images: CapturedImages) => {
     setCapturedImages(images);
@@ -29,7 +31,15 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        throw new Error('No active session');
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to analyze images.",
+          variant: "destructive",
+          duration: 3000,
+          className: "top-center-toast"
+        });
+        navigate('/login');
+        return;
       }
 
       // Call the Edge Function with proper authentication
@@ -38,7 +48,12 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
       });
 
       if (error) {
+        console.error('Analysis error:', error);
         throw error;
+      }
+
+      if (!data) {
+        throw new Error('No analysis data received');
       }
 
       setAnalysis(data);
@@ -53,7 +68,7 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
       console.error('Analysis error:', error);
       toast({
         title: "Analysis Failed",
-        description: "We couldn't analyze your photos. Please try again.",
+        description: "We couldn't analyze your photos. Please try again or log in if you haven't already.",
         variant: "destructive",
         duration: 3000,
         className: "top-center-toast"
