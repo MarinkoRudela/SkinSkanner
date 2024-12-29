@@ -26,10 +26,12 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
     
     try {
       console.log('Calling analyze-skin function...');
+      const { data: sessionData } = await supabase.auth.getSession();
+      
       const { data, error } = await supabase.functions.invoke('analyze-skin', {
         body: { images },
         headers: {
-          Authorization: `Bearer ${supabase.auth.getSession()?.access_token}`
+          Authorization: `Bearer ${sessionData.session?.access_token}`
         }
       });
 
