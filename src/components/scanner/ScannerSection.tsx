@@ -25,8 +25,12 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
     setIsAnalyzing(true);
     
     try {
+      console.log('Calling analyze-skin function...');
       const { data, error } = await supabase.functions.invoke('analyze-skin', {
         body: { images },
+        headers: {
+          Authorization: `Bearer ${supabase.auth.getSession()?.access_token}`
+        }
       });
 
       if (error) {
