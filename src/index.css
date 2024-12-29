@@ -83,11 +83,11 @@
 }
 
 .concern-node {
-  @apply w-full max-w-xs text-center transition-all duration-300 hover:scale-105;
+  @apply w-full max-w-xs text-center transition-all duration-300 hover:scale-105 cursor-pointer;
 }
 
 .recommendation-node {
-  @apply w-full max-w-xs text-center transition-all duration-300 hover:scale-105;
+  @apply w-full max-w-xs text-center transition-all duration-300;
   position: relative;
 }
 
