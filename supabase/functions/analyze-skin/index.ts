@@ -23,75 +23,84 @@ serve(async (req) => {
     }
 
     const { images } = await req.json();
+    console.log('Received request with images:', Object.keys(images));
 
     if (!images || !images.front || !images.left || !images.right) {
       throw new Error('Missing required images');
     }
 
-    console.log('Processing images for analysis...');
-
-    // Convert base64 images to URLs that can be analyzed
-    const imageUrls = {
-      front: images.front.split(',')[1], // Remove data:image/jpeg;base64, prefix
-      left: images.left.split(',')[1],
-      right: images.right.split(',')[1]
+    // Clean and validate base64 images
+    const cleanBase64 = (dataUrl: string) => {
+      const base64Regex = /^data:image\/[a-z]+;base64,/;
+      return base64Regex.test(dataUrl) ? dataUrl : `data:image/jpeg;base64,${dataUrl}`;
     };
 
+    const imageUrls = {
+      front: cleanBase64(images.front),
+      left: cleanBase64(images.left),
+      right: cleanBase64(images.right)
+    };
+
+    console.log('Prepared image URLs for OpenAI');
     console.log('Sending request to OpenAI...');
     
+    const openAIRequest = {
+      model: "gpt-4-vision-preview",
+      max_tokens: 1000,
+      messages: [
+        {
+          role: 'system',
+          content: `You are a professional skin analysis AI assistant. Your task is to:
+          1. Analyze the provided facial images from different angles
+          2. Identify 3-4 key skin concerns based on visible features
+          3. Provide specific, actionable treatment recommendations for each concern
+          4. Return your analysis in a structured JSON format with matching concerns and recommendations
+          
+          Format your response exactly like this example:
+          {
+            "concerns": ["Uneven skin tone", "Fine lines", "Dehydration"],
+            "recommendations": ["Regular use of Vitamin C serum", "Retinol treatment at night", "Hyaluronic acid moisturizer"]
+          }`
+        },
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: 'Analyze these facial images and provide personalized skin care recommendations:'
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: imageUrls.front
+              }
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: imageUrls.left
+              }
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: imageUrls.right
+              }
+            }
+          ]
+        }
+      ]
+    };
+
+    console.log('OpenAI request prepared:', JSON.stringify(openAIRequest, null, 2));
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'gpt-4-vision-preview',
-        max_tokens: 1000,
-        messages: [
-          {
-            role: 'system',
-            content: `You are a professional skin analysis AI assistant. Your task is to:
-            1. Analyze the provided facial images from different angles
-            2. Identify 3-4 key skin concerns based on visible features
-            3. Provide specific, actionable treatment recommendations for each concern
-            4. Return your analysis in a structured JSON format with matching concerns and recommendations
-            
-            Format your response exactly like this example:
-            {
-              "concerns": ["Uneven skin tone", "Fine lines", "Dehydration"],
-              "recommendations": ["Regular use of Vitamin C serum", "Retinol treatment at night", "Hyaluronic acid moisturizer"]
-            }`
-          },
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: 'Analyze these facial images and provide personalized skin care recommendations:'
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: `data:image/jpeg;base64,${imageUrls.front}`
-                }
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: `data:image/jpeg;base64,${imageUrls.left}`
-                }
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: `data:image/jpeg;base64,${imageUrls.right}`
-                }
-              }
-            ]
-          }
-        ],
-      }),
+      body: JSON.stringify(openAIRequest),
     });
 
     if (!response.ok) {
