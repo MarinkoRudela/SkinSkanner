@@ -16,6 +16,12 @@ serve(async (req) => {
 
   try {
     console.log('Starting skin analysis...');
+    
+    if (!openAIApiKey) {
+      console.error('OpenAI API key is not configured');
+      throw new Error('OpenAI API key is not configured');
+    }
+
     const { images } = await req.json();
 
     if (!images || !images.front || !images.left || !images.right) {
@@ -31,6 +37,8 @@ serve(async (req) => {
       right: images.right.split(',')[1]
     };
 
+    console.log('Sending request to OpenAI...');
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -38,7 +46,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4-vision-preview',
+        max_tokens: 1000,
         messages: [
           {
             role: 'system',
@@ -56,12 +65,30 @@ serve(async (req) => {
           },
           {
             role: 'user',
-            content: `Analyze these facial images and provide personalized skin care recommendations:
-            Front view: ${imageUrls.front}
-            Left side view: ${imageUrls.left}
-            Right side view: ${imageUrls.right}
-            
-            Provide a thorough analysis focusing on visible skin concerns and specific treatment recommendations.`
+            content: [
+              {
+                type: 'text',
+                text: 'Analyze these facial images and provide personalized skin care recommendations:'
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:image/jpeg;base64,${imageUrls.front}`
+                }
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:image/jpeg;base64,${imageUrls.left}`
+                }
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:image/jpeg;base64,${imageUrls.right}`
+                }
+              }
+            ]
           }
         ],
       }),
@@ -69,11 +96,13 @@ serve(async (req) => {
 
     if (!response.ok) {
       console.error('OpenAI API error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('Error details:', errorText);
       throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('Received response from OpenAI');
+    console.log('Received response from OpenAI:', data);
 
     if (!data.choices?.[0]?.message?.content) {
       throw new Error('Invalid response format from OpenAI');
