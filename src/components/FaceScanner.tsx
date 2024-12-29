@@ -65,7 +65,7 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: Captu
     reader.readAsDataURL(file);
   };
 
-  const allImagesUploaded = capturedImages.front && capturedImages.left && capturedImages.right;
+  const allImagesUploaded = Boolean(capturedImages.front && capturedImages.left && capturedImages.right);
 
   return (
     <Card className="glass-card p-8 w-full max-w-md mx-auto rounded-3xl">
