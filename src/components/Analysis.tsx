@@ -21,8 +21,8 @@ export const Analysis = ({ analysis, bookingUrl, onShare }: AnalysisProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="p-6 w-full max-w-md mx-auto bg-white rounded-xl shadow-lg">
-        <div className="space-y-6">
+      <Card className="glass-card p-8 w-full max-w-md mx-auto rounded-3xl">
+        <div className="space-y-8">
           <ConcernsList concerns={analysis.concerns} />
           <RecommendationsList recommendations={analysis.recommendations} />
           <ActionButtons bookingUrl={bookingUrl} onShare={onShare} />

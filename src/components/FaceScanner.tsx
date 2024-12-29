@@ -77,28 +77,28 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: Captu
   };
 
   return (
-    <Card className="p-6 w-full max-w-md mx-auto bg-white rounded-xl shadow-lg">
-      <div className="space-y-4">
+    <Card className="glass-card p-8 w-full max-w-md mx-auto rounded-3xl">
+      <div className="space-y-6">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-center text-lg font-medium text-medspa-800"
+          className="text-center text-lg font-medium text-primary-hover"
         >
           {getViewInstructions()}
         </motion.div>
 
-        <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="space-y-6">
+          <div className="grid grid-cols-3 gap-4">
             {['front', 'left', 'right'].map((view) => (
               <div
                 key={view}
-                className={`aspect-square rounded-lg border-2 ${
+                className={`aspect-square rounded-2xl border-2 ${
                   capturedImages[view as ViewType]
-                    ? 'border-medspa-600'
+                    ? 'border-primary'
                     : view === currentView
-                    ? 'border-dashed border-medspa-400'
-                    : 'border-gray-200'
-                } flex items-center justify-center overflow-hidden`}
+                    ? 'border-dashed border-primary/60'
+                    : 'border-muted'
+                } flex items-center justify-center overflow-hidden bg-white/50`}
               >
                 {capturedImages[view as ViewType] ? (
                   <img
@@ -107,7 +107,7 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: Captu
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-sm text-gray-500 text-center p-2">
+                  <span className="text-sm text-muted-foreground text-center p-2">
                     {view} view
                   </span>
                 )}
@@ -118,9 +118,9 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: Captu
           <div className="flex justify-center">
             <Button
               onClick={() => document.getElementById('fileInput')?.click()}
-              className="bg-medspa-600 hover:bg-medspa-700 text-white"
+              className="bg-primary hover:bg-primary-hover text-white rounded-full px-8 py-6 h-auto"
             >
-              <Upload className="mr-2 h-4 w-4" />
+              <Upload className="mr-2 h-5 w-5" />
               Upload {currentView} view
             </Button>
             <input

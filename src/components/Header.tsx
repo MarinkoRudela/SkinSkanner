@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
 
 interface HeaderProps {
   brandName?: string;
@@ -33,29 +32,27 @@ export const Header = ({ brandName: propsBrandName, logoUrl: propsLogoUrl }: Hea
       }
     };
 
-    // If no props are provided, fetch from Supabase
     if (!propsBrandName && !propsLogoUrl) {
       fetchBranding();
     } else {
-      // Use props if provided
       setBrandName(propsBrandName || "Skin Skanner AI");
       setLogoUrl(propsLogoUrl || "");
     }
   }, [propsBrandName, propsLogoUrl]);
 
   return (
-    <header className="text-center py-8">
+    <header className="text-center py-12">
       {logoUrl && (
         <img
           src={logoUrl}
           alt={`${brandName} logo`}
-          className="h-16 mx-auto mb-4"
+          className="h-20 mx-auto mb-6"
         />
       )}
-      <h1 className="text-3xl md:text-4xl font-bold text-medspa-800 mb-4">
+      <h1 className="text-4xl md:text-5xl font-bold text-primary-hover mb-4 bg-clip-text text-transparent purple-gradient">
         {brandName}
       </h1>
-      <p className="text-lg text-medspa-600 italic">
+      <p className="text-lg text-muted-foreground">
         Because radiant skin is just a scan away
       </p>
     </header>
