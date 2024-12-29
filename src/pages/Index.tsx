@@ -119,24 +119,13 @@ const Index = () => {
     }, 1500);
   };
 
-  const handleShare = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'Consult Club Analysis',
-          text: 'Check out my personalized treatment recommendations!',
-          url: window.location.href
-        });
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast({
-          title: "Link copied to clipboard",
-          description: "You can now share it with others!"
-        });
-      }
-    } catch (error) {
-      console.error('Error sharing:', error);
-    }
+  const handleScanAgain = () => {
+    setCapturedImages(null);
+    setAnalysis(null);
+    toast({
+      title: "Ready for New Scan",
+      description: "Please upload your photos for a new analysis."
+    });
   };
 
   if (loading) {
@@ -167,7 +156,7 @@ const Index = () => {
               <Analysis
                 analysis={analysis}
                 bookingUrl={bookingUrl}
-                onShare={handleShare}
+                onScanAgain={handleScanAgain}
               />
             )}
           </div>

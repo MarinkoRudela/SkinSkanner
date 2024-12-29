@@ -9,10 +9,10 @@ interface AnalysisProps {
     recommendations: string[];
   };
   bookingUrl: string;
-  onShare: () => void;
+  onScanAgain: () => void;
 }
 
-export const Analysis = ({ analysis, bookingUrl, onShare }: AnalysisProps) => {
+export const Analysis = ({ analysis, bookingUrl, onScanAgain }: AnalysisProps) => {
   // Pair each concern with its corresponding recommendation
   const pairs = analysis.concerns.map((concern, index) => ({
     concern,
@@ -52,7 +52,7 @@ export const Analysis = ({ analysis, bookingUrl, onShare }: AnalysisProps) => {
             </div>
           </div>
 
-          <ActionButtons bookingUrl={bookingUrl} onShare={onShare} />
+          <ActionButtons bookingUrl={bookingUrl} onScanAgain={onScanAgain} />
         </div>
       </Card>
     </motion.div>
