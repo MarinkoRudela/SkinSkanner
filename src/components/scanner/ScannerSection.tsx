@@ -28,10 +28,7 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
       console.log('Calling analyze-skin function...');
       
       const { data, error } = await supabase.functions.invoke('analyze-skin', {
-        body: { images },
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        body: { images }
       });
 
       if (error) {
@@ -43,6 +40,7 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
         throw new Error('No analysis data received');
       }
 
+      console.log('Analysis data received:', data);
       setAnalysis(data);
       
       toast({

@@ -28,7 +28,7 @@ serve(async (req) => {
 
     console.log('Preparing Perplexity request...');
     
-    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+    const perplexityResponse = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${perplexityApiKey}`,
@@ -81,26 +81,24 @@ serve(async (req) => {
       }),
     });
 
-    console.log('Perplexity API response status:', response.status);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Perplexity API error:', response.status, response.statusText);
+    if (!perplexityResponse.ok) {
+      const errorText = await perplexityResponse.text();
+      console.error('Perplexity API error:', perplexityResponse.status, perplexityResponse.statusText);
       console.error('Error details:', errorText);
-      throw new Error(`Perplexity API error: ${response.status} ${response.statusText}`);
+      throw new Error(`Perplexity API error: ${perplexityResponse.status} ${perplexityResponse.statusText}`);
     }
 
-    const data = await response.json();
-    console.log('Received response from Perplexity:', data);
+    const perplexityData = await perplexityResponse.json();
+    console.log('Received response from Perplexity:', perplexityData);
 
-    if (!data.choices?.[0]?.message?.content) {
+    if (!perplexityData.choices?.[0]?.message?.content) {
       throw new Error('Invalid response format from Perplexity');
     }
 
     // Parse and validate the analysis
     let analysis;
     try {
-      analysis = JSON.parse(data.choices[0].message.content);
+      analysis = JSON.parse(perplexityData.choices[0].message.content);
       
       if (!analysis.concerns || !analysis.recommendations || 
           !Array.isArray(analysis.concerns) || !Array.isArray(analysis.recommendations) ||
@@ -118,8 +116,7 @@ serve(async (req) => {
       headers: { 
         ...corsHeaders, 
         'Content-Type': 'application/json'
-      },
-      status: 200
+      }
     });
   } catch (error) {
     console.error('Error in analyze-skin function:', error);
