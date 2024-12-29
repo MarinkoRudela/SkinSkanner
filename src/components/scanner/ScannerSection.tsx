@@ -2,6 +2,7 @@ import React from 'react';
 import { FaceScanner } from '@/components/FaceScanner';
 import { Analysis } from '@/components/Analysis';
 import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CapturedImages {
   front?: string;
@@ -17,33 +18,49 @@ interface ScannerSectionProps {
 export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps) => {
   const [capturedImages, setCapturedImages] = React.useState<CapturedImages | null>(null);
   const [analysis, setAnalysis] = React.useState<any>(null);
+  const [isAnalyzing, setIsAnalyzing] = React.useState(false);
 
   const handleImageCapture = async (images: CapturedImages) => {
     setCapturedImages(images);
-    const mockAnalysis = {
-      concerns: [
-        "Fine lines around eyes",
-        "Uneven skin texture",
-        "Minor sun damage",
-        "Slight volume loss in cheeks"
-      ],
-      recommendations: [
-        "Hydrafacial treatment for skin rejuvenation",
-        "LED light therapy for collagen stimulation",
-        "Custom skincare routine with SPF protection",
-        "Consider dermal fillers for cheek enhancement"
-      ]
-    };
+    setIsAnalyzing(true);
     
-    setTimeout(() => {
-      setAnalysis(mockAnalysis);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const response = await fetch('https://hyqidjgbnmdiirdhgtgs.supabase.co/functions/v1/analyze-skin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({ images }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Analysis failed');
+      }
+
+      const analysisResult = await response.json();
+      setAnalysis(analysisResult);
+      
       toast({
         title: "Analysis Complete",
         description: "We've analyzed your photos and prepared personalized recommendations.",
         duration: 3000,
         className: "top-center-toast"
       });
-    }, 1500);
+    } catch (error) {
+      console.error('Analysis error:', error);
+      toast({
+        title: "Analysis Failed",
+        description: "We couldn't analyze your photos. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+        className: "top-center-toast"
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const handleScanAgain = () => {
