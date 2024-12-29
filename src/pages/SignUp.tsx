@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Header } from "@/components/Header";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Navigation } from "@/components/Navigation";
+import { PlanSelection } from "@/components/signup/PlanSelection";
+import { SignUpForm } from "@/components/signup/SignUpForm";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -73,91 +71,14 @@ const SignUp = () => {
         <Header />
         <div className="mt-8 bg-white p-8 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold mb-6 text-center">Business Owner Sign Up</h2>
-          <div className="mb-6 space-y-4">
-            <RadioGroup
-              defaultValue="monthly"
-              value={planType}
-              onValueChange={setPlanType}
-              className="grid grid-cols-1 gap-4"
-            >
-              <div className="flex items-center space-x-2 border p-4 rounded-lg cursor-pointer hover:bg-gray-50">
-                <RadioGroupItem value="monthly" id="monthly" />
-                <Label htmlFor="monthly" className="cursor-pointer">
-                  <div className="font-semibold">Monthly Plan</div>
-                  <div className="text-sm text-gray-500">$99/month</div>
-                  <div className="text-xs text-green-600">30-day free trial</div>
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2 border p-4 rounded-lg cursor-pointer hover:bg-gray-50">
-                <RadioGroupItem value="yearly" id="yearly" />
-                <Label htmlFor="yearly" className="cursor-pointer">
-                  <div className="font-semibold">Yearly Plan</div>
-                  <div className="text-sm text-gray-500">$799/year</div>
-                  <div className="text-xs text-green-600">Save $389/year</div>
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2 border p-4 rounded-lg cursor-pointer hover:bg-gray-50">
-                <RadioGroupItem value="lifetime" id="lifetime" />
-                <Label htmlFor="lifetime" className="cursor-pointer">
-                  <div className="font-semibold">Lifetime Access</div>
-                  <div className="text-sm text-gray-500">$1999 one-time</div>
-                  <div className="text-xs text-green-600">Best long-term value</div>
-                </Label>
-              </div>
-            </RadioGroup>
-          </div>
-          <form onSubmit={handleSignUp} className="space-y-4">
-            <div>
-              <label htmlFor="businessName" className="block text-sm font-medium text-gray-700 mb-1">
-                Business Name
-              </label>
-              <Input
-                id="businessName"
-                type="text"
-                value={formData.businessName}
-                onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                required
-                minLength={6}
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Processing..." : "Sign Up & Continue to Payment"}
-            </Button>
-            <p className="text-center text-sm text-gray-600 mt-4">
-              Already have an account?{" "}
-              <button
-                type="button"
-                onClick={() => navigate("/login")}
-                className="text-blue-600 hover:underline"
-              >
-                Log in
-              </button>
-            </p>
-          </form>
+          <PlanSelection planType={planType} setPlanType={setPlanType} />
+          <SignUpForm
+            loading={loading}
+            formData={formData}
+            setFormData={setFormData}
+            onSubmit={handleSignUp}
+            onLoginClick={() => navigate("/login")}
+          />
         </div>
       </div>
     </div>
