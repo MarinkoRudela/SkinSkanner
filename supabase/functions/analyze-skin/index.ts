@@ -9,14 +9,9 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log('Starting skin analysis...');
-  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { 
-      headers: corsHeaders,
-      status: 200
-    });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
@@ -25,9 +20,6 @@ serve(async (req) => {
       throw new Error('OpenAI API key is not configured');
     }
 
-    console.log('Request method:', req.method);
-    console.log('Request headers:', Object.fromEntries(req.headers.entries()));
-
     const { images } = await req.json();
     console.log('Received request with images:', Object.keys(images));
 
@@ -35,43 +27,17 @@ serve(async (req) => {
       throw new Error('Missing required images');
     }
 
-    // Clean and validate base64 images
-    const cleanBase64 = (dataUrl: string) => {
-      // Remove any existing data URL prefix
-      const base64Data = dataUrl.replace(/^data:image\/[a-z]+;base64,/, '');
-      // Validate base64
-      try {
-        atob(base64Data);
-      } catch (e) {
-        console.error('Invalid base64 data:', e);
-        throw new Error('Invalid image data');
-      }
-      return `data:image/jpeg;base64,${base64Data}`;
-    };
-
-    console.log('Cleaning and validating image data...');
-    const imageUrls = {
-      front: cleanBase64(images.front),
-      left: cleanBase64(images.left),
-      right: cleanBase64(images.right)
-    };
-
-    console.log('Images validated successfully');
     console.log('Preparing OpenAI request...');
     
     const openAIRequest = {
-      model: "gpt-4o-mini",
-      max_tokens: 1000,
+      model: "gpt-4o",
       messages: [
         {
           role: 'system',
-          content: `You are a professional skin analysis AI assistant. Your task is to:
-          1. Analyze the provided facial images from different angles
-          2. Identify 3-4 key skin concerns based on visible features
-          3. Provide specific, actionable treatment recommendations for each concern
-          4. Return your analysis in a structured JSON format with matching concerns and recommendations
-          
-          Format your response exactly like this example:
+          content: `You are a professional skin analysis AI assistant. Analyze the provided facial images and provide:
+          1. 3-4 key skin concerns based on visible features
+          2. Specific treatment recommendations for each concern
+          Format your response exactly as this example:
           {
             "concerns": ["Uneven skin tone", "Fine lines", "Dehydration"],
             "recommendations": ["Regular use of Vitamin C serum", "Retinol treatment at night", "Hyaluronic acid moisturizer"]
@@ -82,29 +48,30 @@ serve(async (req) => {
           content: [
             {
               type: 'text',
-              text: 'Analyze these facial images and provide personalized skin care recommendations:'
+              text: 'Please analyze these facial images and provide personalized skin care recommendations:'
             },
             {
               type: 'image_url',
               image_url: {
-                url: imageUrls.front
+                url: images.front
               }
             },
             {
               type: 'image_url',
               image_url: {
-                url: imageUrls.left
+                url: images.left
               }
             },
             {
               type: 'image_url',
               image_url: {
-                url: imageUrls.right
+                url: images.right
               }
             }
           ]
         }
-      ]
+      ],
+      max_tokens: 1000,
     };
 
     console.log('Sending request to OpenAI API...');
