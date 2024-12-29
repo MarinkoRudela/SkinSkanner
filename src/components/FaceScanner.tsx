@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload } from 'lucide-react';
+import { Upload, Scan } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
@@ -54,15 +54,22 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: Captu
           description: "Finally, please upload a photo of your right side."
         });
       } else {
-        onImageCapture(newCapturedImages);
         toast({
-          title: "Upload complete!",
-          description: "Analyzing your photos..."
+          title: "All photos uploaded!",
+          description: "Click 'Scan Images' to analyze your photos."
         });
       }
     };
 
     reader.readAsDataURL(file);
+  };
+
+  const handleScan = () => {
+    onImageCapture(capturedImages);
+    toast({
+      title: "Scanning started",
+      description: "Analyzing your photos..."
+    });
   };
 
   const getViewInstructions = () => {
@@ -76,6 +83,8 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: Captu
     }
   };
 
+  const allImagesUploaded = capturedImages.front && capturedImages.left && capturedImages.right;
+
   return (
     <Card className="glass-card p-8 w-full max-w-md mx-auto rounded-3xl">
       <div className="space-y-6">
@@ -84,7 +93,7 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: Captu
           animate={{ opacity: 1 }}
           className="text-center text-lg font-medium text-primary-hover"
         >
-          {getViewInstructions()}
+          {allImagesUploaded ? "All photos uploaded!" : getViewInstructions()}
         </motion.div>
 
         <div className="space-y-6">
@@ -115,14 +124,27 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: Captu
             ))}
           </div>
 
-          <div className="flex justify-center">
-            <Button
-              onClick={() => document.getElementById('fileInput')?.click()}
-              className="bg-primary hover:bg-primary-hover text-white rounded-full px-8 py-6 h-auto"
-            >
-              <Upload className="mr-2 h-5 w-5" />
-              Upload {currentView} view
-            </Button>
+          <div className="flex flex-col gap-4 items-center">
+            {!allImagesUploaded && (
+              <Button
+                onClick={() => document.getElementById('fileInput')?.click()}
+                className="bg-primary hover:bg-primary-hover text-white rounded-full px-8 py-6 h-auto"
+              >
+                <Upload className="mr-2 h-5 w-5" />
+                Upload {currentView} view
+              </Button>
+            )}
+            
+            {allImagesUploaded && (
+              <Button
+                onClick={handleScan}
+                className="bg-primary hover:bg-primary-hover text-white rounded-full px-8 py-6 h-auto w-full max-w-sm"
+              >
+                <Scan className="mr-2 h-5 w-5" />
+                Scan Images
+              </Button>
+            )}
+            
             <input
               id="fileInput"
               type="file"
