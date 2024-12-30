@@ -23,10 +23,9 @@ enabled = true
 [realtime]
 enabled = true
 
-[[functions]]
-name = "analyze-skin"
+[functions]
+[functions.analyze-skin]
 verify_jwt = false
 
-[[functions]]
-name = "login"
+[functions.login]
 verify_jwt = false
