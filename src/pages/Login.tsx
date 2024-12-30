@@ -31,7 +31,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
-      <Navigation />
+      <Navigation session={session} />
       <div className="container max-w-md mx-auto px-4 py-8">
         <Header />
         <AuthForm session={session} />
