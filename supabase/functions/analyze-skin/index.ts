@@ -7,27 +7,85 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log('🚀 Analyze-skin function called');
+  console.log('Request method:', req.method);
+  console.log('Request headers:', Object.fromEntries(req.headers.entries()));
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log('Parsing request body...');
     const { images } = await req.json();
-    console.log('Received request with images:', Object.keys(images));
+    console.log('Received images with keys:', Object.keys(images));
+    console.log('Image sizes:', {
+      front: images.front?.length,
+      left: images.left?.length,
+      right: images.right?.length,
+    });
 
     if (!images || !images.front || !images.left || !images.right) {
+      console.error('❌ Missing required images. Received:', {
+        front: !!images?.front,
+        left: !!images?.left,
+        right: !!images?.right
+      });
       throw new Error('Missing required images');
     }
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openaiApiKey) {
-      console.error('OpenAI API key is not configured');
+      console.error('❌ OpenAI API key is not configured');
       throw new Error('OpenAI API key is not configured');
     }
+    console.log('✅ OpenAI API key found');
 
-    console.log('Preparing OpenAI request...');
+    console.log('📝 Preparing OpenAI request...');
+    const messages = [
+      {
+        role: 'system',
+        content: `You are a professional skin analysis AI assistant. Analyze the provided facial images and provide:
+        1. 3-4 key skin concerns based on visible features
+        2. Specific treatment recommendations for each concern
+        Format your response exactly as this example:
+        {
+          "concerns": ["Uneven skin tone", "Fine lines", "Dehydration"],
+          "recommendations": ["Regular use of Vitamin C serum", "Retinol treatment at night", "Hyaluronic acid moisturizer"]
+        }`
+      },
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: 'Please analyze these facial images and provide personalized skin care recommendations:'
+          },
+          {
+            type: 'image_url',
+            image_url: {
+              url: images.front
+            }
+          },
+          {
+            type: 'image_url',
+            image_url: {
+              url: images.left
+            }
+          },
+          {
+            type: 'image_url',
+            image_url: {
+              url: images.right
+            }
+          }
+        ]
+      }
+    ];
     
+    console.log('🔄 Making request to OpenAI API...');
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -36,46 +94,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a professional skin analysis AI assistant. Analyze the provided facial images and provide:
-            1. 3-4 key skin concerns based on visible features
-            2. Specific treatment recommendations for each concern
-            Format your response exactly as this example:
-            {
-              "concerns": ["Uneven skin tone", "Fine lines", "Dehydration"],
-              "recommendations": ["Regular use of Vitamin C serum", "Retinol treatment at night", "Hyaluronic acid moisturizer"]
-            }`
-          },
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: 'Please analyze these facial images and provide personalized skin care recommendations:'
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: images.front
-                }
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: images.left
-                }
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: images.right
-                }
-              }
-            ]
-          }
-        ],
+        messages,
         temperature: 0.2,
         max_tokens: 1000
       }),
@@ -83,34 +102,47 @@ serve(async (req) => {
 
     if (!openaiResponse.ok) {
       const errorText = await openaiResponse.text();
-      console.error('OpenAI API error:', openaiResponse.status, openaiResponse.statusText);
-      console.error('Error details:', errorText);
+      console.error('❌ OpenAI API error:', {
+        status: openaiResponse.status,
+        statusText: openaiResponse.statusText,
+        errorDetails: errorText
+      });
       throw new Error(`OpenAI API error: ${openaiResponse.status} ${openaiResponse.statusText}`);
     }
 
     const openaiData = await openaiResponse.json();
-    console.log('Received response from OpenAI:', openaiData);
+    console.log('✅ Received response from OpenAI:', {
+      status: openaiResponse.status,
+      headers: Object.fromEntries(openaiResponse.headers.entries()),
+      responseData: openaiData
+    });
 
     if (!openaiData.choices?.[0]?.message?.content) {
+      console.error('❌ Invalid response format from OpenAI:', openaiData);
       throw new Error('Invalid response format from OpenAI');
     }
 
     // Parse and validate the analysis
     let analysis;
     try {
+      console.log('🔄 Parsing OpenAI response content:', openaiData.choices[0].message.content);
       analysis = JSON.parse(openaiData.choices[0].message.content);
       
       if (!analysis.concerns || !analysis.recommendations || 
           !Array.isArray(analysis.concerns) || !Array.isArray(analysis.recommendations) ||
           analysis.concerns.length !== analysis.recommendations.length) {
+        console.error('❌ Invalid analysis format:', analysis);
         throw new Error('Invalid analysis format');
       }
+
+      console.log('✅ Analysis validation passed:', analysis);
     } catch (error) {
-      console.error('Error parsing analysis:', error);
+      console.error('❌ Error parsing analysis:', error);
+      console.error('Raw content:', openaiData.choices[0].message.content);
       throw new Error('Failed to parse analysis results');
     }
 
-    console.log('Analysis completed successfully:', analysis);
+    console.log('✅ Analysis completed successfully:', analysis);
 
     return new Response(JSON.stringify(analysis), {
       headers: { 
@@ -119,7 +151,10 @@ serve(async (req) => {
       }
     });
   } catch (error) {
-    console.error('Error in analyze-skin function:', error);
+    console.error('❌ Error in analyze-skin function:', {
+      error: error.message,
+      stack: error.stack
+    });
     return new Response(JSON.stringify({ 
       error: error.message,
       details: 'Failed to analyze skin images'
