@@ -1,60 +1,60 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
-interface HeaderProps {
-  brandName?: string;
-  logoUrl?: string;
+interface BrandingData {
+  brand_name: string | null;
+  logo_url: string | null;
 }
 
-export const Header = ({ brandName: propsBrandName, logoUrl: propsLogoUrl }: HeaderProps) => {
-  const [brandName, setBrandName] = useState<string>("Skin Skanner AI");
-  const [logoUrl, setLogoUrl] = useState<string>("");
+export const Header = () => {
+  const [branding, setBranding] = useState<BrandingData>({
+    brand_name: null,
+    logo_url: null,
+  });
 
   useEffect(() => {
     const fetchBranding = async () => {
       try {
-        const { data: profile, error } = await supabase
+        const { data, error } = await supabase
           .from('profiles')
           .select('brand_name, logo_url')
-          .maybeSingle();
+          .single();
 
-        if (error) {
-          console.error('Error fetching branding:', error);
-          return;
-        }
-
-        if (profile) {
-          setBrandName(profile.brand_name || "Skin Skanner AI");
-          setLogoUrl(profile.logo_url || "");
-        }
-      } catch (error) {
-        console.error('Error:', error);
+        if (error) throw error;
+        
+        setBranding({
+          brand_name: data?.brand_name || null,
+          logo_url: data?.logo_url || null,
+        });
+      } catch (error: any) {
+        console.error('Error fetching branding:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load branding information",
+          variant: "destructive",
+        });
       }
     };
 
-    if (!propsBrandName && !propsLogoUrl) {
-      fetchBranding();
-    } else {
-      setBrandName(propsBrandName || "Skin Skanner AI");
-      setLogoUrl(propsLogoUrl || "");
-    }
-  }, [propsBrandName, propsLogoUrl]);
+    fetchBranding();
+  }, []);
 
   return (
-    <header className="text-center py-12">
-      {logoUrl && (
+    <div className="text-center mb-8">
+      {branding.logo_url && (
         <img
-          src={logoUrl}
-          alt={`${brandName} logo`}
-          className="h-20 mx-auto mb-6"
+          src={branding.logo_url}
+          alt="Business Logo"
+          className="mx-auto mb-4 h-16 w-auto"
         />
       )}
-      <h1 className="text-4xl md:text-5xl font-bold text-primary-hover mb-4 bg-clip-text text-transparent purple-gradient">
-        {brandName}
+      <h1 className="text-4xl font-bold text-indigo-900 mb-2">
+        {branding.brand_name || "Skin Skanner AI"}
       </h1>
-      <p className="text-lg text-muted-foreground">
-        Because radiant skin is just a "skan" away
+      <p className="text-lg text-indigo-700">
+        Because radiant skin is just a 'skan' away
       </p>
-    </header>
+    </div>
   );
 };
