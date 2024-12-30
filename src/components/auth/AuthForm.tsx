@@ -8,9 +8,20 @@ export const AuthForm = () => {
       <h2 className="text-2xl font-semibold mb-6 text-center">Business Owner Login</h2>
       <Auth 
         supabaseClient={supabase}
-        appearance={{ theme: ThemeSupa }}
+        appearance={{ 
+          theme: ThemeSupa,
+          variables: {
+            default: {
+              colors: {
+                brand: '#6366f1',
+                brandAccent: '#4f46e5',
+              },
+            },
+          },
+        }}
         theme="light"
         providers={[]}
+        redirectTo={window.location.origin}
       />
     </div>
   );
