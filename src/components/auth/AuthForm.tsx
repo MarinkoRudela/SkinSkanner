@@ -27,6 +27,7 @@ export const AuthForm = ({ session }: AuthFormProps) => {
         theme="light"
         providers={[]}
         redirectTo={window.location.origin}
+        onlyThirdPartyProviders={false}
       />
     </div>
   );
