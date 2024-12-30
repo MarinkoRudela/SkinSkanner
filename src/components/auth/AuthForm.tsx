@@ -1,8 +1,13 @@
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
+import { Session } from "@supabase/supabase-js";
 
-export const AuthForm = () => {
+interface AuthFormProps {
+  session?: Session | null;
+}
+
+export const AuthForm = ({ session }: AuthFormProps) => {
   return (
     <div className="mt-8 bg-white p-8 rounded-lg shadow-lg">
       <h2 className="text-2xl font-semibold mb-6 text-center">Business Owner Login</h2>
