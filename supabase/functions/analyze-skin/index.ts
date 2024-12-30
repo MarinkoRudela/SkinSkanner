@@ -18,17 +18,18 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Parsing request body...');
-    const { images } = await req.json();
-    console.log('Received images with keys:', Object.keys(images));
-    console.log('Image sizes:', {
-      front: images.front?.length,
-      left: images.left?.length,
-      right: images.right?.length,
-    });
+    console.log('Starting request processing...');
+    
+    // Log request body
+    const requestText = await req.text();
+    console.log('Raw request body:', requestText);
+    
+    // Parse the request body
+    const { images } = JSON.parse(requestText);
+    console.log('Parsed images object keys:', Object.keys(images));
 
     if (!images || !images.front || !images.left || !images.right) {
-      console.error('❌ Missing required images. Received:', {
+      console.error('❌ Missing required images:', {
         front: !!images?.front,
         left: !!images?.left,
         right: !!images?.right
@@ -100,6 +101,9 @@ serve(async (req) => {
       }),
     });
 
+    console.log('OpenAI response status:', openaiResponse.status);
+    console.log('OpenAI response headers:', Object.fromEntries(openaiResponse.headers.entries()));
+
     if (!openaiResponse.ok) {
       const errorText = await openaiResponse.text();
       console.error('❌ OpenAI API error:', {
@@ -111,11 +115,7 @@ serve(async (req) => {
     }
 
     const openaiData = await openaiResponse.json();
-    console.log('✅ Received response from OpenAI:', {
-      status: openaiResponse.status,
-      headers: Object.fromEntries(openaiResponse.headers.entries()),
-      responseData: openaiData
-    });
+    console.log('✅ Received response from OpenAI:', openaiData);
 
     if (!openaiData.choices?.[0]?.message?.content) {
       console.error('❌ Invalid response format from OpenAI:', openaiData);
@@ -142,8 +142,7 @@ serve(async (req) => {
       throw new Error('Failed to parse analysis results');
     }
 
-    console.log('✅ Analysis completed successfully:', analysis);
-
+    console.log('✅ Analysis completed successfully');
     return new Response(JSON.stringify(analysis), {
       headers: { 
         ...corsHeaders, 

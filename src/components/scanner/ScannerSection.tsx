@@ -25,10 +25,15 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
     setIsAnalyzing(true);
     
     try {
-      console.log('Calling analyze-skin function...');
+      console.log('Calling analyze-skin function with images:', images);
       
+      // Call the function without any auth headers
       const { data, error } = await supabase.functions.invoke('analyze-skin', {
-        body: { images }
+        body: { images },
+        headers: {
+          // Explicitly remove authorization header
+          Authorization: undefined
+        }
       });
 
       if (error) {
