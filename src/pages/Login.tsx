@@ -14,6 +14,7 @@ const Login = () => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+      console.log('Auth state changed:', event, currentSession);
       if (event === 'SIGNED_IN' && currentSession) {
         setSession(currentSession);
         navigate("/dashboard");
@@ -24,13 +25,18 @@ const Login = () => {
     const checkSession = async () => {
       try {
         const { data: { session: currentSession }, error } = await supabase.auth.getSession();
-        if (error) throw error;
+        if (error) {
+          console.error('Session check error:', error);
+          throw error;
+        }
         
         if (currentSession) {
+          console.log('Existing session found');
           setSession(currentSession);
           navigate("/dashboard");
         }
       } catch (error: any) {
+        console.error('Session check failed:', error);
         toast({
           title: "Error",
           description: error.message,

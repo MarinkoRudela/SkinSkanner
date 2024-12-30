@@ -26,3 +26,7 @@ enabled = true
 [[functions]]
 name = "analyze-skin"
 verify_jwt = false
+
+[[functions]]
+name = "login"
+verify_jwt = false
