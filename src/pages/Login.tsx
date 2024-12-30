@@ -5,28 +5,46 @@ import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
 import { AuthForm } from "@/components/auth/AuthForm";
 import { Session } from "@supabase/supabase-js";
+import { toast } from "@/components/ui/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+      if (event === 'SIGNED_IN' && currentSession) {
+        setSession(currentSession);
         navigate("/dashboard");
       }
-      setSession(session);
     });
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/dashboard");
+    const checkSession = async () => {
+      try {
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        if (currentSession) {
+          setSession(currentSession);
+          navigate("/dashboard");
+        }
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
       }
-      setSession(session);
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    checkSession();
+
+    // Cleanup subscription
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   return (
