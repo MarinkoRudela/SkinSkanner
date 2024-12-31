@@ -28,10 +28,14 @@ export const Navigation = ({ session }: { session: any }) => {
       navigate("/login");
       return;
     }
-    // Add config parameter to current URL
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set("config", "true");
-    navigate(`?${searchParams.toString()}`);
+    // First navigate to root path, then add config parameter
+    navigate("/");
+    // Add a slight delay to ensure we're on the root path before adding the parameter
+    setTimeout(() => {
+      const searchParams = new URLSearchParams(window.location.search);
+      searchParams.set("config", "true");
+      navigate(`?${searchParams.toString()}`);
+    }, 100);
   };
 
   const handleLogout = async () => {
