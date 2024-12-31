@@ -7,6 +7,7 @@ import { IntegrationTab } from "./settings/TabContent/IntegrationTab";
 import { SubscriptionTab } from "./settings/TabContent/SubscriptionTab";
 import { DashboardTabs } from "./settings/DashboardTabs";
 import { DashboardHeader } from "./settings/DashboardHeader";
+import { toast } from "@/hooks/use-toast";
 
 interface ConfigurationViewProps {
   session: any;
@@ -23,6 +24,7 @@ export const ConfigurationView = ({
   const [logoUrl, setLogoUrl] = useState('');
   const [uniqueLink, setUniqueLink] = useState('');
   const [activeTab, setActiveTab] = useState('booking');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (session?.user?.id) {
@@ -39,14 +41,17 @@ export const ConfigurationView = ({
         .eq('id', session.user.id)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
 
       if (profile) {
         setBrandName(profile.brand_name || '');
         setLogoUrl(profile.logo_url || '');
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('Error in fetchProfileData:', error);
     }
   };
 
@@ -54,6 +59,50 @@ export const ConfigurationView = ({
     if (bookingUrl && session?.user?.id) {
       const baseUrl = window.location.origin;
       setUniqueLink(`${baseUrl}?business=${session.user.id}`);
+    }
+  };
+
+  const handleUpdateBookingUrl = async (url: string) => {
+    setIsLoading(true);
+    try {
+      // First check if a record exists
+      const { data: existingSettings } = await supabase
+        .from('business_settings')
+        .select('id')
+        .eq('profile_id', session.user.id)
+        .single();
+
+      if (existingSettings) {
+        // Update existing record
+        const { error: updateError } = await supabase
+          .from('business_settings')
+          .update({ booking_url: url })
+          .eq('profile_id', session.user.id);
+
+        if (updateError) throw updateError;
+      } else {
+        // Insert new record
+        const { error: insertError } = await supabase
+          .from('business_settings')
+          .insert([{ profile_id: session.user.id, booking_url: url }]);
+
+        if (insertError) throw insertError;
+      }
+
+      await updateBookingUrl(url);
+      toast({
+        title: "Success",
+        description: "Booking URL updated successfully",
+      });
+    } catch (error: any) {
+      console.error('Error updating booking URL:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update booking URL. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -76,8 +125,9 @@ export const ConfigurationView = ({
           <TabsContent value="booking">
             <BookingTab 
               bookingUrl={bookingUrl}
-              updateBookingUrl={updateBookingUrl}
+              updateBookingUrl={handleUpdateBookingUrl}
               uniqueLink={uniqueLink}
+              isLoading={isLoading}
             />
           </TabsContent>
 

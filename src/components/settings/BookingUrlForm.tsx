@@ -7,11 +7,11 @@ import { Label } from "../ui/label";
 interface BookingUrlFormProps {
   initialUrl: string;
   onSave: (url: string) => Promise<void>;
+  isLoading: boolean;
 }
 
-export const BookingUrlForm = ({ initialUrl, onSave }: BookingUrlFormProps) => {
+export const BookingUrlForm = ({ initialUrl, onSave, isLoading }: BookingUrlFormProps) => {
   const [localBookingUrl, setLocalBookingUrl] = useState(initialUrl);
-  const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
     if (!localBookingUrl) {
@@ -24,20 +24,13 @@ export const BookingUrlForm = ({ initialUrl, onSave }: BookingUrlFormProps) => {
     }
 
     try {
-      setIsSaving(true);
       await onSave(localBookingUrl);
-      toast({
-        title: "Success",
-        description: "Your booking URL has been updated.",
-      });
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
       });
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -52,6 +45,7 @@ export const BookingUrlForm = ({ initialUrl, onSave }: BookingUrlFormProps) => {
           onChange={(e) => setLocalBookingUrl(e.target.value)}
           placeholder="Enter your booking platform URL (e.g., Calendly, Acuity)"
           className="w-full"
+          disabled={isLoading}
         />
         <p className="text-sm text-muted-foreground">
           Enter the URL where clients can book appointments. This will be used to generate your unique booking link.
@@ -59,10 +53,10 @@ export const BookingUrlForm = ({ initialUrl, onSave }: BookingUrlFormProps) => {
       </div>
       <Button 
         onClick={handleSave}
-        disabled={isSaving || localBookingUrl === initialUrl}
+        disabled={isLoading || localBookingUrl === initialUrl}
         className="w-full"
       >
-        {isSaving ? "Saving..." : "Save Booking URL"}
+        {isLoading ? "Saving..." : "Save Booking URL"}
       </Button>
     </div>
   );

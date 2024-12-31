@@ -9,9 +9,15 @@ interface BookingTabProps {
   bookingUrl: string;
   updateBookingUrl: (url: string) => Promise<void>;
   uniqueLink: string;
+  isLoading: boolean;
 }
 
-export const BookingTab = ({ bookingUrl, updateBookingUrl, uniqueLink }: BookingTabProps) => {
+export const BookingTab = ({ 
+  bookingUrl, 
+  updateBookingUrl, 
+  uniqueLink,
+  isLoading 
+}: BookingTabProps) => {
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(uniqueLink);
@@ -37,6 +43,7 @@ export const BookingTab = ({ bookingUrl, updateBookingUrl, uniqueLink }: Booking
         <BookingUrlForm 
           initialUrl={bookingUrl} 
           onSave={updateBookingUrl}
+          isLoading={isLoading}
         />
         
         {bookingUrl && uniqueLink && (
