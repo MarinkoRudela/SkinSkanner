@@ -16,24 +16,32 @@ export const Header = () => {
   useEffect(() => {
     const fetchBranding = async () => {
       try {
+        // Use maybeSingle() instead of single() to handle the case where no data exists
         const { data, error } = await supabase
           .from('profiles')
           .select('brand_name, logo_url')
-          .single();
+          .maybeSingle();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
         
+        // Handle the case where data might be null
         setBranding({
-          brand_name: data?.brand_name || null,
-          logo_url: data?.logo_url || null,
+          brand_name: data?.brand_name ?? null,
+          logo_url: data?.logo_url ?? null,
         });
       } catch (error: any) {
         console.error('Error fetching branding:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load branding information",
-          variant: "destructive",
-        });
+        // Only show toast for actual errors, not for missing data
+        if (error.code !== 'PGRST116') {
+          toast({
+            title: "Error",
+            description: "Failed to load branding information",
+            variant: "destructive",
+          });
+        }
       }
     };
 
