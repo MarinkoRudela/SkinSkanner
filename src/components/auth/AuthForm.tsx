@@ -1,16 +1,13 @@
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { Session } from "@supabase/supabase-js";
 import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import { useAuth } from "@/providers/AuthProvider";
 
-interface AuthFormProps {
-  session?: Session | null;
-}
-
-export const AuthForm = ({ session }: AuthFormProps) => {
+export const AuthForm = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { session } = useAuth();
 
   const handleLogin = async (email: string, password: string) => {
     if (isLoading) return;
@@ -23,7 +20,10 @@ export const AuthForm = ({ session }: AuthFormProps) => {
 
       if (error) throw error;
 
-      console.log('Login successful:', data);
+      toast({
+        title: "Success",
+        description: "Login successful",
+      });
     } catch (error: any) {
       console.error('Login failed:', error);
       toast({
