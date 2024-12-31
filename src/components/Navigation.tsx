@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Settings, LogIn, UserPlus, Home, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import {
   DropdownMenu,
   DropdownMenuContent,
