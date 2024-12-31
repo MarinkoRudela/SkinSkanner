@@ -13,14 +13,22 @@ import {
 export const Navigation = ({ session }: { session: any }) => {
   const navigate = useNavigate();
 
+  const handleScanClick = () => {
+    // Clear any config parameters and navigate to home
+    const baseUrl = window.location.pathname;
+    navigate(baseUrl);
+  };
+
   const handleConfigClick = () => {
     if (!session) {
       toast({
         title: "Login Required",
         description: "Please login to access settings",
       });
+      navigate("/login");
       return;
     }
+    // Add config parameter to current URL
     const searchParams = new URLSearchParams(window.location.search);
     searchParams.set("config", "true");
     navigate(`?${searchParams.toString()}`);
@@ -34,6 +42,7 @@ export const Navigation = ({ session }: { session: any }) => {
         title: "Success",
         description: "You have been logged out successfully",
       });
+      // After logout, clear any config parameters and go to home
       navigate("/");
     } catch (error: any) {
       toast({
@@ -45,7 +54,7 @@ export const Navigation = ({ session }: { session: any }) => {
   };
 
   return (
-    <div className="absolute top-4 right-4">
+    <div className="absolute top-4 right-4 z-50">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="icon">
@@ -53,7 +62,7 @@ export const Navigation = ({ session }: { session: any }) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-40">
-          <DropdownMenuItem onClick={() => navigate("/")}>
+          <DropdownMenuItem onClick={handleScanClick}>
             <Home className="mr-2 h-4 w-4" />
             Scan
           </DropdownMenuItem>
