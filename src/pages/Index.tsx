@@ -37,8 +37,6 @@ const Index = () => {
           console.log('Fetching business settings for business:', businessId);
           await fetchBusinessSettings(businessId);
         }
-        
-        setDataFetched(true);
       } catch (error) {
         console.error('Auth initialization error:', error);
         toast({
@@ -47,6 +45,7 @@ const Index = () => {
           variant: "destructive"
         });
       } finally {
+        setDataFetched(true);
         setLoading(false);
       }
     };
@@ -61,6 +60,7 @@ const Index = () => {
       if (newSession) {
         await fetchBusinessSettings(newSession.user.id);
       }
+      setDataFetched(true);
       setLoading(false);
     });
 
@@ -136,7 +136,7 @@ const Index = () => {
     });
   };
 
-  // Show loading state only if we haven't fetched data yet
+  // Show loading state only if we haven't completed initialization
   if (loading && !dataFetched) {
     console.log('Showing loading state');
     return (
