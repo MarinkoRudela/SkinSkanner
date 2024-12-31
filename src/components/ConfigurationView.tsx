@@ -1,14 +1,14 @@
-import { Header } from "./Header";
-import { AuthForm } from "./auth/AuthForm";
 import { useEffect, useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { BookingTab } from "./settings/TabContent/BookingTab";
 import { BrandingTab } from "./settings/TabContent/BrandingTab";
 import { IntegrationTab } from "./settings/TabContent/IntegrationTab";
 import { SubscriptionTab } from "./settings/TabContent/SubscriptionTab";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Navigation } from "./Navigation";
 
 interface ConfigurationViewProps {
   session: any;
@@ -29,39 +29,38 @@ export const ConfigurationView = ({
 
   useEffect(() => {
     if (session?.user?.id) {
-      fetchBranding();
-      generateUniqueLink();
+      fetchProfileData();
     }
-  }, [session?.user?.id, bookingUrl]);
+  }, [session]);
 
-  const fetchBranding = async () => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('brand_name, logo_url')
-      .eq('id', session.user.id)
-      .single();
+  const fetchProfileData = async () => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
 
-    if (!error && data) {
-      setBrandName(data.brand_name || '');
-      setLogoUrl(data.logo_url || '');
-    }
-  };
+      if (error) throw error;
 
-  const generateUniqueLink = () => {
-    if (bookingUrl && session?.user?.id) {
+      if (profile) {
+        setBrandName(profile.brand_name || '');
+        setLogoUrl(profile.logo_url || '');
+      }
+
+      // Generate unique link
       const baseUrl = window.location.origin;
-      const link = `${baseUrl}?business=${session.user.id}`;
-      setUniqueLink(link);
+      setUniqueLink(`${baseUrl}?business=${session.user.id}`);
+
+    } catch (error) {
+      console.error('Error fetching profile:', error);
     }
   };
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
-        <div className="container max-w-md mx-auto px-4 py-8">
-          <Header />
-          <AuthForm />
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p>Please log in to access the dashboard.</p>
       </div>
     );
   }
@@ -96,36 +95,39 @@ export const ConfigurationView = ({
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-6">
-      <h2 className="text-2xl font-semibold mb-6">Business Dashboard</h2>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        {renderTabNavigation()}
+    <div className="relative">
+      <Navigation session={session} />
+      <div className="container mx-auto p-4 md:p-6">
+        <h2 className="text-2xl font-semibold mb-6">Business Dashboard</h2>
+        
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          {renderTabNavigation()}
 
-        <TabsContent value="booking">
-          <BookingTab 
-            bookingUrl={bookingUrl}
-            updateBookingUrl={updateBookingUrl}
-            uniqueLink={uniqueLink}
-          />
-        </TabsContent>
+          <TabsContent value="booking">
+            <BookingTab 
+              bookingUrl={bookingUrl}
+              updateBookingUrl={updateBookingUrl}
+              uniqueLink={uniqueLink}
+            />
+          </TabsContent>
 
-        <TabsContent value="branding">
-          <BrandingTab 
-            brandName={brandName}
-            logoUrl={logoUrl}
-            onSave={fetchBranding}
-          />
-        </TabsContent>
+          <TabsContent value="branding">
+            <BrandingTab 
+              brandName={brandName}
+              logoUrl={logoUrl}
+              onSave={fetchProfileData}
+            />
+          </TabsContent>
 
-        <TabsContent value="integration">
-          <IntegrationTab userId={session.user.id} />
-        </TabsContent>
+          <TabsContent value="integration">
+            <IntegrationTab />
+          </TabsContent>
 
-        <TabsContent value="subscription">
-          <SubscriptionTab />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="subscription">
+            <SubscriptionTab session={session} />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };
