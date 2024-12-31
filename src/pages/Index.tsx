@@ -12,6 +12,7 @@ const Index = () => {
   const [session, setSession] = useState<any>(null);
   const [bookingUrl, setBookingUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [dataFetched, setDataFetched] = useState(false);
   const { handleResponse } = useAuthResponse();
   
   useEffect(() => {
@@ -19,7 +20,10 @@ const Index = () => {
     
     const initializeAuth = async () => {
       try {
+        console.log('Initializing auth...');
         const { data: { session: authSession } } = await supabase.auth.getSession();
+        console.log('Auth session retrieved:', authSession?.user?.email);
+        
         const processedSession = await handleResponse(
           new Response(JSON.stringify({ session: authSession })),
           'auth-session'
@@ -27,10 +31,14 @@ const Index = () => {
         setSession(processedSession.session);
         
         if (processedSession.session) {
+          console.log('Fetching business settings for user:', processedSession.session.user.id);
           await fetchBusinessSettings(processedSession.session.user.id);
         } else if (businessId) {
+          console.log('Fetching business settings for business:', businessId);
           await fetchBusinessSettings(businessId);
         }
+        
+        setDataFetched(true);
       } catch (error) {
         console.error('Auth initialization error:', error);
         toast({
@@ -48,10 +56,12 @@ const Index = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      console.log('Auth state changed:', _event, newSession?.user?.email);
       setSession(newSession);
       if (newSession) {
         await fetchBusinessSettings(newSession.user.id);
       }
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -60,6 +70,7 @@ const Index = () => {
   const fetchBusinessSettings = async (userId: string) => {
     return globalRequestQueue.add(async () => {
       try {
+        console.log('Fetching business settings...');
         const { data, error } = await supabase
           .from('business_settings')
           .select('booking_url')
@@ -76,9 +87,11 @@ const Index = () => {
           return;
         }
 
+        console.log('Business settings data:', data);
         if (data) {
           setBookingUrl(data.booking_url);
         } else if (!session) {
+          console.log('No business settings found');
           toast({
             title: "Not Found",
             description: "Business booking link not found",
@@ -96,6 +109,7 @@ const Index = () => {
 
     return globalRequestQueue.add(async () => {
       try {
+        console.log('Updating booking URL...');
         const { error } = await supabase
           .from('business_settings')
           .upsert({
@@ -122,8 +136,17 @@ const Index = () => {
     });
   };
 
-  if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  // Show loading state only if we haven't fetched data yet
+  if (loading && !dataFetched) {
+    console.log('Showing loading state');
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="space-y-4 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto"></div>
+          <p className="text-indigo-600">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   const isConfigMode = new URLSearchParams(window.location.search).get('config') === 'true';
