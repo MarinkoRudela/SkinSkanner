@@ -29,8 +29,8 @@ export const Navigation = ({ session }: { session: any }) => {
       navigate("/login");
       return;
     }
-    // Navigate to root path with config parameter
-    navigate("/?config=true", { replace: true });
+    // Navigate directly to the root path with config parameter
+    window.location.href = '/?config=true';
   };
 
   const handleLogout = async () => {
