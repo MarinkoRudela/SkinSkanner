@@ -45,6 +45,7 @@ serve(async (req) => {
     }
 
     // Get the prices for the products
+    console.log(`Fetching prices for ${planType} plan...`)
     const prices = await stripe.prices.list({
       product: planType === 'yearly' ? 'prod_RUAIez1CRqHion' : 'prod_RTQK03ZwoWsEla',
       active: true,
