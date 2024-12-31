@@ -6,44 +6,64 @@ const corsHeaders = {
 }
 
 Deno.serve(async (req) => {
+  console.log('Login function invoked:', new Date().toISOString());
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    console.log('Handling CORS preflight request');
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { email, password } = await req.json()
+    // Validate request body
+    const { email, password } = await req.json();
+    console.log('Login attempt for email:', email.slice(0, 3) + '***@' + email.split('@')[1]);
 
     if (!email || !password) {
-      throw new Error('Email and password are required')
+      console.error('Missing required fields');
+      throw new Error('Email and password are required');
     }
 
-    // Initialize Supabase client with service role key
+    // Validate environment variables
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      console.error('Missing required environment variables');
+      throw new Error('Server configuration error');
+    }
+
+    console.log('Environment variables validated');
+    console.log('Supabase URL present:', !!supabaseUrl);
+    console.log('Service role key present:', !!supabaseServiceRoleKey);
+
+    // Initialize Supabase admin client
+    console.log('Initializing Supabase admin client');
     const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      supabaseUrl,
+      supabaseServiceRoleKey,
       {
         auth: {
           autoRefreshToken: false,
           persistSession: false,
         },
       }
-    )
+    );
+    console.log('Supabase admin client initialized');
 
-    console.log('Attempting to sign in user:', email)
-    
+    // Attempt authentication
+    console.log('Attempting user authentication');
     const { data, error } = await supabaseAdmin.auth.signInWithPassword({
       email,
       password,
-    })
+    });
 
     if (error) {
-      console.error('Login error:', error)
-      throw error
+      console.error('Authentication error:', error.message);
+      throw error;
     }
 
-    console.log('User signed in successfully')
-
+    console.log('Authentication successful');
     return new Response(
       JSON.stringify(data),
       { 
@@ -52,19 +72,22 @@ Deno.serve(async (req) => {
           'Content-Type': 'application/json',
         },
       },
-    )
+    );
 
   } catch (error) {
-    console.error('Error:', error.message)
+    console.error('Error details:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      }),
       { 
         headers: { 
           ...corsHeaders,
           'Content-Type': 'application/json',
         },
-        status: 400,
+        status: error.status || 400,
       },
-    )
+    );
   }
 })
