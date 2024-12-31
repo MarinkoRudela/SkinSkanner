@@ -66,11 +66,11 @@ Analyze the images and provide your response in a structured JSON format with th
 
 Your JSON response must follow this exact structure:
 {
-  "concerns": ["Observed condition 1", "Observed condition 2", "Observed condition 3"],
-  "recommendations": ["Specific treatment 1", "Specific treatment 2", "Specific treatment 3"]
+  "concerns": ["Observed condition 1", "Observed condition 2", "Observed condition 3", "Observed condition 4"],
+  "recommendations": ["Specific treatment 1", "Specific treatment 2", "Specific treatment 3", "Specific treatment 4"]
 }
 
-Each concern should be paired with its corresponding recommendation in the same array position. Keep your analysis focused on 3-4 key observations and their matching treatment recommendations.`
+Each concern should be paired with its corresponding recommendation in the same array position. Provide exactly 4 key observations and their matching treatment recommendations.`
       },
       {
         role: 'user',
@@ -146,7 +146,8 @@ Each concern should be paired with its corresponding recommendation in the same 
       
       if (!analysis.concerns || !analysis.recommendations || 
           !Array.isArray(analysis.concerns) || !Array.isArray(analysis.recommendations) ||
-          analysis.concerns.length !== analysis.recommendations.length) {
+          analysis.concerns.length !== analysis.recommendations.length ||
+          analysis.concerns.length !== 4) {  // Updated to expect exactly 4 items
         console.error('❌ Invalid analysis format:', analysis);
         throw new Error('Invalid analysis format');
       }

@@ -3,6 +3,7 @@ import { FaceScanner } from '@/components/FaceScanner';
 import { Analysis } from '@/components/Analysis';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { Loader2 } from 'lucide-react';
 
 interface CapturedImages {
   front?: string;
@@ -27,11 +28,9 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
     try {
       console.log('Calling analyze-skin function with images:', images);
       
-      // Call the function without any auth headers
       const { data, error } = await supabase.functions.invoke('analyze-skin', {
         body: { images },
         headers: {
-          // Explicitly remove authorization header
           Authorization: undefined
         }
       });
@@ -82,7 +81,15 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
   return (
     <div className="space-y-8">
       {!analysis && (
-        <FaceScanner onImageCapture={handleImageCapture} />
+        <>
+          <FaceScanner onImageCapture={handleImageCapture} />
+          {isAnalyzing && (
+            <div className="flex flex-col items-center justify-center gap-4 mt-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground">Analyzing your photos...</p>
+            </div>
+          )}
+        </>
       )}
 
       {analysis && (
