@@ -16,6 +16,7 @@ export const useBookingUrl = (session: any, bookingUrl: string, updateBookingUrl
   const handleUpdateBookingUrl = async (url: string) => {
     setIsLoading(true);
     try {
+      // First check if a record exists
       const { data: existingSettings } = await supabase
         .from('business_settings')
         .select('id')
@@ -23,6 +24,7 @@ export const useBookingUrl = (session: any, bookingUrl: string, updateBookingUrl
         .single();
 
       if (existingSettings) {
+        // Update existing record
         const { error: updateError } = await supabase
           .from('business_settings')
           .update({ booking_url: url })
@@ -30,6 +32,7 @@ export const useBookingUrl = (session: any, bookingUrl: string, updateBookingUrl
 
         if (updateError) throw updateError;
       } else {
+        // Insert new record
         const { error: insertError } = await supabase
           .from('business_settings')
           .insert([{ profile_id: session.user.id, booking_url: url }]);
@@ -37,7 +40,9 @@ export const useBookingUrl = (session: any, bookingUrl: string, updateBookingUrl
         if (insertError) throw insertError;
       }
 
+      // Only call updateBookingUrl if database operation succeeded
       await updateBookingUrl(url);
+      
       toast({
         title: "Success",
         description: "Booking URL updated successfully",
@@ -49,6 +54,7 @@ export const useBookingUrl = (session: any, bookingUrl: string, updateBookingUrl
         description: "Failed to update booking URL. Please try again.",
         variant: "destructive",
       });
+      throw error;
     } finally {
       setIsLoading(false);
     }
