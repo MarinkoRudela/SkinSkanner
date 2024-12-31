@@ -4,6 +4,7 @@ import { BookingUrlForm } from "./settings/BookingUrlForm";
 import { IntegrationGuide } from "./settings/IntegrationGuide";
 import { ShareLinks } from "./settings/ShareLinks";
 import { BrandingForm } from "./settings/BrandingForm";
+import { SubscriptionSettings } from "./settings/SubscriptionSettings";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -88,10 +89,11 @@ export const ConfigurationView = ({
       <h2 className="text-2xl font-semibold mb-6">Business Dashboard</h2>
       
       <Tabs defaultValue="booking" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="booking">Booking Settings</TabsTrigger>
           <TabsTrigger value="branding">Branding</TabsTrigger>
           <TabsTrigger value="integration">Integration</TabsTrigger>
+          <TabsTrigger value="subscription">Subscription</TabsTrigger>
         </TabsList>
 
         <TabsContent value="booking">
@@ -148,6 +150,10 @@ export const ConfigurationView = ({
               <ShareLinks userId={session.user.id} />
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="subscription">
+          <SubscriptionSettings />
         </TabsContent>
       </Tabs>
     </div>
