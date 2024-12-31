@@ -1,7 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { SubscriptionSettings } from "../SubscriptionSettings";
 
-export const SubscriptionTab = () => {
+interface SubscriptionTabProps {
+  session: any;
+}
+
+export const SubscriptionTab = ({ session }: SubscriptionTabProps) => {
   return (
     <Card>
       <CardHeader>
