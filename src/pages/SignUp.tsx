@@ -46,8 +46,9 @@ const SignUp = () => {
 
       if (checkoutError) throw checkoutError;
 
-      if (checkoutData.url) {
-        window.location.href = checkoutData.url;
+      if (checkoutData?.url) {
+        // Open Stripe checkout in the top-level window
+        window.top.location.href = checkoutData.url;
       } else {
         throw new Error('No checkout URL returned');
       }
