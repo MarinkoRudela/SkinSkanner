@@ -1,14 +1,12 @@
-import { useEffect, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { BookingTab } from "./settings/TabContent/BookingTab";
 import { BrandingTab } from "./settings/TabContent/BrandingTab";
 import { IntegrationTab } from "./settings/TabContent/IntegrationTab";
 import { SubscriptionTab } from "./settings/TabContent/SubscriptionTab";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Navigation } from "./Navigation";
+import { DashboardTabs } from "./settings/DashboardTabs";
+import { DashboardHeader } from "./settings/DashboardHeader";
 
 interface ConfigurationViewProps {
   session: any;
@@ -25,7 +23,6 @@ export const ConfigurationView = ({
   const [logoUrl, setLogoUrl] = useState('');
   const [uniqueLink, setUniqueLink] = useState('');
   const [activeTab, setActiveTab] = useState('booking');
-  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (session?.user?.id) {
@@ -48,7 +45,6 @@ export const ConfigurationView = ({
         setLogoUrl(profile.logo_url || '');
       }
 
-      // Generate unique link
       const baseUrl = window.location.origin;
       setUniqueLink(`${baseUrl}?business=${session.user.id}`);
 
@@ -65,45 +61,13 @@ export const ConfigurationView = ({
     );
   }
 
-  const renderTabNavigation = () => {
-    if (isMobile) {
-      return (
-        <div className="w-full mb-6">
-          <Select value={activeTab} onValueChange={setActiveTab}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select tab" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="booking">Booking Settings</SelectItem>
-              <SelectItem value="branding">Branding</SelectItem>
-              <SelectItem value="integration">Integration</SelectItem>
-              <SelectItem value="subscription">Subscription</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      );
-    }
-
-    return (
-      <TabsList className="grid w-full grid-cols-4">
-        <TabsTrigger value="booking">Booking Settings</TabsTrigger>
-        <TabsTrigger value="branding">Branding</TabsTrigger>
-        <TabsTrigger value="integration">Integration</TabsTrigger>
-        <TabsTrigger value="subscription">Subscription</TabsTrigger>
-      </TabsList>
-    );
-  };
-
   return (
     <div className="relative min-h-screen">
-      <div className="absolute top-4 right-4 z-50">
-        <Navigation session={session} />
-      </div>
       <div className="container mx-auto p-4 md:p-6 pt-16">
-        <h2 className="text-2xl font-semibold mb-6">Business Dashboard</h2>
+        <DashboardHeader session={session} />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          {renderTabNavigation()}
+          <DashboardTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
           <TabsContent value="booking">
             <BookingTab 
