@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import { toast } from "@/hooks/use-toast";
+import { Label } from "../ui/label";
 
 interface BookingUrlFormProps {
   initialUrl: string;
@@ -12,6 +14,15 @@ export const BookingUrlForm = ({ initialUrl, onSave }: BookingUrlFormProps) => {
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
+    if (!localBookingUrl) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid booking URL",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       setIsSaving(true);
       await onSave(localBookingUrl);
@@ -31,29 +42,28 @@ export const BookingUrlForm = ({ initialUrl, onSave }: BookingUrlFormProps) => {
   };
 
   return (
-    <div>
-      <label htmlFor="bookingUrl" className="block text-sm font-medium text-gray-700 mb-1">
-        Booking URL
-      </label>
-      <div className="flex gap-2">
-        <input
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="bookingUrl">Booking URL</Label>
+        <Input
           type="url"
           id="bookingUrl"
-          className="flex-1 p-2 border rounded"
           value={localBookingUrl}
           onChange={(e) => setLocalBookingUrl(e.target.value)}
-          placeholder="Enter your booking platform URL"
+          placeholder="Enter your booking platform URL (e.g., Calendly, Acuity)"
+          className="w-full"
         />
-        <Button 
-          onClick={handleSave}
-          disabled={isSaving || localBookingUrl === initialUrl}
-        >
-          {isSaving ? "Saving..." : "Save"}
-        </Button>
+        <p className="text-sm text-muted-foreground">
+          Enter the URL where clients can book appointments. This will be used to generate your unique booking link.
+        </p>
       </div>
-      <p className="text-sm text-gray-500 mt-1">
-        Enter the URL where clients can book appointments (e.g., your Calendly or Acuity link)
-      </p>
+      <Button 
+        onClick={handleSave}
+        disabled={isSaving || localBookingUrl === initialUrl}
+        className="w-full"
+      >
+        {isSaving ? "Saving..." : "Save Booking URL"}
+      </Button>
     </div>
   );
 };
