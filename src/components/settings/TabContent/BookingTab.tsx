@@ -39,7 +39,7 @@ export const BookingTab = ({ bookingUrl, updateBookingUrl, uniqueLink }: Booking
           onSave={updateBookingUrl}
         />
         
-        {bookingUrl && (
+        {bookingUrl && uniqueLink && (
           <div className="mt-6">
             <h3 className="text-lg font-medium mb-3">Your Unique Booking Link</h3>
             <div className="flex flex-col sm:flex-row gap-2">

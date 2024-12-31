@@ -27,8 +27,9 @@ export const ConfigurationView = ({
   useEffect(() => {
     if (session?.user?.id) {
       fetchProfileData();
+      generateUniqueLink();
     }
-  }, [session]);
+  }, [session, bookingUrl]);
 
   const fetchProfileData = async () => {
     try {
@@ -44,12 +45,15 @@ export const ConfigurationView = ({
         setBrandName(profile.brand_name || '');
         setLogoUrl(profile.logo_url || '');
       }
-
-      const baseUrl = window.location.origin;
-      setUniqueLink(`${baseUrl}?business=${session.user.id}`);
-
     } catch (error) {
       console.error('Error fetching profile:', error);
+    }
+  };
+
+  const generateUniqueLink = () => {
+    if (bookingUrl && session?.user?.id) {
+      const baseUrl = window.location.origin;
+      setUniqueLink(`${baseUrl}?business=${session.user.id}`);
     }
   };
 
