@@ -19,7 +19,6 @@ export const Header = () => {
 
     const fetchBranding = async () => {
       try {
-        console.log('Fetching branding data...');
         const { data, error } = await supabase
           .from('profiles')
           .select('brand_name, logo_url')

@@ -15,6 +15,7 @@ const Login = () => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+      // Keep this log as it's critical for debugging auth state changes
       console.log('Auth state changed:', event, currentSession?.user?.email);
       if (event === 'SIGNED_IN' && currentSession) {
         setSession(currentSession);
@@ -33,7 +34,6 @@ const Login = () => {
         if (error) throw error;
         
         if (currentSession) {
-          console.log('Existing session found');
           setSession(currentSession);
           navigate("/dashboard");
         }

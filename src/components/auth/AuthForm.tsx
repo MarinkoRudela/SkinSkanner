@@ -17,16 +17,13 @@ export const AuthForm = ({ session }: AuthFormProps) => {
     
     setIsLoading(true);
     try {
-      console.log('Attempting to login via Edge Function');
       const { data, error } = await supabase.functions.invoke('login', {
         body: { email, password }
       });
 
       if (error) throw error;
 
-      if (data) {
-        console.log('Login successful:', data);
-      }
+      console.log('Login successful:', data);
     } catch (error: any) {
       console.error('Login failed:', error);
       toast({
