@@ -1,55 +1,72 @@
-import { useState, useEffect } from "react";
-import { toast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "./use-toast";
 
-export const useBookingUrl = (session: any, bookingUrl: string, updateBookingUrl: (url: string) => Promise<void>) => {
+export const useBookingUrl = (
+  session: any,
+  initialBookingUrl: string,
+  updateBookingUrl: (url: string) => Promise<void>
+) => {
   const [isLoading, setIsLoading] = useState(false);
   const [uniqueLink, setUniqueLink] = useState("");
 
-  useEffect(() => {
-    if (bookingUrl) {
-      try {
-        // Ensure the URL is properly formatted
-        const formattedUrl = formatUrl(bookingUrl);
-        setUniqueLink(formattedUrl);
-      } catch (error) {
-        console.error('Error formatting URL:', error);
-        setUniqueLink("");
-      }
-    }
-  }, [bookingUrl]);
-
-  const formatUrl = (url: string): string => {
-    try {
-      // Remove any trailing colons
-      url = url.replace(/:+$/, '');
-      
-      // If the URL doesn't start with http:// or https://, add https://
-      if (!url.match(/^https?:\/\//i)) {
-        url = `https://${url}`;
-      }
-      
-      // Create URL object to validate and normalize the URL
-      const urlObject = new URL(url);
-      return urlObject.toString();
-    } catch (error) {
-      console.error('Invalid URL:', error);
-      throw new Error('Invalid URL format');
-    }
+  const generateUniqueLink = (userId: string, bookingUrl: string) => {
+    // Create a unique link using the user's ID and booking URL
+    const baseUrl = window.location.origin;
+    return `${baseUrl}?business=${userId}`;
   };
 
   const handleUpdateBookingUrl = async (url: string) => {
+    if (!session?.user?.id) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to update your booking URL",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Format the URL before updating
-      const formattedUrl = formatUrl(url);
-      await updateBookingUrl(formattedUrl);
+      // First check if a record exists
+      const { data: existingSettings } = await supabase
+        .from('business_settings')
+        .select('id')
+        .eq('profile_id', session.user.id)
+        .single();
+
+      let error;
+      
+      if (existingSettings) {
+        // Update existing record
+        const { error: updateError } = await supabase
+          .from('business_settings')
+          .update({ booking_url: url })
+          .eq('profile_id', session.user.id);
+        error = updateError;
+      } else {
+        // Insert new record
+        const { error: insertError } = await supabase
+          .from('business_settings')
+          .insert([{ 
+            profile_id: session.user.id, 
+            booking_url: url 
+          }]);
+        error = insertError;
+      }
+
+      if (error) throw error;
+
+      // Update local state and generate unique link
+      const newUniqueLink = generateUniqueLink(session.user.id, url);
+      setUniqueLink(newUniqueLink);
+      
+      await updateBookingUrl(url);
       
       toast({
         title: "Success",
         description: "Booking URL updated successfully",
       });
-      
-      setUniqueLink(formattedUrl);
     } catch (error: any) {
       console.error('Error updating booking URL:', error);
       toast({
@@ -57,6 +74,7 @@ export const useBookingUrl = (session: any, bookingUrl: string, updateBookingUrl
         description: error.message || "Failed to update booking URL",
         variant: "destructive",
       });
+      throw error;
     } finally {
       setIsLoading(false);
     }
