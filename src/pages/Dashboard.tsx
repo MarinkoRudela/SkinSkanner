@@ -48,13 +48,35 @@ const Dashboard = () => {
   };
 
   const updateBookingUrl = async (url: string) => {
+    if (!session?.user?.id) return;
+    
     try {
-      const { error } = await supabase
+      // First check if a record exists
+      const { data: existingSettings } = await supabase
         .from('business_settings')
-        .upsert({
-          profile_id: session?.user?.id,
-          booking_url: url,
-        });
+        .select('id')
+        .eq('profile_id', session.user.id)
+        .single();
+
+      let error;
+      
+      if (existingSettings) {
+        // Update existing record
+        const { error: updateError } = await supabase
+          .from('business_settings')
+          .update({ booking_url: url })
+          .eq('profile_id', session.user.id);
+        error = updateError;
+      } else {
+        // Insert new record
+        const { error: insertError } = await supabase
+          .from('business_settings')
+          .insert([{ 
+            profile_id: session.user.id, 
+            booking_url: url 
+          }]);
+        error = insertError;
+      }
 
       if (error) throw error;
       

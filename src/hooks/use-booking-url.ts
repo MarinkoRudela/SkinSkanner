@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 export const useBookingUrl = (session: any, bookingUrl: string, updateBookingUrl: (url: string) => Promise<void>) => {
@@ -16,7 +15,6 @@ export const useBookingUrl = (session: any, bookingUrl: string, updateBookingUrl
   const handleUpdateBookingUrl = async (url: string) => {
     setIsLoading(true);
     try {
-      // Update state through parent component first
       await updateBookingUrl(url);
       
       toast({
