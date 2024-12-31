@@ -44,12 +44,26 @@ serve(async (req) => {
       }
     }
 
+    // Get the prices for the products
+    const prices = await stripe.prices.list({
+      product: planType === 'yearly' ? 'prod_RUAIez1CRqHion' : 'prod_RTQK03ZwoWsEla',
+      active: true,
+      limit: 1
+    });
+
+    if (prices.data.length === 0) {
+      throw new Error(`No active price found for the ${planType} plan`);
+    }
+
+    const priceId = prices.data[0].id;
+    console.log(`Using price ID: ${priceId} for ${planType} plan`);
+
     console.log('Creating payment session...')
     const session = await stripe.checkout.sessions.create({
       customer: customer_id,
       customer_email: customer_id ? undefined : email,
       line_items: [{
-        price: planType === 'yearly' ? 'prod_RUAIez1CRqHion' : 'prod_RTQK03ZwoWsEla',
+        price: priceId,
         quantity: 1,
       }],
       mode: 'subscription',
