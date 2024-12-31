@@ -15,9 +15,7 @@ export const Navigation = ({ session }: { session: any }) => {
 
   const handleScanClick = () => {
     // Navigate to root path and ensure any query parameters are cleared
-    navigate('/', { replace: true });
-    // Clear any existing URL parameters
-    window.history.replaceState({}, '', '/');
+    window.location.href = '/';
   };
 
   const handleConfigClick = () => {
