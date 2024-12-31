@@ -6,6 +6,7 @@ import { ScannerSection } from '@/components/scanner/ScannerSection';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { useAuthInitialization } from '@/hooks/use-auth-initialization';
 import { useBusinessSettingsManagement } from '@/hooks/use-business-settings-management';
+import { toast } from '@/hooks/use-toast';
 
 const Index = () => {
   const { session, isInitializing } = useAuthInitialization();
@@ -23,6 +24,19 @@ const Index = () => {
 
   const isConfigMode = new URLSearchParams(window.location.search).get('config') === 'true';
   
+  // Create a wrapper function that only takes url parameter
+  const handleUpdateBookingUrl = async (url: string) => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to update your booking URL",
+        variant: "destructive"
+      });
+      return;
+    }
+    return updateBookingUrl(url, session);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
       <div className="container max-w-4xl mx-auto px-4 py-8 relative">
@@ -33,7 +47,7 @@ const Index = () => {
           <ConfigSection 
             session={session}
             bookingUrl={bookingUrl}
-            updateBookingUrl={updateBookingUrl}
+            updateBookingUrl={handleUpdateBookingUrl}
           />
         ) : (
           <ScannerSection 
