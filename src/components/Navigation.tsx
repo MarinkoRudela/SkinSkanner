@@ -14,9 +14,10 @@ export const Navigation = ({ session }: { session: any }) => {
   const navigate = useNavigate();
 
   const handleScanClick = () => {
-    // Clear any config parameters and navigate to home
-    const baseUrl = window.location.pathname;
-    navigate(baseUrl);
+    // Navigate to root path and ensure any query parameters are cleared
+    navigate('/', { replace: true });
+    // Clear any existing URL parameters
+    window.history.replaceState({}, '', '/');
   };
 
   const handleConfigClick = () => {
