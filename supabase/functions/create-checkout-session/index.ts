@@ -12,31 +12,18 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-  )
-
   try {
-    const authHeader = req.headers.get('Authorization')!
-    const token = authHeader.replace('Bearer ', '')
-    const { data } = await supabaseClient.auth.getUser(token)
-    const user = data.user
-    const email = user?.email
-
+    const { email, planType } = await req.json()
+    
     if (!email) {
-      throw new Error('No email found')
-    }
-
-    const { planType } = await req.json()
-    if (!planType) {
-      throw new Error('No plan type specified')
+      throw new Error('No email provided')
     }
 
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     })
 
+    // Check if customer already exists
     const customers = await stripe.customers.list({
       email: email,
       limit: 1
@@ -45,6 +32,7 @@ serve(async (req) => {
     let customer_id = undefined
     if (customers.data.length > 0) {
       customer_id = customers.data[0].id
+      // Check if already subscribed
       const subscriptions = await stripe.subscriptions.list({
         customer: customers.data[0].id,
         status: 'active',
@@ -57,8 +45,7 @@ serve(async (req) => {
     }
 
     console.log('Creating payment session...')
-    
-    const sessionConfig = {
+    const session = await stripe.checkout.sessions.create({
       customer: customer_id,
       customer_email: customer_id ? undefined : email,
       line_items: [{
@@ -71,9 +58,7 @@ serve(async (req) => {
       } : undefined,
       success_url: `${req.headers.get('origin')}/dashboard`,
       cancel_url: `${req.headers.get('origin')}/signup`,
-    }
-
-    const session = await stripe.checkout.sessions.create(sessionConfig)
+    })
 
     console.log('Payment session created:', session.id)
     return new Response(

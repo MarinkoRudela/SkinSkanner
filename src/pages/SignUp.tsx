@@ -23,6 +23,7 @@ const SignUp = () => {
     setLoading(true);
 
     try {
+      // First create the user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -35,21 +36,20 @@ const SignUp = () => {
 
       if (authError) throw authError;
 
-      if (authData.session) {
-        const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
-          body: { 
-            email: formData.email,
-            planType: planType
-          }
-        });
-
-        if (checkoutError) throw checkoutError;
-
-        if (checkoutData.url) {
-          window.location.href = checkoutData.url;
-        } else {
-          throw new Error('No checkout URL returned');
+      // After successful signup, create a checkout session
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
+        body: { 
+          email: formData.email,
+          planType: planType
         }
+      });
+
+      if (checkoutError) throw checkoutError;
+
+      if (checkoutData.url) {
+        window.location.href = checkoutData.url;
+      } else {
+        throw new Error('No checkout URL returned');
       }
 
     } catch (error: any) {
