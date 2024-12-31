@@ -12,10 +12,16 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
+    const businessId = new URLSearchParams(window.location.search).get('business');
+    
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) {
-        fetchBusinessSettings();
+        // If logged in, fetch own settings
+        fetchBusinessSettings(session.user.id);
+      } else if (businessId) {
+        // If not logged in but business ID provided, fetch that business's settings
+        fetchBusinessSettings(businessId);
       }
       setLoading(false);
     });
@@ -25,31 +31,40 @@ const Index = () => {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (session) {
-        fetchBusinessSettings();
+        fetchBusinessSettings(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchBusinessSettings = async () => {
+  const fetchBusinessSettings = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('business_settings')
-        .select('*')
-        .single();
+        .select('booking_url')
+        .eq('profile_id', userId)
+        .maybeSingle();
 
       if (error) {
-        if (error.code !== 'PGRST116') {
-          console.error('Error fetching business settings:', error);
-          toast({
-            title: "Error",
-            description: "Failed to load business settings",
-            variant: "destructive"
-          });
-        }
-      } else if (data) {
+        console.error('Error fetching business settings:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load business settings",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (data) {
         setBookingUrl(data.booking_url);
+      } else if (!session) {
+        // Only show this message for public access
+        toast({
+          title: "Not Found",
+          description: "Business booking link not found",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Error:', error);
