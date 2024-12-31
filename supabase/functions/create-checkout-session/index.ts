@@ -62,7 +62,7 @@ serve(async (req) => {
       customer: customer_id,
       customer_email: customer_id ? undefined : email,
       line_items: [{
-        price: planType === 'yearly' ? 'YOUR_YEARLY_PRICE_ID' : 'YOUR_MONTHLY_PRICE_ID',
+        price: planType === 'yearly' ? 'prod_RUAIez1CRqHion' : 'prod_RTQK03ZwoWsEla',
         quantity: 1,
       }],
       mode: 'subscription',
