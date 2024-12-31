@@ -3,100 +3,123 @@ import { Header } from '@/components/Header';
 import { Navigation } from '@/components/Navigation';
 import { ConfigSection } from '@/components/config/ConfigSection';
 import { ScannerSection } from '@/components/scanner/ScannerSection';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuthResponse } from '@/hooks/use-auth-response';
+import { globalRequestQueue } from '@/utils/requestQueue';
 
 const Index = () => {
   const [session, setSession] = useState<any>(null);
   const [bookingUrl, setBookingUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const { handleResponse } = useAuthResponse();
   
   useEffect(() => {
     const businessId = new URLSearchParams(window.location.search).get('business');
     
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session) {
-        // If logged in, fetch own settings
-        fetchBusinessSettings(session.user.id);
-      } else if (businessId) {
-        // If not logged in but business ID provided, fetch that business's settings
-        fetchBusinessSettings(businessId);
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: authSession } } = await supabase.auth.getSession();
+        const processedSession = await handleResponse(
+          new Response(JSON.stringify({ session: authSession })),
+          'auth-session'
+        );
+        setSession(processedSession.session);
+        
+        if (processedSession.session) {
+          await fetchBusinessSettings(processedSession.session.user.id);
+        } else if (businessId) {
+          await fetchBusinessSettings(businessId);
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to initialize authentication",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    };
+
+    initializeAuth();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session) {
-        fetchBusinessSettings(session.user.id);
+    } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      setSession(newSession);
+      if (newSession) {
+        await fetchBusinessSettings(newSession.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [handleResponse]);
 
   const fetchBusinessSettings = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('business_settings')
-        .select('booking_url')
-        .eq('profile_id', userId)
-        .maybeSingle();
+    return globalRequestQueue.add(async () => {
+      try {
+        const { data, error } = await supabase
+          .from('business_settings')
+          .select('booking_url')
+          .eq('profile_id', userId)
+          .maybeSingle();
 
-      if (error) {
-        console.error('Error fetching business settings:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load business settings",
-          variant: "destructive"
-        });
-        return;
-      }
+        if (error) {
+          console.error('Error fetching business settings:', error);
+          toast({
+            title: "Error",
+            description: "Failed to load business settings",
+            variant: "destructive"
+          });
+          return;
+        }
 
-      if (data) {
-        setBookingUrl(data.booking_url);
-      } else if (!session) {
-        // Only show this message for public access
-        toast({
-          title: "Not Found",
-          description: "Business booking link not found",
-          variant: "destructive"
-        });
+        if (data) {
+          setBookingUrl(data.booking_url);
+        } else if (!session) {
+          toast({
+            title: "Not Found",
+            description: "Business booking link not found",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        console.error('Error:', error);
       }
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    });
   };
 
   const updateBookingUrl = async (url: string) => {
     if (!session) return;
 
-    try {
-      const { error } = await supabase
-        .from('business_settings')
-        .upsert({
-          profile_id: session.user.id,
-          booking_url: url
+    return globalRequestQueue.add(async () => {
+      try {
+        const { error } = await supabase
+          .from('business_settings')
+          .upsert({
+            profile_id: session.user.id,
+            booking_url: url
+          });
+
+        if (error) throw error;
+
+        setBookingUrl(url);
+        toast({
+          title: "Success",
+          description: "Booking URL updated successfully"
         });
-
-      if (error) throw error;
-
-      setBookingUrl(url);
-      toast({
-        title: "Success",
-        description: "Booking URL updated successfully"
-      });
-    } catch (error) {
-      console.error('Error updating booking URL:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update booking URL",
-        variant: "destructive"
-      });
-    }
+      } catch (error: any) {
+        console.error('Error updating booking URL:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update booking URL",
+          variant: "destructive"
+        });
+        throw error;
+      }
+    });
   };
 
   if (loading) {
