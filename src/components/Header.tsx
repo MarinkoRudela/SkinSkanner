@@ -19,8 +19,8 @@ export const Header = () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('brand_name, logo_url')
-        .maybeSingle()
-        .abortSignal(signal);
+        .abortSignal(signal)
+        .maybeSingle();
 
       if (error) {
         throw error;
