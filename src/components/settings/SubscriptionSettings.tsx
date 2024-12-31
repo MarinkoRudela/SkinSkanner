@@ -14,7 +14,7 @@ export const SubscriptionSettings = () => {
       const { data, error } = await supabase
         .from('subscriptions')
         .select('*')
-        .single();
+        .maybeSingle(); // Changed from .single() to .maybeSingle()
       
       if (error) throw error;
       return data;
@@ -56,6 +56,28 @@ export const SubscriptionSettings = () => {
     }
   };
 
+  // If no subscription data exists, show a different message
+  if (!subscription) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>No Active Subscription</CardTitle>
+          <CardDescription>
+            You currently don't have any active subscriptions
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button
+            variant="default"
+            onClick={() => window.location.href = '/signup'}
+          >
+            View Plans
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -70,12 +92,12 @@ export const SubscriptionSettings = () => {
             <div>
               <h3 className="font-medium">Current Plan</h3>
               <p className="text-sm text-muted-foreground">
-                {subscription?.plan_type || 'Loading...'}
+                {subscription?.plan_type}
               </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">
-                Status: {subscription?.status || 'Loading...'}
+                Status: {subscription?.status}
               </p>
               {subscription?.current_period_end && (
                 <p className="text-sm text-muted-foreground">
