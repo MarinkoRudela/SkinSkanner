@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookingUrlForm } from "../BookingUrlForm";
 import { Button } from "@/components/ui/button";
@@ -30,11 +29,11 @@ export const BookingTab = ({ bookingUrl, updateBookingUrl, uniqueLink }: Booking
   };
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>Booking Configuration</CardTitle>
+        <CardTitle className="text-xl md:text-2xl">Booking Configuration</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         <BookingUrlForm 
           initialUrl={bookingUrl} 
           onSave={updateBookingUrl}
@@ -42,11 +41,20 @@ export const BookingTab = ({ bookingUrl, updateBookingUrl, uniqueLink }: Booking
         
         {bookingUrl && (
           <div className="mt-6">
-            <h3 className="text-lg font-medium mb-2">Your Unique Booking Link</h3>
-            <div className="flex gap-2">
-              <Input value={uniqueLink} readOnly />
-              <Button onClick={copyToClipboard} variant="outline">
-                <Copy className="h-4 w-4" />
+            <h3 className="text-lg font-medium mb-3">Your Unique Booking Link</h3>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Input 
+                value={uniqueLink} 
+                readOnly 
+                className="flex-1 text-sm"
+              />
+              <Button 
+                onClick={copyToClipboard} 
+                variant="outline"
+                className="w-full sm:w-auto"
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Link
               </Button>
             </div>
             <p className="text-sm text-muted-foreground mt-2">
