@@ -18,7 +18,7 @@ export const useBookingUrl = (
         .from('business_short_codes')
         .select('short_code')
         .eq('profile_id', userId)
-        .single();
+        .maybeSingle();
 
       if (existingCode?.short_code) {
         const baseUrl = window.location.origin;
@@ -38,14 +38,14 @@ export const useBookingUrl = (
       if (insertError) {
         console.error('Error creating short code:', insertError);
         // Fallback to using user ID if short code creation fails
-        return `${window.location.origin}?business=${userId}`;
+        return `${window.location.origin}/b/${userId}`;
       }
 
       return `${window.location.origin}/b/${shortCode}`;
     } catch (error) {
       console.error('Error generating unique link:', error);
       // Fallback to using user ID
-      return `${window.location.origin}?business=${userId}`;
+      return `${window.location.origin}/b/${userId}`;
     }
   };
 
