@@ -8,6 +8,18 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    flowType: 'pkce'
-  }
+    flowType: 'pkce',
+    storage: window?.localStorage,
+    storageKey: 'supabase.auth.token',
+  },
+  global: {
+    headers: {
+      'x-client-info': `lovable-app/1.0.0`,
+    },
+  },
 })
+
+// Add debug logging for auth state changes
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth state changed:', event, session?.user?.email);
+});

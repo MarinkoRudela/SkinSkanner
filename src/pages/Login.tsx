@@ -10,6 +10,7 @@ import { toast } from "@/components/ui/use-toast";
 const Login = () => {
   const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
     // Set up auth state listener
@@ -17,6 +18,10 @@ const Login = () => {
       console.log('Auth state changed:', event, currentSession);
       if (event === 'SIGNED_IN' && currentSession) {
         setSession(currentSession);
+        toast({
+          title: "Welcome back!",
+          description: "You have been successfully logged in.",
+        });
         navigate("/dashboard");
       }
     });
@@ -42,6 +47,8 @@ const Login = () => {
           description: error.message,
           variant: "destructive",
         });
+      } finally {
+        setIsInitializing(false);
       }
     };
 
@@ -52,6 +59,14 @@ const Login = () => {
       subscription.unsubscribe();
     };
   }, [navigate]);
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
