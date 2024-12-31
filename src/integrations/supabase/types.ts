@@ -41,6 +41,38 @@ export type Database = {
           },
         ]
       }
+      business_short_codes: {
+        Row: {
+          created_at: string
+          id: string
+          profile_id: string
+          short_code: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          profile_id: string
+          short_code: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          profile_id?: string
+          short_code?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_short_codes_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           brand_name: string | null

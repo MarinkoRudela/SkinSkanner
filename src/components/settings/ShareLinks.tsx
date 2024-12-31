@@ -6,7 +6,7 @@ interface ShareLinksProps {
 }
 
 export const ShareLinks = ({ userId }: ShareLinksProps) => {
-  const shareUrl = `${window.location.origin}?business=${userId}`;
+  const shareUrl = `${window.location.origin}/b/${userId}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl);

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "./use-toast";
+import { generateShortCode } from "@/utils/shortCode";
 
 export const useBookingUrl = (
   session: any,
@@ -10,9 +11,42 @@ export const useBookingUrl = (
   const [isLoading, setIsLoading] = useState(false);
   const [uniqueLink, setUniqueLink] = useState("");
 
-  const generateUniqueLink = (userId: string) => {
-    const baseUrl = window.location.origin;
-    return `${baseUrl}?business=${userId}`;
+  const generateUniqueLink = async (userId: string) => {
+    try {
+      // First check if user already has a short code
+      const { data: existingCode } = await supabase
+        .from('business_short_codes')
+        .select('short_code')
+        .eq('profile_id', userId)
+        .single();
+
+      if (existingCode?.short_code) {
+        const baseUrl = window.location.origin;
+        return `${baseUrl}/b/${existingCode.short_code}`;
+      }
+
+      // If no existing code, generate a new one
+      const shortCode = generateShortCode();
+      
+      const { error: insertError } = await supabase
+        .from('business_short_codes')
+        .insert([{
+          profile_id: userId,
+          short_code: shortCode
+        }]);
+
+      if (insertError) {
+        console.error('Error creating short code:', insertError);
+        // Fallback to using user ID if short code creation fails
+        return `${window.location.origin}?business=${userId}`;
+      }
+
+      return `${window.location.origin}/b/${shortCode}`;
+    } catch (error) {
+      console.error('Error generating unique link:', error);
+      // Fallback to using user ID
+      return `${window.location.origin}?business=${userId}`;
+    }
   };
 
   const handleUpdateBookingUrl = async (url: string) => {
@@ -58,8 +92,8 @@ export const useBookingUrl = (
 
       if (error) throw error;
 
-      // Update local state and generate unique link
-      const newUniqueLink = generateUniqueLink(session.user.id);
+      // Generate unique link with short code
+      const newUniqueLink = await generateUniqueLink(session.user.id);
       setUniqueLink(newUniqueLink);
       
       await updateBookingUrl(url);
