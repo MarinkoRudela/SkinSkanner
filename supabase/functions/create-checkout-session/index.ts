@@ -8,7 +8,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -19,7 +18,6 @@ serve(async (req) => {
   )
 
   try {
-    // Get the session or user object
     const authHeader = req.headers.get('Authorization')!
     const token = authHeader.replace('Bearer ', '')
     const { data } = await supabaseClient.auth.getUser(token)
@@ -30,7 +28,6 @@ serve(async (req) => {
       throw new Error('No email found')
     }
 
-    // Get the plan type from the request body
     const { planType } = await req.json()
     if (!planType) {
       throw new Error('No plan type specified')
@@ -48,7 +45,6 @@ serve(async (req) => {
     let customer_id = undefined
     if (customers.data.length > 0) {
       customer_id = customers.data[0].id
-      // check if already subscribed
       const subscriptions = await stripe.subscriptions.list({
         customer: customers.data[0].id,
         status: 'active',
@@ -62,30 +58,19 @@ serve(async (req) => {
 
     console.log('Creating payment session...')
     
-    let sessionConfig = {
+    const sessionConfig = {
       customer: customer_id,
       customer_email: customer_id ? undefined : email,
+      line_items: [{
+        price: planType === 'yearly' ? 'YOUR_YEARLY_PRICE_ID' : 'YOUR_MONTHLY_PRICE_ID',
+        quantity: 1,
+      }],
+      mode: 'subscription',
+      subscription_data: planType === 'monthly' ? {
+        trial_period_days: 14,
+      } : undefined,
       success_url: `${req.headers.get('origin')}/dashboard`,
       cancel_url: `${req.headers.get('origin')}/signup`,
-      line_items: [{
-        quantity: 1,
-        price: planType === 'lifetime' ? 'YOUR_LIFETIME_PRICE_ID' : 'YOUR_MONTHLY_PRICE_ID',
-      }],
-    }
-
-    if (planType === 'monthly') {
-      sessionConfig = {
-        ...sessionConfig,
-        mode: 'subscription',
-        subscription_data: {
-          trial_period_days: 30,
-        },
-      }
-    } else {
-      sessionConfig = {
-        ...sessionConfig,
-        mode: 'payment',
-      }
     }
 
     const session = await stripe.checkout.sessions.create(sessionConfig)
