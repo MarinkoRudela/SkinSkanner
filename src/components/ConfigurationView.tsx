@@ -95,9 +95,11 @@ export const ConfigurationView = ({
   };
 
   return (
-    <div className="relative">
-      <Navigation session={session} />
-      <div className="container mx-auto p-4 md:p-6">
+    <div className="relative min-h-screen">
+      <div className="absolute top-4 right-4 z-50">
+        <Navigation session={session} />
+      </div>
+      <div className="container mx-auto p-4 md:p-6 pt-16">
         <h2 className="text-2xl font-semibold mb-6">Business Dashboard</h2>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -120,7 +122,7 @@ export const ConfigurationView = ({
           </TabsContent>
 
           <TabsContent value="integration">
-            <IntegrationTab />
+            <IntegrationTab userId={session.user.id} />
           </TabsContent>
 
           <TabsContent value="subscription">
