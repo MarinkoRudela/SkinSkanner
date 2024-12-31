@@ -16,31 +16,7 @@ export const useBookingUrl = (session: any, bookingUrl: string, updateBookingUrl
   const handleUpdateBookingUrl = async (url: string) => {
     setIsLoading(true);
     try {
-      // First check if a record exists
-      const { data: existingSettings } = await supabase
-        .from('business_settings')
-        .select('id')
-        .eq('profile_id', session.user.id)
-        .single();
-
-      if (existingSettings) {
-        // Update existing record
-        const { error: updateError } = await supabase
-          .from('business_settings')
-          .update({ booking_url: url })
-          .eq('profile_id', session.user.id);
-
-        if (updateError) throw updateError;
-      } else {
-        // Insert new record
-        const { error: insertError } = await supabase
-          .from('business_settings')
-          .insert([{ profile_id: session.user.id, booking_url: url }]);
-
-        if (insertError) throw insertError;
-      }
-
-      // Only call updateBookingUrl if database operation succeeded
+      // Update state through parent component first
       await updateBookingUrl(url);
       
       toast({

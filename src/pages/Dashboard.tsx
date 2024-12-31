@@ -57,6 +57,9 @@ const Dashboard = () => {
         });
 
       if (error) throw error;
+      
+      // Update local state after successful database update
+      setBookingUrl(url);
     } catch (error: any) {
       console.error('Error updating booking URL:', error);
       throw error;
