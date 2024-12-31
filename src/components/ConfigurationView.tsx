@@ -1,18 +1,12 @@
 import { Header } from "./Header";
 import { AuthForm } from "./auth/AuthForm";
-import { BookingUrlForm } from "./settings/BookingUrlForm";
-import { IntegrationGuide } from "./settings/IntegrationGuide";
-import { ShareLinks } from "./settings/ShareLinks";
-import { BrandingForm } from "./settings/BrandingForm";
-import { SubscriptionSettings } from "./settings/SubscriptionSettings";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Copy } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { BookingTab } from "./settings/TabContent/BookingTab";
+import { BrandingTab } from "./settings/TabContent/BrandingTab";
+import { IntegrationTab } from "./settings/TabContent/IntegrationTab";
+import { SubscriptionTab } from "./settings/TabContent/SubscriptionTab";
 
 interface ConfigurationViewProps {
   session: any;
@@ -57,22 +51,6 @@ export const ConfigurationView = ({
     }
   };
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(uniqueLink);
-      toast({
-        title: "Success",
-        description: "Link copied to clipboard",
-      });
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to copy link",
-        variant: "destructive",
-      });
-    }
-  };
-
   if (!session) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
@@ -97,63 +75,27 @@ export const ConfigurationView = ({
         </TabsList>
 
         <TabsContent value="booking">
-          <Card>
-            <CardHeader>
-              <CardTitle>Booking Configuration</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <BookingUrlForm 
-                initialUrl={bookingUrl} 
-                onSave={updateBookingUrl}
-              />
-              
-              {bookingUrl && (
-                <div className="mt-6">
-                  <h3 className="text-lg font-medium mb-2">Your Unique Booking Link</h3>
-                  <div className="flex gap-2">
-                    <Input value={uniqueLink} readOnly />
-                    <Button onClick={copyToClipboard} variant="outline">
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Share this link with your clients to let them book appointments through your customized scanner.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <BookingTab 
+            bookingUrl={bookingUrl}
+            updateBookingUrl={updateBookingUrl}
+            uniqueLink={uniqueLink}
+          />
         </TabsContent>
 
         <TabsContent value="branding">
-          <Card>
-            <CardHeader>
-              <CardTitle>Branding Settings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <BrandingForm
-                initialBrandName={brandName}
-                initialLogoUrl={logoUrl}
-                onSave={fetchBranding}
-              />
-            </CardContent>
-          </Card>
+          <BrandingTab 
+            brandName={brandName}
+            logoUrl={logoUrl}
+            onSave={fetchBranding}
+          />
         </TabsContent>
 
         <TabsContent value="integration">
-          <Card>
-            <CardHeader>
-              <CardTitle>Integration Guide</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <IntegrationGuide />
-              <ShareLinks userId={session.user.id} />
-            </CardContent>
-          </Card>
+          <IntegrationTab userId={session.user.id} />
         </TabsContent>
 
         <TabsContent value="subscription">
-          <SubscriptionSettings />
+          <SubscriptionTab />
         </TabsContent>
       </Tabs>
     </div>
