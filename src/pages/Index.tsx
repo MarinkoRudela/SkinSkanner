@@ -11,8 +11,7 @@ import { globalRequestQueue } from '@/utils/requestQueue';
 const Index = () => {
   const [session, setSession] = useState<any>(null);
   const [bookingUrl, setBookingUrl] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-  const [dataFetched, setDataFetched] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   const { handleResponse } = useAuthResponse();
   
   useEffect(() => {
@@ -28,6 +27,7 @@ const Index = () => {
           new Response(JSON.stringify({ session: authSession })),
           'auth-session'
         );
+        
         setSession(processedSession.session);
         
         if (processedSession.session) {
@@ -45,8 +45,7 @@ const Index = () => {
           variant: "destructive"
         });
       } finally {
-        setDataFetched(true);
-        setLoading(false);
+        setIsInitializing(false);
       }
     };
 
@@ -57,11 +56,10 @@ const Index = () => {
     } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
       console.log('Auth state changed:', _event, newSession?.user?.email);
       setSession(newSession);
+      
       if (newSession) {
         await fetchBusinessSettings(newSession.user.id);
       }
-      setDataFetched(true);
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -136,9 +134,7 @@ const Index = () => {
     });
   };
 
-  // Show loading state only if we haven't completed initialization
-  if (loading && !dataFetched) {
-    console.log('Showing loading state');
+  if (isInitializing) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="space-y-4 text-center">
