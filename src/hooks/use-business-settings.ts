@@ -11,7 +11,10 @@ export const useBusinessSettings = () => {
         .eq('profile_id', userId)
         .maybeSingle();
 
-      if (fetchError) throw fetchError;
+      if (fetchError) {
+        console.error('Error checking existing settings:', fetchError);
+        throw fetchError;
+      }
 
       let error;
       
@@ -33,11 +36,14 @@ export const useBusinessSettings = () => {
         error = insertError;
       }
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating business settings:', error);
+        throw error;
+      }
       
       return true;
     } catch (error: any) {
-      console.error('Error updating business settings:', error);
+      console.error('Error in updateBusinessSettings:', error);
       throw error;
     }
   };

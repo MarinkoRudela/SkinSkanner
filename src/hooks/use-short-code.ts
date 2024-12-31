@@ -7,12 +7,19 @@ export const useShortCode = () => {
 
   const getOrCreateShortCode = async (userId: string): Promise<string> => {
     try {
+      setIsGenerating(true);
+      
       // First check if user already has a short code
-      const { data: existingCode } = await supabase
+      const { data: existingCode, error: fetchError } = await supabase
         .from('business_short_codes')
         .select('short_code')
         .eq('profile_id', userId)
         .maybeSingle();
+
+      if (fetchError) {
+        console.error('Error fetching existing code:', fetchError);
+        return userId; // Fallback to using user ID
+      }
 
       if (existingCode?.short_code) {
         return existingCode.short_code;
@@ -37,6 +44,8 @@ export const useShortCode = () => {
     } catch (error) {
       console.error('Error managing short code:', error);
       return userId; // Fallback to using user ID
+    } finally {
+      setIsGenerating(false);
     }
   };
 
