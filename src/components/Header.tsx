@@ -12,11 +12,14 @@ export const Header = () => {
     brand_name: null,
     logo_url: null,
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchBranding = async () => {
       try {
-        // Use maybeSingle() instead of single() to handle the case where no data exists
+        console.log('Fetching branding data...');
         const { data, error } = await supabase
           .from('profiles')
           .select('brand_name, logo_url')
@@ -27,11 +30,12 @@ export const Header = () => {
           throw error;
         }
         
-        // Handle the case where data might be null
-        setBranding({
-          brand_name: data?.brand_name ?? null,
-          logo_url: data?.logo_url ?? null,
-        });
+        if (isMounted) {
+          setBranding({
+            brand_name: data?.brand_name ?? null,
+            logo_url: data?.logo_url ?? null,
+          });
+        }
       } catch (error: any) {
         console.error('Error fetching branding:', error);
         // Only show toast for actual errors, not for missing data
@@ -42,11 +46,29 @@ export const Header = () => {
             variant: "destructive",
           });
         }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchBranding();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="text-center mb-8">
+        <div className="h-16 w-16 mx-auto mb-4 bg-gray-100 animate-pulse rounded-full"></div>
+        <div className="h-8 w-48 mx-auto mb-2 bg-gray-100 animate-pulse rounded"></div>
+        <div className="h-4 w-64 mx-auto bg-gray-100 animate-pulse rounded"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="text-center mb-8">

@@ -10,12 +10,12 @@ import { toast } from "@/components/ui/use-toast";
 const Login = () => {
   const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
-  const [isInitializing, setIsInitializing] = useState(true);
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-      console.log('Auth state changed:', event, currentSession);
+      console.log('Auth state changed:', event, currentSession?.user?.email);
       if (event === 'SIGNED_IN' && currentSession) {
         setSession(currentSession);
         toast({
@@ -30,10 +30,7 @@ const Login = () => {
     const checkSession = async () => {
       try {
         const { data: { session: currentSession }, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error('Session check error:', error);
-          throw error;
-        }
+        if (error) throw error;
         
         if (currentSession) {
           console.log('Existing session found');
@@ -48,19 +45,18 @@ const Login = () => {
           variant: "destructive",
         });
       } finally {
-        setIsInitializing(false);
+        setIsAuthReady(true);
       }
     };
 
     checkSession();
 
-    // Cleanup subscription
     return () => {
       subscription.unsubscribe();
     };
   }, [navigate]);
 
-  if (isInitializing) {
+  if (!isAuthReady) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
@@ -72,7 +68,7 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
       <Navigation session={session} />
       <div className="container max-w-md mx-auto px-4 py-8">
-        <Header />
+        {isAuthReady && <Header />}
         <AuthForm session={session} />
       </div>
     </div>

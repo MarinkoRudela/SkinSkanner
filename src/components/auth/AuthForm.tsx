@@ -13,6 +13,8 @@ export const AuthForm = ({ session }: AuthFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (email: string, password: string) => {
+    if (isLoading) return;
+    
     setIsLoading(true);
     try {
       console.log('Attempting to login via Edge Function');
@@ -20,17 +22,10 @@ export const AuthForm = ({ session }: AuthFormProps) => {
         body: { email, password }
       });
 
-      if (error) {
-        console.error('Login error:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       if (data) {
         console.log('Login successful:', data);
-        toast({
-          title: "Success",
-          description: "Login successful!",
-        });
       }
     } catch (error: any) {
       console.error('Login failed:', error);
