@@ -29,14 +29,8 @@ export const Navigation = ({ session }: { session: any }) => {
       navigate("/login");
       return;
     }
-    // First navigate to root path, then add config parameter
-    navigate("/");
-    // Add a slight delay to ensure we're on the root path before adding the parameter
-    setTimeout(() => {
-      const searchParams = new URLSearchParams(window.location.search);
-      searchParams.set("config", "true");
-      navigate(`?${searchParams.toString()}`);
-    }, 100);
+    // Navigate to root path with config parameter
+    navigate("/?config=true", { replace: true });
   };
 
   const handleLogout = async () => {
@@ -59,7 +53,7 @@ export const Navigation = ({ session }: { session: any }) => {
   };
 
   return (
-    <div className="absolute top-4 right-4 z-50">
+    <div className="fixed top-4 right-4 z-50">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="icon">
