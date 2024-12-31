@@ -1,7 +1,7 @@
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -14,8 +14,9 @@ export const AuthForm = () => {
     
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('login', {
-        body: { email, password }
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
       });
 
       if (error) throw error;
