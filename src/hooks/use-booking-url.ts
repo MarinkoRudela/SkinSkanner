@@ -10,8 +10,7 @@ export const useBookingUrl = (
   const [isLoading, setIsLoading] = useState(false);
   const [uniqueLink, setUniqueLink] = useState("");
 
-  const generateUniqueLink = (userId: string, bookingUrl: string) => {
-    // Create a unique link using the user's ID and booking URL
+  const generateUniqueLink = (userId: string) => {
     const baseUrl = window.location.origin;
     return `${baseUrl}?business=${userId}`;
   };
@@ -29,11 +28,13 @@ export const useBookingUrl = (
     setIsLoading(true);
     try {
       // First check if a record exists
-      const { data: existingSettings } = await supabase
+      const { data: existingSettings, error: fetchError } = await supabase
         .from('business_settings')
         .select('id')
         .eq('profile_id', session.user.id)
-        .single();
+        .maybeSingle();
+
+      if (fetchError) throw fetchError;
 
       let error;
       
@@ -58,7 +59,7 @@ export const useBookingUrl = (
       if (error) throw error;
 
       // Update local state and generate unique link
-      const newUniqueLink = generateUniqueLink(session.user.id, url);
+      const newUniqueLink = generateUniqueLink(session.user.id);
       setUniqueLink(newUniqueLink);
       
       await updateBookingUrl(url);
