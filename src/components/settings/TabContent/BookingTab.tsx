@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Copy } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { BookingUrlGuide } from "../BookingUrlGuide";
 
 interface BookingTabProps {
   bookingUrl: string;
@@ -69,6 +70,8 @@ export const BookingTab = ({
             </p>
           </div>
         )}
+
+        <BookingUrlGuide />
       </CardContent>
     </Card>
   );
