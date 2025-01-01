@@ -28,7 +28,7 @@ export const HeroSection = () => {
           <Button
             variant="secondary"
             size="lg"
-            onClick={() => navigate("/?config=false")}
+            onClick={() => navigate("/demo")}
             className="text-lg px-8 py-6"
           >
             Try Demo
