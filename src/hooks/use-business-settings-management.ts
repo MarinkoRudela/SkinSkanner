@@ -42,12 +42,20 @@ export const useBusinessSettingsManagement = () => {
     return globalRequestQueue.add(async () => {
       try {
         console.log('Updating booking URL...');
+        
+        // Use upsert with ON CONFLICT DO UPDATE
         const { error } = await supabase
           .from('business_settings')
-          .upsert({
-            profile_id: session.user.id,
-            booking_url: url
-          });
+          .upsert(
+            {
+              profile_id: session.user.id,
+              booking_url: url
+            },
+            {
+              onConflict: 'profile_id',
+              ignoreDuplicates: false
+            }
+          );
 
         if (error) throw error;
 
