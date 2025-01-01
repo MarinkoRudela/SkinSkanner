@@ -18,9 +18,11 @@ export const Header = () => {
 
   const fetchBranding = useCallback(async (signal: AbortSignal) => {
     try {
+      const { data: session } = await supabase.auth.getSession();
       const { data, error } = await supabase
         .from('profiles')
         .select('brand_name, logo_url, tagline')
+        .eq('id', session?.session?.user?.id)
         .abortSignal(signal)
         .maybeSingle();
 
@@ -54,8 +56,26 @@ export const Header = () => {
     const abortController = new AbortController();
     fetchBranding(abortController.signal);
 
+    // Set up real-time subscription for branding updates
+    const channel = supabase
+      .channel('profiles_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+        },
+        (payload) => {
+          console.log('Branding updated:', payload);
+          fetchBranding(abortController.signal);
+        }
+      )
+      .subscribe();
+
     return () => {
       abortController.abort();
+      channel.unsubscribe();
     };
   }, [fetchBranding]);
 
