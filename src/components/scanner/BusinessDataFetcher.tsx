@@ -48,41 +48,43 @@ export const BusinessDataFetcher = ({
         console.log('Found profile_id:', shortCodeData.profile_id);
 
         // Then fetch both profile and settings data
-        const [profileResponse, settingsResponse] = await Promise.all([
-          supabase
-            .from('profiles')
-            .select('brand_name, logo_url, tagline')
-            .eq('id', shortCodeData.profile_id)
-            .maybeSingle(),
-          supabase
-            .from('business_settings')
-            .select('booking_url')
-            .eq('profile_id', shortCodeData.profile_id)
-            .maybeSingle()
-        ]);
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('brand_name, logo_url, tagline')
+          .eq('id', shortCodeData.profile_id)
+          .maybeSingle();
 
-        // Handle specific error cases
-        if (profileResponse.error) {
-          console.error('Error fetching profile:', profileResponse.error);
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
           throw new Error('Could not load business profile information');
         }
 
-        if (settingsResponse.error) {
-          console.error('Error fetching settings:', settingsResponse.error);
+        if (!profileData || !profileData.brand_name) {
+          console.error('Incomplete profile data:', profileData);
+          throw new Error('This business profile is not completely set up. Please make sure brand name is set.');
+        }
+
+        const { data: settingsData, error: settingsError } = await supabase
+          .from('business_settings')
+          .select('booking_url')
+          .eq('profile_id', shortCodeData.profile_id)
+          .maybeSingle();
+
+        if (settingsError) {
+          console.error('Error fetching settings:', settingsError);
           throw new Error('Could not load business settings');
         }
 
-        if (!profileResponse.data || !settingsResponse.data) {
-          console.error('Missing data:', { 
-            profile: profileResponse.data, 
-            settings: settingsResponse.data 
-          });
-          throw new Error('Business profile is not completely set up');
+        if (!settingsData?.booking_url) {
+          console.error('Missing booking URL:', settingsData);
+          throw new Error('This business has not set up their booking URL yet.');
         }
 
         const businessInfo = {
-          ...profileResponse.data,
-          booking_url: settingsResponse.data.booking_url
+          brand_name: profileData.brand_name,
+          logo_url: profileData.logo_url || '',
+          tagline: profileData.tagline || '',
+          booking_url: settingsData.booking_url
         };
         
         console.log('Successfully loaded business data:', businessInfo);
