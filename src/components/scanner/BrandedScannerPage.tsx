@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { BusinessBrandedHeader } from "./BusinessBrandedHeader";
 import { ScannerSection } from "./ScannerSection";
+import { toast } from "@/hooks/use-toast";
 
 interface BusinessData {
   brand_name: string;
@@ -20,6 +21,13 @@ export const BrandedScannerPage = () => {
 
   useEffect(() => {
     const fetchBusinessData = async () => {
+      if (!shortCode) {
+        console.error('No short code provided');
+        setError('Invalid URL');
+        setIsLoading(false);
+        return;
+      }
+
       try {
         console.log('Fetching business data for short code:', shortCode);
         
@@ -32,11 +40,21 @@ export const BrandedScannerPage = () => {
 
         if (shortCodeError) {
           console.error('Error fetching short code:', shortCodeError);
+          toast({
+            title: "Error",
+            description: "Unable to load business information",
+            variant: "destructive",
+          });
           throw new Error('Invalid booking link');
         }
 
         if (!shortCodeData) {
           console.error('No business found for short code:', shortCode);
+          toast({
+            title: "Error",
+            description: "Business not found",
+            variant: "destructive",
+          });
           throw new Error('Business not found');
         }
 
@@ -58,16 +76,31 @@ export const BrandedScannerPage = () => {
 
         if (profileResponse.error) {
           console.error('Error fetching profile:', profileResponse.error);
+          toast({
+            title: "Error",
+            description: "Unable to load business information",
+            variant: "destructive",
+          });
           throw new Error('Could not load business information');
         }
 
         if (settingsResponse.error) {
           console.error('Error fetching settings:', settingsResponse.error);
+          toast({
+            title: "Error",
+            description: "Unable to load business settings",
+            variant: "destructive",
+          });
           throw new Error('Could not load business settings');
         }
 
         if (!profileResponse.data || !settingsResponse.data) {
           console.error('Missing data - Profile:', profileResponse.data, 'Settings:', settingsResponse.data);
+          toast({
+            title: "Error",
+            description: "Business information is incomplete",
+            variant: "destructive",
+          });
           throw new Error('Business information not found');
         }
 
@@ -78,6 +111,10 @@ export const BrandedScannerPage = () => {
         console.log('Successfully loaded business data:', businessInfo);
         
         setBusinessData(businessInfo);
+        toast({
+          title: "Success",
+          description: "Welcome to the face analysis tool",
+        });
       } catch (err: any) {
         console.error('Error in fetchBusinessData:', err);
         setError(err.message);
@@ -114,7 +151,12 @@ export const BrandedScannerPage = () => {
         />
         <ScannerSection
           bookingUrl={businessData.booking_url}
-          onScanAgain={() => {}}
+          onScanAgain={() => {
+            toast({
+              title: "Ready",
+              description: "Upload new photos for another analysis",
+            });
+          }}
         />
       </div>
     </div>
