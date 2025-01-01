@@ -29,11 +29,11 @@ export const useShortCode = () => {
         return existingCode.short_code;
       }
 
-      // Generate new unique code
-      console.log('Generating new short code');
+      // Generate new unique code with improved process
+      console.log('No existing code found, generating new one');
       const shortCode = await generateShortCode();
       
-      // Insert new code
+      // Insert new code with error handling
       const { error: insertError } = await supabase
         .from('business_short_codes')
         .insert([{
@@ -52,9 +52,19 @@ export const useShortCode = () => {
       }
 
       console.log('Successfully created new short code:', shortCode);
+      toast({
+        title: "Success",
+        description: "Successfully generated your unique link"
+      });
+      
       return shortCode;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error managing short code:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to manage short code",
+        variant: "destructive"
+      });
       throw error;
     } finally {
       setIsGenerating(false);
