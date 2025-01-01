@@ -14,7 +14,6 @@ export const Navigation = ({ session }: { session: any }) => {
   const navigate = useNavigate();
 
   const handleScanClick = () => {
-    // Navigate to root path and ensure any query parameters are cleared
     window.location.href = '/';
   };
 
@@ -27,7 +26,6 @@ export const Navigation = ({ session }: { session: any }) => {
       navigate("/login");
       return;
     }
-    // Navigate directly to the root path with config parameter
     window.location.href = '/?config=true';
   };
 
@@ -39,7 +37,6 @@ export const Navigation = ({ session }: { session: any }) => {
         title: "Success",
         description: "You have been logged out successfully",
       });
-      // After logout, clear any config parameters and go to home
       navigate("/");
     } catch (error: any) {
       toast({
@@ -51,37 +48,37 @@ export const Navigation = ({ session }: { session: any }) => {
   };
 
   return (
-    <div className="fixed top-4 right-4 z-50">
+    <div className="fixed top-3 right-3 md:top-4 md:right-4 z-50">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon">
-            <Menu className="h-4 w-4" />
+          <Button variant="outline" size="icon" className="h-10 w-10 md:h-9 md:w-9">
+            <Menu className="h-5 w-5 md:h-4 md:w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-40">
-          <DropdownMenuItem onClick={handleScanClick}>
-            <Home className="mr-2 h-4 w-4" />
+        <DropdownMenuContent align="end" className="w-48 md:w-40">
+          <DropdownMenuItem onClick={handleScanClick} className="py-3 md:py-2">
+            <Home className="mr-2 h-5 w-5 md:h-4 md:w-4" />
             Scan
           </DropdownMenuItem>
           
           {!session ? (
             <>
-              <DropdownMenuItem onClick={() => navigate("/signup")}>
-                <UserPlus className="mr-2 h-4 w-4" />
+              <DropdownMenuItem onClick={() => navigate("/signup")} className="py-3 md:py-2">
+                <UserPlus className="mr-2 h-5 w-5 md:h-4 md:w-4" />
                 Sign Up
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/login")}>
-                <LogIn className="mr-2 h-4 w-4" />
+              <DropdownMenuItem onClick={() => navigate("/login")} className="py-3 md:py-2">
+                <LogIn className="mr-2 h-5 w-5 md:h-4 md:w-4" />
                 Login
               </DropdownMenuItem>
             </>
           ) : (
             <>
-              <DropdownMenuItem onClick={handleConfigClick}>
-                <Settings className="mr-2 h-4 w-4" />
+              <DropdownMenuItem onClick={handleConfigClick} className="py-3 md:py-2">
+                <Settings className="mr-2 h-5 w-5 md:h-4 md:w-4" />
                 Settings
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout}>
+              <DropdownMenuItem onClick={handleLogout} className="py-3 md:py-2">
                 Logout
               </DropdownMenuItem>
             </>

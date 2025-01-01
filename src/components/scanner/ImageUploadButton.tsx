@@ -11,9 +11,9 @@ export const ImageUploadButton = ({ currentView, onClick }: ImageUploadButtonPro
   return (
     <Button
       onClick={onClick}
-      className="bg-primary hover:bg-primary-hover text-white rounded-full px-8 py-6 h-auto"
+      className="bg-primary hover:bg-primary-hover text-white rounded-full px-6 py-5 md:px-8 md:py-6 h-auto w-full max-w-sm text-sm md:text-base"
     >
-      <Upload className="mr-2 h-5 w-5" />
+      <Upload className="mr-2 h-4 w-4 md:h-5 md:w-5" />
       Upload {currentView} view
     </Button>
   );

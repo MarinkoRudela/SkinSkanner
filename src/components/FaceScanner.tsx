@@ -68,15 +68,15 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: Captu
   const allImagesUploaded = Boolean(capturedImages.front && capturedImages.left && capturedImages.right);
 
   return (
-    <Card className="glass-card p-8 w-full max-w-md mx-auto rounded-3xl">
-      <div className="space-y-6">
+    <Card className="glass-card p-4 md:p-8 w-full max-w-md mx-auto rounded-3xl">
+      <div className="space-y-4 md:space-y-6">
         <ViewInstructions 
           currentView={currentView}
           allImagesUploaded={allImagesUploaded}
         />
 
-        <div className="space-y-6">
-          <div className="grid grid-cols-3 gap-4">
+        <div className="space-y-4 md:space-y-6">
+          <div className="grid grid-cols-3 gap-2 md:gap-4">
             {['front', 'left', 'right'].map((view) => (
               <ImagePreview
                 key={view}
@@ -87,7 +87,7 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: Captu
             ))}
           </div>
 
-          <div className="flex flex-col gap-4 items-center">
+          <div className="flex flex-col gap-3 md:gap-4 items-center">
             {!allImagesUploaded && (
               <ImageUploadButton
                 currentView={currentView}

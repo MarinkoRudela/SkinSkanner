@@ -26,7 +26,7 @@ export const ViewInstructions = ({ currentView, allImagesUploaded }: ViewInstruc
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="text-center text-lg font-medium text-primary-hover"
+      className="text-center text-base md:text-lg font-medium text-primary-hover px-2"
     >
       {getViewInstructions()}
     </motion.div>
