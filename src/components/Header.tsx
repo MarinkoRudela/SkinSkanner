@@ -19,22 +19,26 @@ export const Header = () => {
   const fetchBranding = useCallback(async (signal: AbortSignal) => {
     try {
       const { data: session } = await supabase.auth.getSession();
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('brand_name, logo_url, tagline')
-        .eq('id', session?.session?.user?.id)
-        .abortSignal(signal)
-        .maybeSingle();
-
-      if (error) {
-        throw error;
-      }
       
-      setBranding({
-        brand_name: data?.brand_name ?? null,
-        logo_url: data?.logo_url ?? null,
-        tagline: data?.tagline ?? null,
-      });
+      // Only fetch branding if we have a valid session with a user ID
+      if (session?.session?.user?.id) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('brand_name, logo_url, tagline')
+          .eq('id', session.session.user.id)
+          .abortSignal(signal)
+          .maybeSingle();
+
+        if (error) {
+          throw error;
+        }
+        
+        setBranding({
+          brand_name: data?.brand_name ?? null,
+          logo_url: data?.logo_url ?? null,
+          tagline: data?.tagline ?? null,
+        });
+      }
     } catch (error: any) {
       // Only show toast for actual errors, not for aborted requests
       if (error.name !== 'AbortError') {
