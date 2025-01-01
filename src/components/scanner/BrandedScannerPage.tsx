@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { BusinessBrandedHeader } from "./BusinessBrandedHeader";
 import { ScannerSection } from "./ScannerSection";
+import { ErrorDisplay } from "./ErrorDisplay";
+import { BusinessDataFetcher } from "./BusinessDataFetcher";
 import { toast } from "@/hooks/use-toast";
 
 interface BusinessData {
@@ -19,124 +20,31 @@ export const BrandedScannerPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchBusinessData = async () => {
-      if (!shortCode) {
-        console.error('No short code provided');
-        setError('Invalid URL');
-        setIsLoading(false);
-        return;
-      }
+  if (!shortCode) {
+    return <ErrorDisplay error="Invalid URL" />;
+  }
 
-      try {
-        console.log('Fetching business data for short code:', shortCode);
-        
-        // Get profile_id from short code
-        const { data: shortCodeData, error: shortCodeError } = await supabase
-          .from('business_short_codes')
-          .select('profile_id')
-          .eq('short_code', shortCode)
-          .maybeSingle();
-
-        if (shortCodeError) {
-          console.error('Error fetching short code:', shortCodeError);
-          toast({
-            title: "Error",
-            description: "Unable to load business information",
-            variant: "destructive",
-          });
-          throw new Error('Invalid booking link');
-        }
-
-        if (!shortCodeData) {
-          console.error('No business found for short code:', shortCode);
-          toast({
-            title: "Error",
-            description: "Business not found",
-            variant: "destructive",
-          });
-          throw new Error('Business not found');
-        }
-
-        console.log('Found profile_id:', shortCodeData.profile_id);
-
-        // Get business data and booking URL
-        const [profileResponse, settingsResponse] = await Promise.all([
-          supabase
-            .from('profiles')
-            .select('brand_name, logo_url, tagline')
-            .eq('id', shortCodeData.profile_id)
-            .maybeSingle(),
-          supabase
-            .from('business_settings')
-            .select('booking_url')
-            .eq('profile_id', shortCodeData.profile_id)
-            .maybeSingle()
-        ]);
-
-        if (profileResponse.error) {
-          console.error('Error fetching profile:', profileResponse.error);
-          toast({
-            title: "Error",
-            description: "Unable to load business information",
-            variant: "destructive",
-          });
-          throw new Error('Could not load business information');
-        }
-
-        if (settingsResponse.error) {
-          console.error('Error fetching settings:', settingsResponse.error);
-          toast({
-            title: "Error",
-            description: "Unable to load business settings",
-            variant: "destructive",
-          });
-          throw new Error('Could not load business settings');
-        }
-
-        if (!profileResponse.data || !settingsResponse.data) {
-          console.error('Missing data - Profile:', profileResponse.data, 'Settings:', settingsResponse.data);
-          toast({
-            title: "Error",
-            description: "Business information is incomplete",
-            variant: "destructive",
-          });
-          throw new Error('Business information not found');
-        }
-
-        const businessInfo = {
-          ...profileResponse.data,
-          booking_url: settingsResponse.data.booking_url
-        };
-        console.log('Successfully loaded business data:', businessInfo);
-        
-        setBusinessData(businessInfo);
-        toast({
-          title: "Success",
-          description: "Welcome to the face analysis tool",
-        });
-      } catch (err: any) {
-        console.error('Error in fetchBusinessData:', err);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchBusinessData();
-  }, [shortCode]);
-
-  if (isLoading) return <LoadingScreen />;
+  if (isLoading) {
+    return (
+      <>
+        <BusinessDataFetcher
+          shortCode={shortCode}
+          onDataFetched={(data) => {
+            setBusinessData(data);
+            setIsLoading(false);
+          }}
+          onError={(err) => {
+            setError(err);
+            setIsLoading(false);
+          }}
+        />
+        <LoadingScreen />
+      </>
+    );
+  }
 
   if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-medspa-50 to-white">
-        <div className="text-center p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Oops!</h1>
-          <p className="text-gray-600">{error}</p>
-        </div>
-      </div>
-    );
+    return <ErrorDisplay error={error} />;
   }
 
   if (!businessData) return null;
