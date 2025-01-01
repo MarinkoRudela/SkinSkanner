@@ -18,9 +18,10 @@ export const useShortCode = () => {
 
       if (fetchError) {
         console.error('Error fetching existing code:', fetchError);
-        return userId; // Fallback to using user ID
+        throw fetchError;
       }
 
+      // If existing code found, return it
       if (existingCode?.short_code) {
         return existingCode.short_code;
       }
@@ -37,13 +38,13 @@ export const useShortCode = () => {
 
       if (insertError) {
         console.error('Error creating short code:', insertError);
-        return userId; // Fallback to using user ID
+        throw insertError;
       }
 
       return shortCode;
     } catch (error) {
       console.error('Error managing short code:', error);
-      return userId; // Fallback to using user ID
+      throw error;
     } finally {
       setIsGenerating(false);
     }

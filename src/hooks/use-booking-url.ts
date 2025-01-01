@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "./use-toast";
 import { useShortCode } from "./use-short-code";
 import { useBusinessSettings } from "./use-business-settings";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useBookingUrl = (
   session: any,
@@ -12,6 +13,32 @@ export const useBookingUrl = (
   const [uniqueLink, setUniqueLink] = useState("");
   const { getOrCreateShortCode } = useShortCode();
   const { updateBusinessSettings } = useBusinessSettings();
+
+  // Fetch existing short code on mount
+  useEffect(() => {
+    const fetchExistingShortCode = async () => {
+      if (!session?.user?.id) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('business_short_codes')
+          .select('short_code')
+          .eq('profile_id', session.user.id)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (data?.short_code) {
+          const newUniqueLink = `${window.location.origin}/b/${data.short_code}`;
+          setUniqueLink(newUniqueLink);
+        }
+      } catch (error) {
+        console.error('Error fetching existing short code:', error);
+      }
+    };
+
+    fetchExistingShortCode();
+  }, [session?.user?.id]);
 
   const handleUpdateBookingUrl = async (url: string) => {
     if (!session?.user?.id) {
