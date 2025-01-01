@@ -1,3 +1,4 @@
+import React from "react";
 import { Check, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
