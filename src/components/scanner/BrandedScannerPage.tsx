@@ -26,9 +26,16 @@ export const BrandedScannerPage = () => {
           .from('business_short_codes')
           .select('profile_id')
           .eq('short_code', shortCode)
-          .single();
+          .maybeSingle();
 
-        if (shortCodeError) throw new Error('Invalid booking link');
+        if (shortCodeError) {
+          console.error('Error fetching short code:', shortCodeError);
+          throw new Error('Invalid booking link');
+        }
+
+        if (!shortCodeData) {
+          throw new Error('Business not found');
+        }
 
         // Get business data and booking URL
         const [profileResponse, settingsResponse] = await Promise.all([
@@ -36,16 +43,26 @@ export const BrandedScannerPage = () => {
             .from('profiles')
             .select('brand_name, logo_url, tagline')
             .eq('id', shortCodeData.profile_id)
-            .single(),
+            .maybeSingle(),
           supabase
             .from('business_settings')
             .select('booking_url')
             .eq('profile_id', shortCodeData.profile_id)
-            .single()
+            .maybeSingle()
         ]);
 
-        if (profileResponse.error || settingsResponse.error) {
+        if (profileResponse.error) {
+          console.error('Error fetching profile:', profileResponse.error);
           throw new Error('Could not load business information');
+        }
+
+        if (settingsResponse.error) {
+          console.error('Error fetching settings:', settingsResponse.error);
+          throw new Error('Could not load business settings');
+        }
+
+        if (!profileResponse.data || !settingsResponse.data) {
+          throw new Error('Business information not found');
         }
 
         setBusinessData({
