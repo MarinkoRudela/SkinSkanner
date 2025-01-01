@@ -25,10 +25,13 @@ export const BusinessDataFetcher = ({
       try {
         console.log('Fetching business data for short code:', shortCode);
         
+        const normalizedShortCode = shortCode.toUpperCase();
+        console.log('Normalized short code:', normalizedShortCode);
+        
         const { data: shortCodeData, error: shortCodeError } = await supabase
           .from('business_short_codes')
           .select('profile_id')
-          .eq('short_code', shortCode)
+          .ilike('short_code', normalizedShortCode)
           .maybeSingle();
 
         if (shortCodeError) {
@@ -37,8 +40,8 @@ export const BusinessDataFetcher = ({
         }
 
         if (!shortCodeData) {
-          console.error('No business found for short code:', shortCode);
-          throw new Error('Business not found');
+          console.error('No business found for short code:', normalizedShortCode);
+          throw new Error(`Business not found for code: ${shortCode}`);
         }
 
         console.log('Found profile_id:', shortCodeData.profile_id);

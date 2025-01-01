@@ -5,7 +5,7 @@ const CODE_LENGTH = 6;
 const MAX_ATTEMPTS = 3;
 
 const generateRandomCode = (length: number = CODE_LENGTH): string => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
   const charactersLength = chars.length;
   
@@ -22,7 +22,7 @@ const isCodeUnique = async (code: string): Promise<boolean> => {
     const { data, error } = await supabase
       .from('business_short_codes')
       .select('short_code')
-      .eq('short_code', code)
+      .ilike('short_code', code)
       .maybeSingle();
 
     if (error) {
