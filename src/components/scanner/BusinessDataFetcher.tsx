@@ -47,7 +47,7 @@ export const BusinessDataFetcher = ({
 
         console.log('Found profile_id:', shortCodeData.profile_id);
 
-        // Then fetch both profile and settings data
+        // Then fetch profile data
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('brand_name, logo_url, tagline')
@@ -64,6 +64,7 @@ export const BusinessDataFetcher = ({
           throw new Error('This business profile is not completely set up. Please make sure brand name is set.');
         }
 
+        // Then fetch settings data
         const { data: settingsData, error: settingsError } = await supabase
           .from('business_settings')
           .select('booking_url')
