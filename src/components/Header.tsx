@@ -5,12 +5,14 @@ import { toast } from "@/hooks/use-toast";
 interface BrandingData {
   brand_name: string | null;
   logo_url: string | null;
+  tagline: string | null;
 }
 
 export const Header = () => {
   const [branding, setBranding] = useState<BrandingData>({
     brand_name: null,
     logo_url: null,
+    tagline: null,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -18,7 +20,7 @@ export const Header = () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('brand_name, logo_url')
+        .select('brand_name, logo_url, tagline')
         .abortSignal(signal)
         .maybeSingle();
 
@@ -29,6 +31,7 @@ export const Header = () => {
       setBranding({
         brand_name: data?.brand_name ?? null,
         logo_url: data?.logo_url ?? null,
+        tagline: data?.tagline ?? null,
       });
     } catch (error: any) {
       // Only show toast for actual errors, not for aborted requests
@@ -79,7 +82,7 @@ export const Header = () => {
         {branding.brand_name || "Skin Skanner AI"}
       </h1>
       <p className="text-lg text-indigo-700">
-        Because radiant skin is just a 'skan' away
+        {branding.tagline || "Because radiant skin is just a 'skan' away"}
       </p>
     </div>
   );

@@ -21,7 +21,7 @@ export const ConfigurationView = ({
   updateBookingUrl,
 }: ConfigurationViewProps) => {
   const [activeTab, setActiveTab] = useState('booking');
-  const { brandName, logoUrl, fetchProfileData } = useProfileData(session);
+  const { brandName, logoUrl, tagline, fetchProfileData } = useProfileData(session);
   const { uniqueLink, isLoading, handleUpdateBookingUrl } = useBookingUrl(
     session,
     bookingUrl,
@@ -57,6 +57,7 @@ export const ConfigurationView = ({
             <BrandingTab 
               brandName={brandName}
               logoUrl={logoUrl}
+              tagline={tagline}
               onSave={fetchProfileData}
             />
           </TabsContent>

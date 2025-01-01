@@ -5,6 +5,7 @@ import { toast } from "@/hooks/use-toast";
 export const useProfileData = (session: any) => {
   const [brandName, setBrandName] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [tagline, setTagline] = useState('');
 
   const fetchProfileData = async () => {
     if (!session?.user?.id) return;
@@ -24,6 +25,7 @@ export const useProfileData = (session: any) => {
       if (profile) {
         setBrandName(profile.brand_name || '');
         setLogoUrl(profile.logo_url || '');
+        setTagline(profile.tagline || '');
       }
     } catch (error) {
       console.error('Error in fetchProfileData:', error);
@@ -39,6 +41,7 @@ export const useProfileData = (session: any) => {
   return {
     brandName,
     logoUrl,
+    tagline,
     fetchProfileData
   };
 };

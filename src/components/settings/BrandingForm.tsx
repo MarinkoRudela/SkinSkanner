@@ -4,20 +4,24 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { LogoUpload } from "./branding/LogoUpload";
 import { BrandNameInput } from "./branding/BrandNameInput";
+import { TaglineInput } from "./branding/TaglineInput";
 
 interface BrandingFormProps {
   initialBrandName?: string;
   initialLogoUrl?: string;
+  initialTagline?: string;
   onSave: () => void;
 }
 
 export const BrandingForm = ({ 
   initialBrandName = '', 
-  initialLogoUrl = '', 
+  initialLogoUrl = '',
+  initialTagline = '',
   onSave 
 }: BrandingFormProps) => {
   const [brandName, setBrandName] = useState(initialBrandName);
   const [logoUrl, setLogoUrl] = useState(initialLogoUrl);
+  const [tagline, setTagline] = useState(initialTagline);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
@@ -28,6 +32,7 @@ export const BrandingForm = ({
         .update({
           brand_name: brandName,
           logo_url: logoUrl,
+          tagline: tagline,
         })
         .eq('id', (await supabase.auth.getUser()).data.user?.id);
 
@@ -60,6 +65,10 @@ export const BrandingForm = ({
         <LogoUpload 
           initialLogoUrl={logoUrl}
           onLogoChange={setLogoUrl}
+        />
+        <TaglineInput
+          tagline={tagline}
+          onChange={setTagline}
         />
         <Button
           onClick={handleSave}

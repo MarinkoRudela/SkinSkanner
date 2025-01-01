@@ -4,10 +4,11 @@ import { BrandingForm } from "../BrandingForm";
 interface BrandingTabProps {
   brandName: string;
   logoUrl: string;
+  tagline: string;
   onSave: () => void;
 }
 
-export const BrandingTab = ({ brandName, logoUrl, onSave }: BrandingTabProps) => {
+export const BrandingTab = ({ brandName, logoUrl, tagline, onSave }: BrandingTabProps) => {
   return (
     <Card>
       <CardHeader>
@@ -17,6 +18,7 @@ export const BrandingTab = ({ brandName, logoUrl, onSave }: BrandingTabProps) =>
         <BrandingForm
           initialBrandName={brandName}
           initialLogoUrl={logoUrl}
+          initialTagline={tagline}
           onSave={onSave}
         />
       </CardContent>

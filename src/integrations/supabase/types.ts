@@ -80,6 +80,7 @@ export type Database = {
           created_at: string
           id: string
           logo_url: string | null
+          tagline: string | null
           updated_at: string
         }
         Insert: {
@@ -88,6 +89,7 @@ export type Database = {
           created_at?: string
           id: string
           logo_url?: string | null
+          tagline?: string | null
           updated_at?: string
         }
         Update: {
@@ -96,6 +98,7 @@ export type Database = {
           created_at?: string
           id?: string
           logo_url?: string | null
+          tagline?: string | null
           updated_at?: string
         }
         Relationships: []
