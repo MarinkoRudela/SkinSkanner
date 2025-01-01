@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -28,6 +28,7 @@ export const BusinessDataFetcher = ({
         const normalizedShortCode = shortCode.toUpperCase();
         console.log('Normalized short code:', normalizedShortCode);
         
+        // First, get the profile_id from short code
         const { data: shortCodeData, error: shortCodeError } = await supabase
           .from('business_short_codes')
           .select('profile_id')
@@ -46,6 +47,7 @@ export const BusinessDataFetcher = ({
 
         console.log('Found profile_id:', shortCodeData.profile_id);
 
+        // Then fetch both profile and settings data
         const [profileResponse, settingsResponse] = await Promise.all([
           supabase
             .from('profiles')
@@ -59,12 +61,15 @@ export const BusinessDataFetcher = ({
             .maybeSingle()
         ]);
 
-        if (profileResponse.error || settingsResponse.error) {
-          console.error('Error fetching data:', { 
-            profileError: profileResponse.error, 
-            settingsError: settingsResponse.error 
-          });
-          throw new Error('Could not load business information');
+        // Handle specific error cases
+        if (profileResponse.error) {
+          console.error('Error fetching profile:', profileResponse.error);
+          throw new Error('Could not load business profile information');
+        }
+
+        if (settingsResponse.error) {
+          console.error('Error fetching settings:', settingsResponse.error);
+          throw new Error('Could not load business settings');
         }
 
         if (!profileResponse.data || !settingsResponse.data) {
@@ -72,7 +77,7 @@ export const BusinessDataFetcher = ({
             profile: profileResponse.data, 
             settings: settingsResponse.data 
           });
-          throw new Error('Business information is incomplete');
+          throw new Error('Business profile is not completely set up');
         }
 
         const businessInfo = {
