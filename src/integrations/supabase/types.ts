@@ -144,6 +144,42 @@ export type Database = {
           },
         ]
       }
+      testimonials: {
+        Row: {
+          author_name: string
+          author_title: string
+          business_name: string
+          created_at: string
+          id: string
+          is_featured: boolean | null
+          rating: number | null
+          testimonial: string
+          updated_at: string
+        }
+        Insert: {
+          author_name: string
+          author_title: string
+          business_name: string
+          created_at?: string
+          id?: string
+          is_featured?: boolean | null
+          rating?: number | null
+          testimonial: string
+          updated_at?: string
+        }
+        Update: {
+          author_name?: string
+          author_title?: string
+          business_name?: string
+          created_at?: string
+          id?: string
+          is_featured?: boolean | null
+          rating?: number | null
+          testimonial?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

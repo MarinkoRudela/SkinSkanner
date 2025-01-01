@@ -7,6 +7,10 @@ import { LoadingScreen } from '@/components/LoadingScreen';
 import { useAuthInitialization } from '@/hooks/use-auth-initialization';
 import { useBusinessSettingsManagement } from '@/hooks/use-business-settings-management';
 import { toast } from '@/hooks/use-toast';
+import { HeroSection } from '@/components/home/HeroSection';
+import { BenefitsSection } from '@/components/home/BenefitsSection';
+import { TestimonialsSection } from '@/components/home/TestimonialsSection';
+import { CTASection } from '@/components/home/CTASection';
 
 const Index = () => {
   const { session, isInitializing } = useAuthInitialization();
@@ -23,6 +27,7 @@ const Index = () => {
   }
 
   const isConfigMode = new URLSearchParams(window.location.search).get('config') === 'true';
+  const showHomepage = !session && !isConfigMode && window.location.search === '';
   
   // Create a wrapper function that only takes url parameter
   const handleUpdateBookingUrl = async (url: string) => {
@@ -36,6 +41,18 @@ const Index = () => {
     }
     return updateBookingUrl(url, session);
   };
+
+  if (showHomepage) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
+        <Navigation session={session} />
+        <HeroSection />
+        <BenefitsSection />
+        <TestimonialsSection />
+        <CTASection />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
