@@ -43,19 +43,36 @@ export const useBusinessSettingsManagement = () => {
       try {
         console.log('Updating booking URL...');
         
-        // Use upsert with ON CONFLICT DO UPDATE
-        const { error } = await supabase
+        // First check if a record exists
+        const { data: existingSettings, error: checkError } = await supabase
           .from('business_settings')
-          .upsert(
-            {
-              profile_id: session.user.id,
-              booking_url: url
-            },
-            {
-              onConflict: 'profile_id',
-              ignoreDuplicates: false
-            }
-          );
+          .select('id')
+          .eq('profile_id', session.user.id)
+          .maybeSingle();
+
+        if (checkError) {
+          throw checkError;
+        }
+
+        let error;
+        
+        if (existingSettings) {
+          // Update existing record
+          const { error: updateError } = await supabase
+            .from('business_settings')
+            .update({ booking_url: url })
+            .eq('profile_id', session.user.id);
+          error = updateError;
+        } else {
+          // Insert new record
+          const { error: insertError } = await supabase
+            .from('business_settings')
+            .insert([{ 
+              profile_id: session.user.id, 
+              booking_url: url 
+            }]);
+          error = insertError;
+        }
 
         if (error) throw error;
 
