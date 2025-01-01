@@ -21,6 +21,8 @@ export const BrandedScannerPage = () => {
   useEffect(() => {
     const fetchBusinessData = async () => {
       try {
+        console.log('Fetching business data for short code:', shortCode);
+        
         // Get profile_id from short code
         const { data: shortCodeData, error: shortCodeError } = await supabase
           .from('business_short_codes')
@@ -34,8 +36,11 @@ export const BrandedScannerPage = () => {
         }
 
         if (!shortCodeData) {
+          console.error('No business found for short code:', shortCode);
           throw new Error('Business not found');
         }
+
+        console.log('Found profile_id:', shortCodeData.profile_id);
 
         // Get business data and booking URL
         const [profileResponse, settingsResponse] = await Promise.all([
@@ -62,15 +67,19 @@ export const BrandedScannerPage = () => {
         }
 
         if (!profileResponse.data || !settingsResponse.data) {
+          console.error('Missing data - Profile:', profileResponse.data, 'Settings:', settingsResponse.data);
           throw new Error('Business information not found');
         }
 
-        setBusinessData({
+        const businessInfo = {
           ...profileResponse.data,
           booking_url: settingsResponse.data.booking_url
-        });
+        };
+        console.log('Successfully loaded business data:', businessInfo);
+        
+        setBusinessData(businessInfo);
       } catch (err: any) {
-        console.error('Error fetching business data:', err);
+        console.error('Error in fetchBusinessData:', err);
         setError(err.message);
       } finally {
         setIsLoading(false);
