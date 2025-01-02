@@ -47,7 +47,7 @@ serve(async (req) => {
     // Get the price for the monthly plan
     console.log('Fetching price for monthly plan...')
     const prices = await stripe.prices.list({
-      product: 'prod_RUAIez1CRqHion',
+      product: 'prod_RVtnJCe1VBYL53',
       active: true,
       limit: 1
     });
