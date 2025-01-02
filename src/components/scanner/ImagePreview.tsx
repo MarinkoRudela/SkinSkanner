@@ -27,7 +27,7 @@ export const ImagePreview = ({ view, imageUrl, isCurrentView }: ImagePreviewProp
         />
       ) : (
         <span className="text-sm text-muted-foreground text-center p-2">
-          {view === 'front' ? 'front picture' : view === 'left' ? 'left side picture' : 'right side picture'}
+          {view === 'front' ? 'front pic' : view === 'left' ? 'left side pic' : 'right side pic'}
         </span>
       )}
     </div>
