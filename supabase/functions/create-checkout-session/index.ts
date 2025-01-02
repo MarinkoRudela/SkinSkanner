@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { email, planType } = await req.json()
+    const { email } = await req.json()
     
     if (!email) {
       throw new Error('No email provided')
@@ -44,20 +44,20 @@ serve(async (req) => {
       }
     }
 
-    // Get the prices for the products
-    console.log(`Fetching prices for ${planType} plan...`)
+    // Get the price for the monthly plan
+    console.log('Fetching price for monthly plan...')
     const prices = await stripe.prices.list({
-      product: planType === 'yearly' ? 'prod_RUAIez1CRqHion' : 'prod_RUAIez1CRqHion',
+      product: 'prod_RUAIez1CRqHion',
       active: true,
       limit: 1
     });
 
     if (prices.data.length === 0) {
-      throw new Error(`No active price found for the ${planType} plan`);
+      throw new Error('No active price found for the monthly plan');
     }
 
     const priceId = prices.data[0].id;
-    console.log(`Using price ID: ${priceId} for ${planType} plan`);
+    console.log(`Using price ID: ${priceId} for monthly plan`);
 
     console.log('Creating payment session...')
     const session = await stripe.checkout.sessions.create({
