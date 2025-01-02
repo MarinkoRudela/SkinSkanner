@@ -22,14 +22,6 @@ export const PlanSelection = ({ planType, setPlanType }: PlanSelectionProps) => 
             <div className="text-sm text-gray-500">$148/month</div>
           </Label>
         </div>
-        <div className="flex items-center space-x-2 border p-4 rounded-lg cursor-pointer hover:bg-gray-50">
-          <RadioGroupItem value="yearly" id="yearly" />
-          <Label htmlFor="yearly" className="cursor-pointer">
-            <div className="font-semibold">Yearly Plan</div>
-            <div className="text-sm text-gray-500">$999/year</div>
-            <div className="text-xs text-green-600">Save $777/year</div>
-          </Label>
-        </div>
       </RadioGroup>
     </div>
   );
