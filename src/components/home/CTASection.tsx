@@ -19,7 +19,7 @@ export const CTASection = () => {
           size="lg"
           className="text-lg px-8 py-6"
         >
-          Start Your Free Trial <ArrowRight className="ml-2" />
+          Sign Up Now <ArrowRight className="ml-2" />
         </Button>
       </div>
     </div>

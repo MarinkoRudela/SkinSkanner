@@ -23,7 +23,7 @@ export const HeroSection = () => {
             size="lg"
             className="text-lg px-8 py-6"
           >
-            Start Free Trial <ArrowRight className="ml-2" />
+            Sign Up <ArrowRight className="ml-2" />
           </Button>
           <Button
             variant="secondary"
