@@ -64,6 +64,10 @@ export const Analysis = ({ analysis, bookingUrl, onScanAgain }: AnalysisProps) =
           </div>
 
           <ActionButtons bookingUrl={bookingUrl} onScanAgain={onScanAgain} />
+          
+          <p className="text-center text-sm text-muted-foreground mt-6 px-4">
+            Disclaimer: These recommendations are for informational purposes only. Please consult with a licensed medical professional before proceeding with any treatments.
+          </p>
         </div>
       </Card>
     </motion.div>
