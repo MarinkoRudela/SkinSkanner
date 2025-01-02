@@ -19,8 +19,7 @@ export const PlanSelection = ({ planType, setPlanType }: PlanSelectionProps) => 
           <RadioGroupItem value="monthly" id="monthly" />
           <Label htmlFor="monthly" className="cursor-pointer">
             <div className="font-semibold">Monthly Plan</div>
-            <div className="text-sm text-gray-500">$99/month</div>
-            <div className="text-xs text-green-600">14-day free trial</div>
+            <div className="text-sm text-gray-500">$148/month</div>
           </Label>
         </div>
         <div className="flex items-center space-x-2 border p-4 rounded-lg cursor-pointer hover:bg-gray-50">
@@ -28,7 +27,7 @@ export const PlanSelection = ({ planType, setPlanType }: PlanSelectionProps) => 
           <Label htmlFor="yearly" className="cursor-pointer">
             <div className="font-semibold">Yearly Plan</div>
             <div className="text-sm text-gray-500">$999/year</div>
-            <div className="text-xs text-green-600">Save $189/year</div>
+            <div className="text-xs text-green-600">Save $777/year</div>
           </Label>
         </div>
       </RadioGroup>

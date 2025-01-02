@@ -47,7 +47,7 @@ serve(async (req) => {
     // Get the prices for the products
     console.log(`Fetching prices for ${planType} plan...`)
     const prices = await stripe.prices.list({
-      product: planType === 'yearly' ? 'prod_RUAIez1CRqHion' : 'prod_RTQK03ZwoWsEla',
+      product: planType === 'yearly' ? 'prod_RUAIez1CRqHion' : 'prod_RUAIez1CRqHion',
       active: true,
       limit: 1
     });
@@ -68,9 +68,6 @@ serve(async (req) => {
         quantity: 1,
       }],
       mode: 'subscription',
-      subscription_data: planType === 'monthly' ? {
-        trial_period_days: 14,
-      } : undefined,
       success_url: `${req.headers.get('origin')}/dashboard`,
       cancel_url: `${req.headers.get('origin')}/signup`,
     })
