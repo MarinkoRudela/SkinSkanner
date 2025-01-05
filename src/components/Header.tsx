@@ -107,9 +107,9 @@ export const Header = () => {
         />
       ) : (
         <img
-          src="/lovable-uploads/cd10fb62-a904-4fa5-bacc-19f3ec61ed55.png"
+          src="/lovable-uploads/779fe9aa-eef9-453e-b5da-89a3ae847a62.png"
           alt="Skin Skanner AI"
-          className="mx-auto mb-4 h-24 w-auto"
+          className="mx-auto mb-4 h-16 w-auto"
           onError={handleLogoError}
         />
       )}
