@@ -25,14 +25,14 @@ export const BusinessBrandedHeader = ({
         <img
           src={logoUrl}
           alt={brandName}
-          className="h-24 mx-auto mb-4 object-contain"
+          className="h-32 mx-auto mb-4 object-contain"
           onError={handleLogoError}
         />
       ) : (
         <img
           src="/lovable-uploads/779fe9aa-eef9-453e-b5da-89a3ae847a62.png"
           alt="Skin Skanner AI"
-          className="h-24 mx-auto mb-4 object-contain"
+          className="h-32 mx-auto mb-4 object-contain"
           onError={handleLogoError}
         />
       )}
