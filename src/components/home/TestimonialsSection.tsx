@@ -32,14 +32,14 @@ export const TestimonialsSection = () => {
   return (
     <div className="py-16">
       <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-indigo-900 mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-12">
           Trusted by Leading Med Spas
         </h2>
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="glass-card p-6 rounded-xl space-y-4"
+              className="glass-card p-6 rounded-xl space-y-4 hover:bg-white/30 transition-all duration-300"
             >
               <div className="flex gap-1">
                 {[...Array(testimonial.rating)].map((_, i) => (
@@ -49,12 +49,12 @@ export const TestimonialsSection = () => {
                   />
                 ))}
               </div>
-              <p className="text-indigo-700 italic">"{testimonial.testimonial}"</p>
+              <p className="text-white/90 italic">"{testimonial.testimonial}"</p>
               <div>
-                <p className="font-semibold text-indigo-900">
+                <p className="font-semibold text-white">
                   {testimonial.author_name}
                 </p>
-                <p className="text-sm text-indigo-600">
+                <p className="text-sm text-white/80">
                   {testimonial.author_title}, {testimonial.business_name}
                 </p>
               </div>

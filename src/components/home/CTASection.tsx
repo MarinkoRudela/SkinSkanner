@@ -6,18 +6,18 @@ export const CTASection = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="py-16 bg-muted">
+    <div className="py-16 bg-white/5">
       <div className="max-w-4xl mx-auto text-center px-4 space-y-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-indigo-900">
+        <h2 className="text-3xl md:text-4xl font-bold text-white">
           Ready to Transform Your Business?
         </h2>
-        <p className="text-xl text-indigo-700">
+        <p className="text-xl text-white/90">
           Join leading med spas using Skin Skanner AI to enhance their consultations and boost bookings.
         </p>
         <Button
           onClick={() => navigate("/signup")}
           size="lg"
-          className="text-lg px-8 py-6"
+          className="text-lg px-8 py-6 bg-primary hover:bg-primary/90"
         >
           Sign Up Now <ArrowRight className="ml-2" />
         </Button>

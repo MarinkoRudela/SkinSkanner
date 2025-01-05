@@ -41,12 +41,12 @@
     @apply border-border;
   }
   body {
-    @apply bg-gradient-to-br from-[#252B3D] to-[#353B4D] min-h-screen text-white;
+    @apply bg-gradient-to-br from-[#2C3248] to-[#3C425E] min-h-screen text-white;
   }
 }
 
 .glass-card {
-  @apply bg-white/10 backdrop-blur-lg border border-white/20 shadow-lg;
+  @apply bg-white/20 backdrop-blur-lg border border-white/30 shadow-lg;
 }
 
 .purple-gradient {
