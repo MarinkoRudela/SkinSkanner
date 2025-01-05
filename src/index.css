@@ -41,7 +41,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-gradient-to-br from-[#1A1F2C] to-[#2A2F3C] min-h-screen text-white;
+    @apply bg-gradient-to-br from-[#252B3D] to-[#353B4D] min-h-screen text-white;
   }
 }
 
