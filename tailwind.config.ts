@@ -38,7 +38,7 @@ export default {
           foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "#F4F3FF",
+          DEFAULT: "#1A1F2C",
           foreground: "#6E59A5",
         },
         accent: {
