@@ -20,7 +20,6 @@ export const Header = () => {
     try {
       const { data: session } = await supabase.auth.getSession();
       
-      // Only fetch branding if we have a valid session with a user ID
       if (session?.session?.user?.id) {
         const { data, error } = await supabase
           .from('profiles')
@@ -40,7 +39,6 @@ export const Header = () => {
         });
       }
     } catch (error: any) {
-      // Only show toast for actual errors, not for aborted requests
       if (error.name !== 'AbortError') {
         console.error('Error fetching branding:', error);
         if (error.code !== 'PGRST116') {
@@ -60,7 +58,6 @@ export const Header = () => {
     const abortController = new AbortController();
     fetchBranding(abortController.signal);
 
-    // Set up real-time subscription for branding updates
     const channel = supabase
       .channel('profiles_changes')
       .on(
@@ -95,16 +92,24 @@ export const Header = () => {
 
   return (
     <div className="text-center mb-8">
-      {branding.logo_url && (
+      {branding.logo_url ? (
         <img
           src={branding.logo_url}
-          alt="Business Logo"
+          alt={branding.brand_name || "Business Logo"}
           className="mx-auto mb-4 h-16 w-auto"
         />
+      ) : (
+        <img
+          src="/logo.png"
+          alt="Skin Skanner AI"
+          className="mx-auto mb-4 h-24 w-auto"
+        />
       )}
-      <h1 className="text-4xl font-bold text-indigo-900 mb-2">
-        {branding.brand_name || "Skin Skanner AI"}
-      </h1>
+      {branding.brand_name && (
+        <h1 className="text-4xl font-bold text-indigo-900 mb-2">
+          {branding.brand_name}
+        </h1>
+      )}
       <p className="text-lg text-indigo-700">
         {branding.tagline || "Because radiant skin is just a 'skan' away"}
       </p>
