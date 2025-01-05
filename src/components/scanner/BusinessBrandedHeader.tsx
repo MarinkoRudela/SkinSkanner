@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { useState } from "react";
 
 interface BusinessBrandedHeaderProps {
   brandName: string;
@@ -11,6 +12,13 @@ export const BusinessBrandedHeader = ({
   logoUrl,
   tagline
 }: BusinessBrandedHeaderProps) => {
+  const [logoError, setLogoError] = useState(false);
+
+  const handleLogoError = () => {
+    console.error('Failed to load logo');
+    setLogoError(true);
+  };
+
   return (
     <Card className="glass-card p-8 mb-8 text-center">
       {logoUrl ? (
@@ -18,12 +26,14 @@ export const BusinessBrandedHeader = ({
           src={logoUrl}
           alt={brandName}
           className="h-20 mx-auto mb-4 object-contain"
+          onError={handleLogoError}
         />
       ) : (
         <img
           src="/logo.png"
           alt="Skin Skanner AI"
           className="h-24 mx-auto mb-4 object-contain"
+          onError={handleLogoError}
         />
       )}
       <h1 className="text-2xl font-bold mb-2">{brandName}</h1>

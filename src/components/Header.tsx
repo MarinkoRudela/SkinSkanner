@@ -15,6 +15,7 @@ export const Header = () => {
     tagline: null,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [logoError, setLogoError] = useState(false);
 
   const fetchBranding = useCallback(async (signal: AbortSignal) => {
     try {
@@ -80,6 +81,11 @@ export const Header = () => {
     };
   }, [fetchBranding]);
 
+  const handleLogoError = () => {
+    console.error('Failed to load logo');
+    setLogoError(true);
+  };
+
   if (isLoading) {
     return (
       <div className="text-center mb-8">
@@ -97,12 +103,14 @@ export const Header = () => {
           src={branding.logo_url}
           alt={branding.brand_name || "Business Logo"}
           className="mx-auto mb-4 h-16 w-auto"
+          onError={handleLogoError}
         />
       ) : (
         <img
           src="/logo.png"
           alt="Skin Skanner AI"
           className="mx-auto mb-4 h-24 w-auto"
+          onError={handleLogoError}
         />
       )}
       {branding.brand_name && (
