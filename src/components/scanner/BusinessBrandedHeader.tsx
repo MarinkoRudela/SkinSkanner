@@ -30,7 +30,7 @@ export const BusinessBrandedHeader = ({
         />
       ) : (
         <img
-          src="/logo.png"
+          src="/lovable-uploads/cd10fb62-a904-4fa5-bacc-19f3ec61ed55.png"
           alt="Skin Skanner AI"
           className="h-24 mx-auto mb-4 object-contain"
           onError={handleLogoError}
