@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bot, Send, X } from "lucide-react";
+import { Bot } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -9,9 +9,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { ChatInput } from "./support/ChatInput";
+import { ChatMessages } from "./support/ChatMessages";
 
 interface Message {
   role: 'user' | 'assistant';
@@ -79,56 +79,14 @@ export const Support = () => {
           </SheetHeader>
           
           <div className="flex flex-col h-[calc(100vh-200px)] mt-4">
-            <ScrollArea className="flex-1 pr-4">
-              <div className="space-y-4">
-                {messages.map((message, index) => (
-                  <div
-                    key={index}
-                    className={`flex ${
-                      message.role === 'user' ? 'justify-end' : 'justify-start'
-                    }`}
-                  >
-                    <div
-                      className={`max-w-[80%] rounded-lg p-3 ${
-                        message.role === 'user'
-                          ? 'bg-primary text-primary-foreground ml-4'
-                          : 'bg-muted mr-4'
-                      }`}
-                    >
-                      {message.content}
-                    </div>
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-muted rounded-lg p-3 mr-4">
-                      Typing...
-                    </div>
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-
-            <div className="flex items-center gap-2 pt-4">
-              <Input
-                placeholder="Type your message..."
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSendMessage();
-                  }
-                }}
-                disabled={isLoading}
-              />
-              <Button
-                size="icon"
-                onClick={handleSendMessage}
-                disabled={isLoading || !inputMessage.trim()}
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
+            <ChatMessages messages={messages} isLoading={isLoading} />
+            
+            <ChatInput
+              inputMessage={inputMessage}
+              setInputMessage={setInputMessage}
+              handleSendMessage={handleSendMessage}
+              isLoading={isLoading}
+            />
 
             <div className="text-sm text-muted-foreground mt-4 text-center">
               Need direct assistance?{" "}
