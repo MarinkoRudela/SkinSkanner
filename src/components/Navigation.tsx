@@ -51,34 +51,56 @@ export const Navigation = ({ session }: { session: any }) => {
     <div className="fixed top-3 right-3 md:top-4 md:right-4 z-50">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="h-10 w-10 md:h-9 md:w-9">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-10 w-10 md:h-9 md:w-9 touch-manipulation"
+          >
             <Menu className="h-5 w-5 md:h-4 md:w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48 md:w-40">
-          <DropdownMenuItem onClick={handleScanClick} className="py-3 md:py-2">
+        <DropdownMenuContent 
+          align="end" 
+          className="w-56 md:w-48"
+        >
+          <DropdownMenuItem 
+            onClick={handleScanClick} 
+            className="py-3 md:py-2.5 px-4 cursor-pointer touch-manipulation"
+          >
             <Home className="mr-2 h-5 w-5 md:h-4 md:w-4" />
             Home
           </DropdownMenuItem>
           
           {!session ? (
             <>
-              <DropdownMenuItem onClick={() => navigate("/signup")} className="py-3 md:py-2">
+              <DropdownMenuItem 
+                onClick={() => navigate("/signup")} 
+                className="py-3 md:py-2.5 px-4 cursor-pointer touch-manipulation"
+              >
                 <UserPlus className="mr-2 h-5 w-5 md:h-4 md:w-4" />
                 Sign Up
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/login")} className="py-3 md:py-2">
+              <DropdownMenuItem 
+                onClick={() => navigate("/login")} 
+                className="py-3 md:py-2.5 px-4 cursor-pointer touch-manipulation"
+              >
                 <LogIn className="mr-2 h-5 w-5 md:h-4 md:w-4" />
                 Login
               </DropdownMenuItem>
             </>
           ) : (
             <>
-              <DropdownMenuItem onClick={handleConfigClick} className="py-3 md:py-2">
+              <DropdownMenuItem 
+                onClick={handleConfigClick} 
+                className="py-3 md:py-2.5 px-4 cursor-pointer touch-manipulation"
+              >
                 <Settings className="mr-2 h-5 w-5 md:h-4 md:w-4" />
                 Settings
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout} className="py-3 md:py-2">
+              <DropdownMenuItem 
+                onClick={handleLogout} 
+                className="py-3 md:py-2.5 px-4 cursor-pointer touch-manipulation"
+              >
                 Logout
               </DropdownMenuItem>
             </>

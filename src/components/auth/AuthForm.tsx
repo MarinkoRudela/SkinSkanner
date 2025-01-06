@@ -38,11 +38,11 @@ export const AuthForm = () => {
   };
 
   return (
-    <div className="mt-8 bg-white p-8 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-semibold mb-6 text-center">Business Owner Login</h2>
+    <div className="mt-4 md:mt-8 bg-white p-4 md:p-8 rounded-lg shadow-lg w-full max-w-md mx-auto">
+      <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-center">Business Owner Login</h2>
       {isLoading && (
         <div className="text-center mb-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-6 w-6 md:h-8 md:w-8 border-b-2 border-indigo-500 mx-auto"></div>
         </div>
       )}
       <Auth 
@@ -56,6 +56,12 @@ export const AuthForm = () => {
                 brandAccent: '#4f46e5',
               },
             },
+          },
+          className: {
+            container: 'w-full',
+            button: 'w-full py-3 md:py-4 text-base md:text-lg rounded-lg',
+            input: 'w-full px-3 py-2 md:py-3 text-base rounded-lg border focus:ring-2 focus:ring-indigo-500',
+            label: 'block text-sm md:text-base font-medium mb-1 md:mb-2',
           },
         }}
         theme="light"
