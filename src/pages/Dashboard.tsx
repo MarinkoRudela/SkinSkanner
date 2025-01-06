@@ -27,7 +27,7 @@ const Dashboard = () => {
 
           toast({
             title: "Success",
-            description: "Payment successful! Please check your email to verify your account.",
+            description: "Payment successful! Please check your email (including spam folder) to verify your account.",
           });
 
           // Clean up URL parameters
