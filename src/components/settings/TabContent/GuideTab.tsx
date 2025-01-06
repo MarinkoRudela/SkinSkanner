@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Info, AlertTriangle, FileText, Users, Settings, Link, Calendar } from "lucide-react";
+import { Check, Info, AlertTriangle, FileText, Settings, Link, Calendar } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const GuideTab = () => {
@@ -9,28 +9,6 @@ export const GuideTab = () => {
         <CardTitle>Getting Started Guide</CardTitle>
       </CardHeader>
       <CardContent className="space-y-8">
-        {/* Account Setup */}
-        <section className="space-y-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Users className="h-5 w-5 text-primary" />
-            Account Setup
-          </h3>
-          <div className="ml-7 space-y-3">
-            <div className="flex items-start gap-2">
-              <Check className="h-4 w-4 mt-1 text-green-500" />
-              <p>Create your account with a valid email address</p>
-            </div>
-            <div className="flex items-start gap-2">
-              <Check className="h-4 w-4 mt-1 text-green-500" />
-              <p>Choose your subscription plan ($148/month)</p>
-            </div>
-            <div className="flex items-start gap-2">
-              <Check className="h-4 w-4 mt-1 text-green-500" />
-              <p>Complete payment setup using our secure payment system</p>
-            </div>
-          </div>
-        </section>
-
         {/* Configuration */}
         <section className="space-y-4">
           <h3 className="text-lg font-semibold flex items-center gap-2">
