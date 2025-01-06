@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import { BrandedScannerPage } from "./components/scanner/BrandedScannerPage";
 import { DemoPage } from "./pages/DemoPage";
 import { Toaster } from "./components/ui/toaster";
+import { Support } from "./components/Support";
 import "./App.css";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/b/:shortCode" element={<BrandedScannerPage />} />
         <Route path="/demo" element={<DemoPage />} />
       </Routes>
+      <Support />
       <Toaster />
     </Router>
   );
