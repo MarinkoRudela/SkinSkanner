@@ -50,13 +50,6 @@ export const FAQTab = () => {
             Yes, you can customize your booking link in the Booking Settings tab. This allows you to direct clients to your preferred scheduling platform after they receive their skin analysis results.
           </AccordionContent>
         </AccordionItem>
-
-        <AccordionItem value="item-6">
-          <AccordionTrigger>What subscription plans are available?</AccordionTrigger>
-          <AccordionContent>
-            We offer flexible subscription plans to suit different business needs. You can view and manage your subscription in the Subscription tab. Each plan includes different features and usage limits to accommodate various business sizes.
-          </AccordionContent>
-        </AccordionItem>
       </Accordion>
     </div>
   );
