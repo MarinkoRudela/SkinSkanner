@@ -1,12 +1,12 @@
 .glass-card {
-  @apply bg-white/30 backdrop-blur-lg border border-white/40 shadow-lg;
+  @apply bg-white/30 backdrop-blur-lg border border-white/40 shadow-lg text-black;
 }
 
 .purple-gradient {
-  @apply bg-gradient-to-r from-primary to-accent;
+  @apply bg-gradient-to-r from-primary to-accent text-black;
 }
 
 /* Toast positioning */
 .top-center-toast {
-  @apply fixed top-20 left-1/2 -translate-x-1/2 !important;
+  @apply fixed top-20 left-1/2 -translate-x-1/2 text-black !important;
 }

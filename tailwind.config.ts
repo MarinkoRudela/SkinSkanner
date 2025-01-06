@@ -39,7 +39,7 @@ export default {
         },
         muted: {
           DEFAULT: "#2C2C2C",
-          foreground: "#E5E5E5",
+          foreground: "#000000",
         },
         accent: {
           DEFAULT: "#9B87B9",
@@ -47,11 +47,11 @@ export default {
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          foreground: "#000000",
         },
         card: {
           DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          foreground: "#000000",
         },
       },
       borderRadius: {

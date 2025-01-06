@@ -20,7 +20,7 @@
     --secondary-foreground: 0 0% 0%;
     
     --muted: 0 0% 17%;
-    --muted-foreground: 0 0% 90%;
+    --muted-foreground: 0 0% 0%;
     
     --accent: 270 25% 63%;
     --accent-foreground: 0 0% 0%;
@@ -38,7 +38,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border text-black;
   }
   body {
     @apply bg-gradient-to-br from-[#E5A8B7] to-[#9B87B9] min-h-screen text-black;
