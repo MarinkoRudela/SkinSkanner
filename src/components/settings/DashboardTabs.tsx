@@ -18,6 +18,7 @@ export const DashboardTabs = ({ activeTab, setActiveTab }: DashboardTabsProps) =
             <SelectValue placeholder="Select tab" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="guide">Setup Guide</SelectItem>
             <SelectItem value="booking">Booking Settings</SelectItem>
             <SelectItem value="branding">Branding</SelectItem>
             <SelectItem value="integration">Integration</SelectItem>
@@ -29,7 +30,8 @@ export const DashboardTabs = ({ activeTab, setActiveTab }: DashboardTabsProps) =
   }
 
   return (
-    <TabsList className="grid w-full grid-cols-4">
+    <TabsList className="grid w-full grid-cols-5">
+      <TabsTrigger value="guide">Setup Guide</TabsTrigger>
       <TabsTrigger value="booking">Booking Settings</TabsTrigger>
       <TabsTrigger value="branding">Branding</TabsTrigger>
       <TabsTrigger value="integration">Integration</TabsTrigger>

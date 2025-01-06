@@ -4,6 +4,7 @@ import { BookingTab } from "./settings/TabContent/BookingTab";
 import { BrandingTab } from "./settings/TabContent/BrandingTab";
 import { IntegrationTab } from "./settings/TabContent/IntegrationTab";
 import { SubscriptionTab } from "./settings/TabContent/SubscriptionTab";
+import { GuideTab } from "./settings/TabContent/GuideTab";
 import { DashboardTabs } from "./settings/DashboardTabs";
 import { DashboardHeader } from "./settings/DashboardHeader";
 import { useProfileData } from "@/hooks/use-profile-data";
@@ -20,7 +21,7 @@ export const ConfigurationView = ({
   bookingUrl,
   updateBookingUrl,
 }: ConfigurationViewProps) => {
-  const [activeTab, setActiveTab] = useState('booking');
+  const [activeTab, setActiveTab] = useState('guide');
   const { brandName, logoUrl, tagline, fetchProfileData } = useProfileData(session);
   const { uniqueLink, isLoading, handleUpdateBookingUrl } = useBookingUrl(
     session,
@@ -43,6 +44,10 @@ export const ConfigurationView = ({
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <DashboardTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+
+          <TabsContent value="guide">
+            <GuideTab />
+          </TabsContent>
 
           <TabsContent value="booking">
             <BookingTab 
