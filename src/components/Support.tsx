@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Send, X } from "lucide-react";
+import { Bot, Send, X } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -66,8 +66,8 @@ export const Support = () => {
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button variant="outline" className="rounded-full shadow-lg">
-            <Mail className="h-4 w-4 mr-2" />
-            Support
+            <Bot className="h-4 w-4 mr-2" />
+            Support Bot
           </Button>
         </SheetTrigger>
         <SheetContent side="right" className="w-[90vw] sm:w-[440px]">
