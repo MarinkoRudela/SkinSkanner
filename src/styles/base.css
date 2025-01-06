@@ -4,33 +4,33 @@
 
 @layer base {
   :root {
-    --background: 340 40% 95%;
-    --foreground: 0 0% 0%;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
     
-    --card: 340 40% 95%;
-    --card-foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
     
-    --popover: 340 40% 95%;
-    --popover-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
     
-    --primary: 350 50% 78%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 270 25% 54%;
+    --primary-foreground: 0 0% 100%;
     
-    --secondary: 280 20% 70%;
-    --secondary-foreground: 0 0% 0%;
+    --secondary: 240 96% 96%;
+    --secondary-foreground: 240 5.9% 10%;
     
-    --muted: 0 0% 17%;
-    --muted-foreground: 0 0% 0%;
+    --muted: 255 100% 95%;
+    --muted-foreground: 240 3.8% 46.1%;
     
-    --accent: 270 25% 63%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 270 25% 50%;
+    --accent-foreground: 0 0% 100%;
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 10%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
     
     --radius: 1.5rem;
   }
@@ -38,9 +38,9 @@
 
 @layer base {
   * {
-    @apply border-border text-black;
+    @apply border-border;
   }
   body {
-    @apply bg-gradient-to-br from-[#E5A8B7] to-[#9B87B9] min-h-screen text-black;
+    @apply bg-gradient-to-br from-secondary via-muted to-secondary min-h-screen text-foreground;
   }
 }
