@@ -89,7 +89,7 @@ export const Header = () => {
   if (isLoading) {
     return (
       <div className="text-center mb-8">
-        <div className="h-40 w-40 mx-auto mb-4 bg-gray-100 animate-pulse rounded-full"></div>
+        <div className="h-80 w-80 mx-auto mb-4 bg-gray-100 animate-pulse rounded-full"></div>
         <div className="h-8 w-48 mx-auto mb-2 bg-gray-100 animate-pulse rounded"></div>
         <div className="h-4 w-64 mx-auto bg-gray-100 animate-pulse rounded"></div>
       </div>
@@ -102,14 +102,14 @@ export const Header = () => {
         <img
           src={branding.logo_url}
           alt={branding.brand_name || "Business Logo"}
-          className="mx-auto mb-4 h-40 w-auto"
+          className="mx-auto mb-4 h-80 w-auto"
           onError={handleLogoError}
         />
       ) : (
         <img
           src="/lovable-uploads/56380414-6671-46a7-99f4-723c10622c30.png"
           alt="Skin Skanner AI"
-          className="mx-auto mb-4 h-40 w-auto"
+          className="mx-auto mb-4 h-80 w-auto"
           onError={handleLogoError}
         />
       )}
