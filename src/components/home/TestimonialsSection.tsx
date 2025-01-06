@@ -39,9 +39,9 @@ export const TestimonialsSection = () => {
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="glass-card p-6 rounded-xl space-y-4 hover:bg-white/30 transition-all duration-300"
+              className="glass-card p-6 rounded-xl flex flex-col h-full hover:bg-white/30 transition-all duration-300"
             >
-              <div className="flex gap-1">
+              <div className="flex gap-1 mb-4">
                 {[...Array(testimonial.rating)].map((_, i) => (
                   <Star
                     key={i}
@@ -49,9 +49,9 @@ export const TestimonialsSection = () => {
                   />
                 ))}
               </div>
-              <p className="text-gray-800 italic">"{testimonial.testimonial}"</p>
-              <div>
-                <p className="font-semibold text-gray-900">
+              <p className="text-gray-800 italic flex-grow">"{testimonial.testimonial}"</p>
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <p className="font-semibold text-gray-900 text-lg">
                   {testimonial.author_name}
                 </p>
                 <p className="text-sm text-gray-700">
