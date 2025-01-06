@@ -10,7 +10,7 @@ export const HeroSection = () => {
       <div className="max-w-4xl mx-auto text-center space-y-8">
         <h1 className="text-4xl md:text-6xl font-bold text-[#1A1F2C] leading-tight">
           Transform Your Med Spa with
-          <span className="block purple-gradient bg-clip-text text-transparent">
+          <span className="block purple-gradient bg-clip-text text-transparent font-extrabold">
             AI-Powered Skin Analysis
           </span>
         </h1>
