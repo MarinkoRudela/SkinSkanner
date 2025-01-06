@@ -4,33 +4,33 @@
 
 @layer base {
   :root {
-    --background: 230 25% 18%;
-    --foreground: 0 0% 98%;
+    --background: 340 40% 95%;
+    --foreground: 0 0% 0%;
     
-    --card: 230 25% 18%;
-    --card-foreground: 0 0% 98%;
+    --card: 340 40% 95%;
+    --card-foreground: 0 0% 0%;
     
-    --popover: 230 25% 18%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 340 40% 95%;
+    --popover-foreground: 0 0% 0%;
     
-    --primary: 255 89% 94%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 350 50% 78%;
+    --primary-foreground: 0 0% 0%;
     
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 280 20% 70%;
+    --secondary-foreground: 0 0% 0%;
     
-    --muted: 230 25% 18%;
-    --muted-foreground: 240 3.8% 96.1%;
+    --muted: 0 0% 17%;
+    --muted-foreground: 0 0% 90%;
     
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 270 25% 63%;
+    --accent-foreground: 0 0% 0%;
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 10%;
     
     --radius: 1.5rem;
   }
@@ -41,12 +41,12 @@
     @apply border-border;
   }
   body {
-    @apply bg-gradient-to-br from-[#2C3248] to-[#3C425E] min-h-screen text-white;
+    @apply bg-gradient-to-br from-[#E5A8B7] to-[#9B87B9] min-h-screen text-black;
   }
 }
 
 .glass-card {
-  @apply bg-white/20 backdrop-blur-lg border border-white/30 shadow-lg;
+  @apply bg-white/30 backdrop-blur-lg border border-white/40 shadow-lg;
 }
 
 .purple-gradient {
