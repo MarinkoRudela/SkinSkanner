@@ -1,0 +1,42 @@
+/* Family Tree Styles */
+.family-tree {
+  @apply flex flex-col items-center space-y-8;
+}
+
+.root-node {
+  @apply relative z-10 inline-block mx-auto;
+}
+
+.tree-container {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-3xl mx-auto;
+  position: relative;
+}
+
+.tree-container::before {
+  content: '';
+  @apply absolute top-0 left-1/2 w-px h-4 bg-primary/30 -translate-x-1/2 -translate-y-4;
+}
+
+.concern-branch {
+  @apply flex flex-col items-center space-y-4;
+  position: relative;
+}
+
+.concern-branch::before {
+  content: '';
+  @apply absolute top-0 left-1/2 w-px h-4 bg-primary/30 -translate-x-1/2 -translate-y-4;
+}
+
+.concern-node {
+  @apply w-full max-w-xs text-center transition-all duration-300 hover:scale-105 cursor-pointer;
+}
+
+.recommendation-node {
+  @apply w-full max-w-xs text-center transition-all duration-300;
+  position: relative;
+}
+
+.recommendation-node::before {
+  content: '';
+  @apply absolute top-0 left-1/2 w-px h-4 bg-primary/30 -translate-x-1/2 -translate-y-4;
+}
