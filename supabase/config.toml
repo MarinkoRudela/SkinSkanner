@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.login]
 verify_jwt = false
+
+[functions.support-chat]
+verify_jwt = false
