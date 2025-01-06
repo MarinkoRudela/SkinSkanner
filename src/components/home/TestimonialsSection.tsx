@@ -32,7 +32,7 @@ export const TestimonialsSection = () => {
   return (
     <div className="py-16">
       <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-primary mb-12">
           Trusted by Leading Med Spas
         </h2>
         <div className="grid md:grid-cols-3 gap-8">
@@ -49,12 +49,12 @@ export const TestimonialsSection = () => {
                   />
                 ))}
               </div>
-              <p className="text-white/90 italic">"{testimonial.testimonial}"</p>
+              <p className="text-gray-800 italic">"{testimonial.testimonial}"</p>
               <div>
-                <p className="font-semibold text-white">
+                <p className="font-semibold text-gray-900">
                   {testimonial.author_name}
                 </p>
-                <p className="text-sm text-white/80">
+                <p className="text-sm text-gray-700">
                   {testimonial.author_title}, {testimonial.business_name}
                 </p>
               </div>
