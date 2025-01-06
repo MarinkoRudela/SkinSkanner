@@ -5,6 +5,7 @@ import { BrandingTab } from "./settings/TabContent/BrandingTab";
 import { IntegrationTab } from "./settings/TabContent/IntegrationTab";
 import { SubscriptionTab } from "./settings/TabContent/SubscriptionTab";
 import { GuideTab } from "./settings/TabContent/GuideTab";
+import { FAQTab } from "./settings/TabContent/FAQTab";
 import { DashboardTabs } from "./settings/DashboardTabs";
 import { DashboardHeader } from "./settings/DashboardHeader";
 import { useProfileData } from "@/hooks/use-profile-data";
@@ -90,6 +91,10 @@ export const ConfigurationView = ({
 
           <TabsContent value="subscription">
             <SubscriptionTab session={session} />
+          </TabsContent>
+
+          <TabsContent value="faq">
+            <FAQTab />
           </TabsContent>
         </Tabs>
       </div>
