@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { ConfigurationView } from "@/components/ConfigurationView";
@@ -7,8 +7,44 @@ import { toast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [session, setSession] = useState<any>(null);
   const [bookingUrl, setBookingUrl] = useState("");
+
+  useEffect(() => {
+    const handlePaymentSuccess = async () => {
+      const paymentStatus = searchParams.get('payment');
+      const email = searchParams.get('email');
+      
+      if (paymentStatus === 'success' && email) {
+        try {
+          // Send verification email after successful payment
+          const { error } = await supabase.functions.invoke('handle-successful-payment', {
+            body: { email }
+          });
+
+          if (error) throw error;
+
+          toast({
+            title: "Success",
+            description: "Payment successful! Please check your email to verify your account.",
+          });
+
+          // Clean up URL parameters
+          navigate('/dashboard', { replace: true });
+        } catch (error: any) {
+          console.error('Error handling payment success:', error);
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+      }
+    };
+
+    handlePaymentSuccess();
+  }, [searchParams, navigate]);
 
   useEffect(() => {
     // Check current session

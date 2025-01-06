@@ -23,7 +23,7 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      // First create the user
+      // First create the user with email confirmation disabled
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -31,6 +31,7 @@ const SignUp = () => {
           data: {
             business_name: formData.businessName,
           },
+          emailRedirectTo: `${window.location.origin}/dashboard`,
         },
       });
 
@@ -47,6 +48,9 @@ const SignUp = () => {
       if (checkoutError) throw checkoutError;
 
       if (checkoutData?.url) {
+        // Store the user's email in localStorage to verify after payment
+        localStorage.setItem('pendingVerificationEmail', formData.email);
+        
         // Open Stripe checkout in the top-level window
         window.top.location.href = checkoutData.url;
       } else {

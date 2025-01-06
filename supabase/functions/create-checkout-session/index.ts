@@ -68,7 +68,7 @@ serve(async (req) => {
         quantity: 1,
       }],
       mode: 'subscription',
-      success_url: `${req.headers.get('origin')}/dashboard`,
+      success_url: `${req.headers.get('origin')}/dashboard?payment=success&email=${encodeURIComponent(email)}`,
       cancel_url: `${req.headers.get('origin')}/signup`,
     })
 
