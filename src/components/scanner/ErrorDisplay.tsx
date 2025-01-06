@@ -7,7 +7,8 @@ interface ErrorDisplayProps {
 }
 
 export const ErrorDisplay = ({ error }: ErrorDisplayProps) => {
-  const isSetupError = error.includes("not completely set up") || error.includes("not set up their booking URL");
+  const isSetupError = error.includes("hasn't completed their profile") || 
+                      error.includes("not set up their booking URL");
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-medspa-50 to-white">
@@ -18,7 +19,7 @@ export const ErrorDisplay = ({ error }: ErrorDisplayProps) => {
         {isSetupError ? (
           <div className="space-y-4">
             <p className="text-sm text-gray-500">
-              The business owner needs to complete their profile setup. Please contact them to resolve this issue.
+              The business owner is still setting up their profile. Please check back later or contact them directly.
             </p>
             <Button
               variant="outline"

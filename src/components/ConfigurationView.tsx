@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { BookingTab } from "./settings/TabContent/BookingTab";
 import { BrandingTab } from "./settings/TabContent/BrandingTab";
@@ -9,6 +9,8 @@ import { DashboardTabs } from "./settings/DashboardTabs";
 import { DashboardHeader } from "./settings/DashboardHeader";
 import { useProfileData } from "@/hooks/use-profile-data";
 import { useBookingUrl } from "@/hooks/use-booking-url";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 interface ConfigurationViewProps {
   session: any;
@@ -29,6 +31,12 @@ export const ConfigurationView = ({
     updateBookingUrl
   );
 
+  useEffect(() => {
+    if (!brandName) {
+      setActiveTab('branding');
+    }
+  }, [brandName]);
+
   if (!session) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -42,6 +50,15 @@ export const ConfigurationView = ({
       <div className="container mx-auto p-4 md:p-6 pt-16">
         <DashboardHeader session={session} />
         
+        {!brandName && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Please set up your brand name in the Branding tab to activate your scanner.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <DashboardTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 

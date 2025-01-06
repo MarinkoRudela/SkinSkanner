@@ -32,10 +32,13 @@ export const BusinessDataFetcher = ({
         });
       } catch (err: any) {
         console.error('Error in loadBusinessData:', err);
-        onError(err.message);
+        const errorMessage = err.message.includes('not completely set up')
+          ? "This business hasn't completed their profile setup yet. Please contact them directly or try again later."
+          : err.message;
+        onError(errorMessage);
         toast({
           title: "Error",
-          description: err.message,
+          description: errorMessage,
           variant: "destructive",
         });
       }
