@@ -58,7 +58,7 @@ export const Navigation = ({ session }: { session: any }) => {
         <DropdownMenuContent align="end" className="w-48 md:w-40">
           <DropdownMenuItem onClick={handleScanClick} className="py-3 md:py-2">
             <Home className="mr-2 h-5 w-5 md:h-4 md:w-4" />
-            Scan
+            Home
           </DropdownMenuItem>
           
           {!session ? (
