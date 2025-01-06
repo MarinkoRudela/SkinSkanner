@@ -1,5 +1,4 @@
 import React from 'react';
-import { Header } from '@/components/Header';
 import { Navigation } from '@/components/Navigation';
 import { ConfigSection } from '@/components/config/ConfigSection';
 import { ScannerSection } from '@/components/scanner/ScannerSection';
@@ -11,6 +10,7 @@ import { HeroSection } from '@/components/home/HeroSection';
 import { BenefitsSection } from '@/components/home/BenefitsSection';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { CTASection } from '@/components/home/CTASection';
+import { Header } from '@/components/Header';
 
 const Index = () => {
   const { session, isInitializing } = useAuthInitialization();
@@ -27,46 +27,31 @@ const Index = () => {
   }
 
   const isConfigMode = new URLSearchParams(window.location.search).get('config') === 'true';
-  const showHomepage = !session && !isConfigMode && window.location.search === '';
   
-  // Create a wrapper function that only takes url parameter
-  const handleUpdateBookingUrl = async (url: string) => {
-    if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to update your booking URL",
-        variant: "destructive"
-      });
-      return;
-    }
-    return updateBookingUrl(url, session);
-  };
-
-  if (showHomepage) {
+  // If user is logged in and in config mode, show config section
+  if (session && isConfigMode) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
-        <Navigation session={session} />
-        <HeroSection />
-        <BenefitsSection />
-        <TestimonialsSection />
-        <CTASection />
+        <div className="container max-w-4xl mx-auto px-4 py-8 relative">
+          <Navigation session={session} />
+          <Header />
+          <ConfigSection 
+            session={session}
+            bookingUrl={bookingUrl}
+            updateBookingUrl={(url: string) => updateBookingUrl(url, session)}
+          />
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
-      <div className="container max-w-4xl mx-auto px-4 py-8 relative">
-        <Navigation session={session} />
-        <Header />
-        
-        {isConfigMode ? (
-          <ConfigSection 
-            session={session}
-            bookingUrl={bookingUrl}
-            updateBookingUrl={handleUpdateBookingUrl}
-          />
-        ) : (
+  // If user is logged in and wants to scan, show scanner section
+  if (session && !isConfigMode) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
+        <div className="container max-w-4xl mx-auto px-4 py-8 relative">
+          <Navigation session={session} />
+          <Header />
           <ScannerSection 
             bookingUrl={bookingUrl}
             onScanAgain={() => {
@@ -76,8 +61,19 @@ const Index = () => {
               });
             }}
           />
-        )}
+        </div>
       </div>
+    );
+  }
+
+  // Default: Show homepage for visitors
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
+      <Navigation session={session} />
+      <HeroSection />
+      <BenefitsSection />
+      <TestimonialsSection />
+      <CTASection />
     </div>
   );
 };
