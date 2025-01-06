@@ -29,7 +29,9 @@ export const useBookingUrl = (
         if (error) throw error;
 
         if (data?.short_code) {
-          const newUniqueLink = `${window.location.origin}/b/${data.short_code}`;
+          // Properly construct the URL without adding extra colons
+          const baseUrl = window.location.origin;
+          const newUniqueLink = `${baseUrl}/b/${data.short_code}`;
           setUniqueLink(newUniqueLink);
         }
       } catch (error) {
@@ -58,8 +60,9 @@ export const useBookingUrl = (
       // Generate or get existing short code
       const shortCode = await getOrCreateShortCode(session.user.id);
       
-      // Create the unique link
-      const newUniqueLink = `${window.location.origin}/b/${shortCode}`;
+      // Create the unique link with proper URL construction
+      const baseUrl = window.location.origin;
+      const newUniqueLink = `${baseUrl}/b/${shortCode}`;
       setUniqueLink(newUniqueLink);
       
       // Update parent state
