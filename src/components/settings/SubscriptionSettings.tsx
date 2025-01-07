@@ -4,9 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const SubscriptionSettings = () => {
   const [isCancelling, setIsCancelling] = useState(false);
+  const [isReactivating, setIsReactivating] = useState(false);
 
   const { data: subscription, refetch } = useQuery({
     queryKey: ['subscription'],
@@ -14,7 +17,7 @@ export const SubscriptionSettings = () => {
       const { data, error } = await supabase
         .from('subscriptions')
         .select('*')
-        .maybeSingle(); // Changed from .single() to .maybeSingle()
+        .maybeSingle();
       
       if (error) throw error;
       return data;
@@ -54,6 +57,10 @@ export const SubscriptionSettings = () => {
     } finally {
       setIsCancelling(false);
     }
+  };
+
+  const handleReactivateSubscription = () => {
+    window.location.href = '/signup';
   };
 
   // If no subscription data exists, show a different message
@@ -99,7 +106,7 @@ export const SubscriptionSettings = () => {
               <p className="text-sm text-muted-foreground">
                 Status: {subscription?.status}
               </p>
-              {subscription?.current_period_end && (
+              {subscription?.current_period_end && subscription.status === 'active' && (
                 <p className="text-sm text-muted-foreground">
                   Next billing date: {new Date(subscription.current_period_end).toLocaleDateString()}
                 </p>
@@ -107,6 +114,15 @@ export const SubscriptionSettings = () => {
             </div>
           </div>
         </div>
+
+        {subscription?.status === 'unpaid' && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Your subscription payment has failed. Please update your payment method to continue using our services.
+            </AlertDescription>
+          </Alert>
+        )}
         
         {subscription?.status === 'active' && (
           <Button
@@ -115,6 +131,16 @@ export const SubscriptionSettings = () => {
             disabled={isCancelling}
           >
             {isCancelling ? "Cancelling..." : "Cancel Subscription"}
+          </Button>
+        )}
+
+        {(subscription?.status === 'cancelled' || subscription?.status === 'unpaid') && (
+          <Button
+            variant="default"
+            onClick={handleReactivateSubscription}
+            disabled={isReactivating}
+          >
+            Reactivate Subscription
           </Button>
         )}
       </CardContent>
