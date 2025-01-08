@@ -24,6 +24,8 @@ export const Analysis = ({
   shortCode,
   linkVisitId
 }: AnalysisProps) => {
+  console.log('Analysis component received bookingUrl:', bookingUrl);
+  
   // Pair each concern with its corresponding recommendation
   const pairs = analysis.concerns.map((concern, index) => ({
     concern,

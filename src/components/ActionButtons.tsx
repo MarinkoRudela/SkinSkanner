@@ -24,6 +24,8 @@ export const ActionButtons = ({
   const isDemo = bookingUrl === '/signup';
 
   const handleBookingClick = async () => {
+    console.log('ActionButtons received bookingUrl:', bookingUrl);
+    
     if (isDemo) {
       navigate('/signup');
       return;
@@ -44,11 +46,13 @@ export const ActionButtons = ({
 
       // Format URL before opening
       const formattedUrl = formatUrl(bookingUrl);
+      console.log('Formatted URL before window.open:', formattedUrl);
       window.open(formattedUrl, '_blank');
     } catch (error) {
       console.error('Error tracking booking conversion:', error);
       // Still open the booking URL even if tracking fails
       const formattedUrl = formatUrl(bookingUrl);
+      console.log('Formatted URL (after error):', formattedUrl);
       window.open(formattedUrl, '_blank');
     }
   };

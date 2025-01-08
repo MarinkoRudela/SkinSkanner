@@ -19,6 +19,12 @@ export const ScannerPageContainer = ({
   shortCode,
   linkVisitId
 }: ScannerPageContainerProps) => {
+  console.log('ScannerPageContainer received:', {
+    brandName: businessData.brand_name,
+    bookingUrl: businessData.booking_url,
+    profileId: businessData.profile_id
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
       <div className="container max-w-4xl mx-auto px-4 py-8">

@@ -24,6 +24,7 @@ export const BusinessDataFetcher: React.FC<BusinessDataFetcherProps> = ({
         setIsLoading(true);
         const businessData = await fetchBusinessData(shortCode);
         console.log('Business data received:', businessData);
+        console.log('Booking URL from business data:', businessData?.business_settings?.booking_url);
         
         if (!businessData) {
           throw new Error('Business not found');
