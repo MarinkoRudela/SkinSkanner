@@ -6,14 +6,6 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 // Get the current domain
 const currentDomain = window.location.hostname;
 
-// Configure cookie options based on the domain
-const cookieOptions = {
-  domain: currentDomain === 'localhost' ? 'localhost' : `.${currentDomain}`,
-  sameSite: 'lax' as const,
-  secure: currentDomain !== 'localhost',
-  path: '/'
-}
-
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
@@ -22,7 +14,14 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     flowType: 'pkce',
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     storageKey: 'supabase.auth.token',
-    cookieOptions
+    cookieOptions: {
+      name: 'sb-auth-token',
+      lifetime: 60 * 60 * 24 * 365, // 1 year
+      domain: currentDomain === 'localhost' ? 'localhost' : `.${currentDomain}`,
+      sameSite: 'lax',
+      secure: currentDomain !== 'localhost',
+      path: '/'
+    }
   },
   global: {
     headers: {
@@ -35,7 +34,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session?.user?.email);
   console.log('Current domain:', currentDomain);
-  console.log('Cookie options:', cookieOptions);
   
   // Log token status
   if (session) {
