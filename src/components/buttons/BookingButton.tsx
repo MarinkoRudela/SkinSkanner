@@ -19,9 +19,7 @@ export const BookingButton = ({
 }: BookingButtonProps) => {
   const { trackConversion } = useConversionTracking();
 
-  const handleBookingClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    
+  const handleBookingClick = async () => {
     if (!bookingUrl) {
       console.error('No booking URL provided');
       toast({
@@ -50,8 +48,8 @@ export const BookingButton = ({
         console.log('Conversion tracked successfully');
       }
 
-      // Open the URL in a new tab
-      window.open(formattedUrl, '_blank', 'noopener,noreferrer');
+      // Open in new tab immediately
+      window.open(formattedUrl, '_blank');
     } catch (error) {
       console.error('Error handling booking click:', error);
       toast({
@@ -63,17 +61,12 @@ export const BookingButton = ({
   };
 
   return (
-    <a
-      href={bookingUrl}
+    <Button
       onClick={handleBookingClick}
-      className="w-full"
+      className="w-full bg-primary hover:bg-primary-hover text-primary-foreground py-6 sm:py-4 text-base sm:text-sm rounded-xl"
     >
-      <Button
-        className="w-full bg-primary hover:bg-primary-hover text-primary-foreground py-6 sm:py-4 text-base sm:text-sm rounded-xl"
-      >
-        <CalendarDays className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-        Book Consultation
-      </Button>
-    </a>
+      <CalendarDays className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
+      Book Consultation
+    </Button>
   );
 };

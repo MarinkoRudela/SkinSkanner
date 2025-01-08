@@ -1,7 +1,6 @@
 export const formatUrl = (url: string): string => {
-  if (!url) {
-    console.error('Received empty URL to format');
-    throw new Error('No URL provided');
+  if (!url || url.trim() === '') {
+    return '';
   }
   
   // Remove leading/trailing whitespace
