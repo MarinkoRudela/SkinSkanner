@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { LoadingScreen } from "@/components/LoadingScreen";
-import { BusinessBrandedHeader } from "./BusinessBrandedHeader";
-import { ScannerSection } from "./ScannerSection";
 import { ErrorDisplay } from "./ErrorDisplay";
 import { BusinessDataFetcher } from "./BusinessDataFetcher";
-import { useVisitorTracking } from "@/hooks/use-visitor-tracking";
-import { toast } from "@/hooks/use-toast";
+import { ScannerPageContainer } from "./ScannerPageContainer";
+import { VisitorTracker } from "./VisitorTracker";
 
 interface BusinessData {
   brand_name: string;
@@ -26,23 +24,6 @@ export const BrandedScannerPage = () => {
   useEffect(() => {
     console.log('BrandedScannerPage mounted with shortCode:', shortCode);
   }, [shortCode]);
-
-  // Initialize visitor tracking when business data is loaded
-  useEffect(() => {
-    if (businessData && shortCode) {
-      console.log('Initializing visitor tracking');
-      const { visitId } = useVisitorTracking({
-        shortCode,
-        profileId: businessData.profile_id
-      });
-      
-      // Update linkVisitId when we get it from tracking
-      if (visitId) {
-        console.log('Visit ID received:', visitId);
-        setLinkVisitId(visitId);
-      }
-    }
-  }, [businessData, shortCode]);
 
   if (!shortCode) {
     console.error('No shortCode provided in URL');
@@ -81,26 +62,17 @@ export const BrandedScannerPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
-      <div className="container max-w-4xl mx-auto px-4 py-8">
-        <BusinessBrandedHeader
-          brandName={businessData.brand_name}
-          logoUrl={businessData.logo_url}
-          tagline={businessData.tagline}
-        />
-        <ScannerSection
-          bookingUrl={businessData.booking_url}
-          profileId={businessData.profile_id}
-          shortCode={shortCode}
-          linkVisitId={linkVisitId || undefined}
-          onScanAgain={() => {
-            toast({
-              title: "Ready",
-              description: "Upload new photos for another analysis",
-            });
-          }}
-        />
-      </div>
-    </div>
+    <>
+      <VisitorTracker
+        shortCode={shortCode}
+        profileId={businessData.profile_id}
+        onVisitIdReceived={(visitId) => setLinkVisitId(visitId)}
+      />
+      <ScannerPageContainer
+        businessData={businessData}
+        shortCode={shortCode}
+        linkVisitId={linkVisitId || undefined}
+      />
+    </>
   );
 };
