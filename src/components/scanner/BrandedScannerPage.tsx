@@ -23,9 +23,14 @@ export const BrandedScannerPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [linkVisitId, setLinkVisitId] = useState<string | null>(null);
 
+  useEffect(() => {
+    console.log('BrandedScannerPage mounted with shortCode:', shortCode);
+  }, [shortCode]);
+
   // Initialize visitor tracking when business data is loaded
   useEffect(() => {
     if (businessData && shortCode) {
+      console.log('Initializing visitor tracking');
       const { visitId } = useVisitorTracking({
         shortCode,
         profileId: businessData.profile_id
@@ -33,12 +38,14 @@ export const BrandedScannerPage = () => {
       
       // Update linkVisitId when we get it from tracking
       if (visitId) {
+        console.log('Visit ID received:', visitId);
         setLinkVisitId(visitId);
       }
     }
   }, [businessData, shortCode]);
 
   if (!shortCode) {
+    console.error('No shortCode provided in URL');
     return <ErrorDisplay error="Invalid URL" />;
   }
 
@@ -48,10 +55,12 @@ export const BrandedScannerPage = () => {
         <BusinessDataFetcher
           shortCode={shortCode}
           onDataFetched={(data) => {
+            console.log('Business data fetched successfully:', data);
             setBusinessData(data);
             setIsLoading(false);
           }}
           onError={(err) => {
+            console.error('Error fetching business data:', err);
             setError(err);
             setIsLoading(false);
           }}
@@ -62,10 +71,14 @@ export const BrandedScannerPage = () => {
   }
 
   if (error) {
+    console.error('Rendering error state:', error);
     return <ErrorDisplay error={error} />;
   }
 
-  if (!businessData) return null;
+  if (!businessData) {
+    console.error('No business data available');
+    return <ErrorDisplay error="Failed to load business information" />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">

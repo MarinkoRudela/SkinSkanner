@@ -24,7 +24,9 @@ export const BusinessDataFetcher = ({
   useEffect(() => {
     const loadBusinessData = async () => {
       try {
+        console.log('Fetching business data for shortCode:', shortCode);
         const businessInfo = await fetchBusinessData(shortCode);
+        console.log('Business data fetched successfully:', businessInfo);
         onDataFetched(businessInfo);
         
         toast({
@@ -36,6 +38,7 @@ export const BusinessDataFetcher = ({
         const errorMessage = err.message.includes('not completely set up')
           ? "This business hasn't completed their profile setup yet. Please contact them directly or try again later."
           : err.message;
+        console.error('Displaying error message:', errorMessage);
         onError(errorMessage);
         toast({
           title: "Error",

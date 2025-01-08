@@ -35,6 +35,7 @@ export const fetchBusinessShortCode = async (shortCode: string) => {
 };
 
 export const fetchBusinessProfile = async (profileId: string) => {
+  console.log('Fetching business profile for ID:', profileId);
   const { data, error } = await supabase
     .from('profiles')
     .select('brand_name, logo_url, tagline, id')
@@ -51,6 +52,7 @@ export const fetchBusinessProfile = async (profileId: string) => {
     throw new Error('This business profile is not completely set up. Please make sure brand name is set.');
   }
 
+  console.log('Business profile fetched:', data);
   return {
     brand_name: data.brand_name,
     logo_url: data.logo_url,
@@ -60,6 +62,7 @@ export const fetchBusinessProfile = async (profileId: string) => {
 };
 
 export const fetchBusinessSettings = async (profileId: string) => {
+  console.log('Fetching business settings for ID:', profileId);
   const { data, error } = await supabase
     .from('business_settings')
     .select('booking_url')
@@ -76,11 +79,13 @@ export const fetchBusinessSettings = async (profileId: string) => {
     throw new Error('This business has not set up their booking URL yet.');
   }
 
+  console.log('Business settings fetched:', data);
   return data;
 };
 
 export const fetchBusinessData = async (shortCode: string): Promise<BusinessData> => {
   try {
+    console.log('Starting business data fetch process for shortCode:', shortCode);
     const profileId = await fetchBusinessShortCode(shortCode);
     const profileData = await fetchBusinessProfile(profileId);
     const settingsData = await fetchBusinessSettings(profileId);
@@ -96,6 +101,7 @@ export const fetchBusinessData = async (shortCode: string): Promise<BusinessData
     console.log('Successfully loaded business data:', businessInfo);
     return businessInfo;
   } catch (error) {
+    console.error('Error in fetchBusinessData:', error);
     throw error;
   }
 };
