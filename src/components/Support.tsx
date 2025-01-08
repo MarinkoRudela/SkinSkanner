@@ -20,7 +20,10 @@ interface Message {
 
 export const Support = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([{
+    role: 'assistant',
+    content: "This is Jenny at Skin Skanner Support. How can I help you today?"
+  }]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const email = "info@skinskanner.ai";
@@ -67,7 +70,7 @@ export const Support = () => {
         <SheetTrigger asChild>
           <Button variant="outline" className="rounded-full shadow-lg">
             <Bot className="h-4 w-4 mr-2" />
-            Support Bot
+            Jenny - Support
           </Button>
         </SheetTrigger>
         <SheetContent side="right" className="w-[90vw] sm:w-[440px]">
