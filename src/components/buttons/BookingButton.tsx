@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { CalendarDays } from 'lucide-react';
 import { useConversionTracking } from '@/hooks/use-conversion-tracking';
+import { toast } from '@/hooks/use-toast';
+import { formatUrl } from '@/utils/urlFormatter';
 
 interface BookingButtonProps {
   bookingUrl: string;
@@ -19,28 +21,45 @@ export const BookingButton = ({
 
   const handleBookingClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    console.log('Booking button clicked with URL:', bookingUrl);
     
     if (!bookingUrl) {
       console.error('No booking URL provided');
+      toast({
+        title: "Error",
+        description: "No booking URL configured for this business",
+        variant: "destructive"
+      });
       return;
     }
 
-    // Track conversion first
-    if (profileId && shortCode && linkVisitId) {
-      console.log('Tracking conversion before redirect');
-      try {
-        await trackConversion(bookingUrl, { profileId, shortCode, linkVisitId });
-        console.log('Conversion tracked successfully');
-      } catch (error) {
-        console.error('Error tracking conversion:', error);
-        // Continue with redirect even if tracking fails
-      }
-    }
+    console.log('Booking button clicked with:', {
+      bookingUrl,
+      profileId,
+      shortCode,
+      linkVisitId
+    });
 
-    // Ensure redirect happens after tracking attempt
-    console.log('Redirecting to:', bookingUrl);
-    window.open(bookingUrl, '_blank', 'noopener,noreferrer');
+    try {
+      // Format the URL to ensure it has a protocol
+      const formattedUrl = formatUrl(bookingUrl);
+      
+      // Track conversion first if we have all required data
+      if (profileId && shortCode && linkVisitId) {
+        console.log('Tracking conversion before redirect');
+        await trackConversion(formattedUrl, { profileId, shortCode, linkVisitId });
+        console.log('Conversion tracked successfully');
+      }
+
+      // Open the URL in a new tab
+      window.open(formattedUrl, '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      console.error('Error handling booking click:', error);
+      toast({
+        title: "Error",
+        description: "Failed to open booking page. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (

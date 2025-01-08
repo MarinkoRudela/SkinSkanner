@@ -19,17 +19,24 @@ export const BusinessDataFetcher: React.FC<BusinessDataFetcherProps> = ({
 
   React.useEffect(() => {
     const loadData = async () => {
+      if (!shortCode) {
+        console.error('No shortCode provided');
+        onError('Invalid business link. Please check the URL and try again.');
+        return;
+      }
+
       try {
         console.log('Fetching business data for shortCode:', shortCode);
         setIsLoading(true);
         const businessData = await fetchBusinessData(shortCode);
-        console.log('Business data received:', businessData);
-        console.log('Business settings:', businessData?.business_settings);
-        console.log('Booking URL:', businessData?.business_settings?.booking_url);
         
         if (!businessData) {
           throw new Error('Business not found');
         }
+
+        console.log('Business data received:', businessData);
+        console.log('Business settings:', businessData?.business_settings);
+        console.log('Booking URL:', businessData?.business_settings?.booking_url);
         
         onDataFetched(businessData);
       } catch (err: any) {
@@ -49,9 +56,7 @@ export const BusinessDataFetcher: React.FC<BusinessDataFetcherProps> = ({
       }
     };
 
-    if (shortCode) {
-      loadData();
-    }
+    loadData();
   }, [shortCode, onDataFetched, onError]);
 
   if (isLoading) {
