@@ -65,6 +65,13 @@ export const AnalyticsTab = ({ session }: AnalyticsTabProps) => {
     { name: 'Sun', visits: 9 },
   ];
 
+  const chartConfig = {
+    visits: {
+      label: 'Visits',
+      color: '#7E69AB'
+    }
+  };
+
   if (visitsLoading || conversionsLoading || scannerLoading) {
     return <div className="p-4">Loading analytics...</div>;
   }
@@ -112,14 +119,16 @@ export const AnalyticsTab = ({ session }: AnalyticsTabProps) => {
         </CardHeader>
         <CardContent>
           <div className="h-[200px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={visitsByDay}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="visits" fill="#7E69AB" />
-              </BarChart>
-            </ResponsiveContainer>
+            <ChartContainer config={chartConfig}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={visitsByDay}>
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="visits" fill="#7E69AB" />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
           </div>
         </CardContent>
       </Card>
