@@ -26,7 +26,9 @@ export const fetchBusinessData = async (shortCode: string) => {
       .from('profiles')
       .select(`
         *,
-        business_settings (*)
+        business_settings (
+          booking_url
+        )
       `)
       .eq('id', shortCodeData.profile_id)
       .maybeSingle();
@@ -42,6 +44,7 @@ export const fetchBusinessData = async (shortCode: string) => {
     }
 
     console.log('Successfully fetched business data:', businessData);
+    console.log('Business settings:', businessData.business_settings);
     return businessData;
   } catch (error: any) {
     console.error('Error in fetchBusinessData:', error);

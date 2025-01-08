@@ -9,7 +9,7 @@ interface ScannerPageContainerProps {
     tagline: string;
     business_settings: {
       booking_url: string;
-    };
+    } | null;
     profile_id: string;
   };
   shortCode: string;
@@ -27,6 +27,15 @@ export const ScannerPageContainer = ({
     profileId: businessData.profile_id
   });
 
+  if (!businessData.business_settings?.booking_url) {
+    console.error('No booking URL found for business');
+    toast({
+      title: "Error",
+      description: "This business hasn't set up their booking URL yet.",
+      variant: "destructive"
+    });
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
       <div className="container max-w-4xl mx-auto px-4 py-8">
@@ -36,7 +45,7 @@ export const ScannerPageContainer = ({
           tagline={businessData.tagline}
         />
         <ScannerSection
-          bookingUrl={businessData.business_settings?.booking_url}
+          bookingUrl={businessData.business_settings?.booking_url || '/signup'}
           profileId={businessData.profile_id}
           shortCode={shortCode}
           linkVisitId={linkVisitId}
