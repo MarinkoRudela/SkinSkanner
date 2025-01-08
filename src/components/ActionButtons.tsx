@@ -24,16 +24,15 @@ export const ActionButtons = ({
       {isDemo ? (
         <DemoButton />
       ) : (
-        <BookingButton
-          bookingUrl={bookingUrl}
-          profileId={profileId}
-          shortCode={shortCode}
-          linkVisitId={linkVisitId}
-        />
-      )}
-      
-      {!isDemo && (
-        <ScanAgainButton onScanAgain={onScanAgain} />
+        <>
+          <BookingButton
+            bookingUrl={bookingUrl}
+            profileId={profileId}
+            shortCode={shortCode}
+            linkVisitId={linkVisitId}
+          />
+          <ScanAgainButton onScanAgain={onScanAgain} />
+        </>
       )}
     </div>
   );
