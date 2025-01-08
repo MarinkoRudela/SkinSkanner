@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -8,6 +8,8 @@ interface VisitorData {
 }
 
 export const useVisitorTracking = ({ shortCode, profileId }: VisitorData) => {
+  const [visitId, setVisitId] = useState<string | null>(null);
+
   useEffect(() => {
     const trackVisit = async () => {
       try {
@@ -26,7 +28,7 @@ export const useVisitorTracking = ({ shortCode, profileId }: VisitorData) => {
         const browser = getBrowserInfo(userAgent);
 
         // Record the visit
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('link_analytics')
           .insert({
             short_code: shortCode,
@@ -35,11 +37,16 @@ export const useVisitorTracking = ({ shortCode, profileId }: VisitorData) => {
             device_type: deviceType,
             browser: browser,
             visit_timestamp: new Date().toISOString(),
-          });
+          })
+          .select('id')
+          .single();
 
         if (error) {
           console.error('Error tracking visit:', error);
+          return;
         }
+
+        setVisitId(data.id);
       } catch (error) {
         console.error('Error in visit tracking:', error);
       }
@@ -48,6 +55,8 @@ export const useVisitorTracking = ({ shortCode, profileId }: VisitorData) => {
     // Track the visit when component mounts
     trackVisit();
   }, [shortCode, profileId]);
+
+  return { visitId };
 };
 
 // Helper function to determine browser

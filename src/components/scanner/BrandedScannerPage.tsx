@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { BusinessBrandedHeader } from "./BusinessBrandedHeader";
@@ -23,21 +23,23 @@ export const BrandedScannerPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [linkVisitId, setLinkVisitId] = useState<string | null>(null);
 
+  // Initialize visitor tracking when business data is loaded
+  useEffect(() => {
+    if (businessData && shortCode) {
+      const { visitId } = useVisitorTracking({
+        shortCode,
+        profileId: businessData.profile_id
+      });
+      
+      // Update linkVisitId when we get it from tracking
+      if (visitId) {
+        setLinkVisitId(visitId);
+      }
+    }
+  }, [businessData, shortCode]);
+
   if (!shortCode) {
     return <ErrorDisplay error="Invalid URL" />;
-  }
-
-  // Initialize visitor tracking when business data is loaded
-  if (businessData) {
-    const { visitId } = useVisitorTracking({
-      shortCode,
-      profileId: businessData.profile_id
-    });
-    
-    // Update linkVisitId when we get it from tracking
-    if (visitId && !linkVisitId) {
-      setLinkVisitId(visitId);
-    }
   }
 
   if (isLoading) {
