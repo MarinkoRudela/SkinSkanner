@@ -49,7 +49,7 @@ export const BookingTab = ({
         
         {bookingUrl && uniqueLink && (
           <div className="mt-6">
-            <h3 className="text-xl font-semibold mb-4">Your Unique Scanner</h3>
+            <h3 className="text-xl font-semibold mb-4">Your Unique Scanner Link</h3>
             <div className="flex flex-col sm:flex-row gap-2">
               <Input 
                 value={uniqueLink} 
