@@ -26,16 +26,20 @@ export const BusinessDataFetcher: React.FC<BusinessDataFetcherProps> = ({
         console.log('Business data received:', businessData);
         
         if (!businessData) {
-          throw new Error('No business data found');
+          throw new Error('Business not found');
         }
         
         onDataFetched(businessData);
       } catch (err: any) {
         console.error('Error fetching business data:', err);
-        onError(err.message || 'Failed to load business data');
+        const errorMessage = err.message === 'Business not found' 
+          ? `This business link (${shortCode}) doesn't exist. Please check the URL and try again.`
+          : 'Failed to load business data. Please try again.';
+        
+        onError(errorMessage);
         toast({
           title: "Error",
-          description: "Failed to load business data. Please try again.",
+          description: errorMessage,
           variant: "destructive",
         });
       } finally {

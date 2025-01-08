@@ -11,29 +11,29 @@ export const ErrorDisplay = ({ error }: ErrorDisplayProps) => {
                       error.includes("not set up their booking URL");
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-medspa-50 to-white">
-      <div className="text-center p-8 max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-medspa-50 to-white p-4">
+      <div className="text-center max-w-md mx-auto">
         <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Oops!</h1>
-        <p className="text-gray-600 whitespace-pre-wrap mb-4">{error}</p>
-        {isSetupError ? (
-          <div className="space-y-4">
+        <p className="text-gray-600 mb-6 whitespace-pre-wrap">{error}</p>
+        <div className="space-y-4">
+          {isSetupError ? (
             <p className="text-sm text-gray-500">
-              The business owner is still setting up their profile. Please check back later or contact them directly.
+              The business owner is still setting up their profile. Please check back later.
             </p>
-            <Button
-              variant="outline"
-              onClick={() => window.location.href = '/'}
-              className="mt-4"
-            >
-              Return to Home
-            </Button>
-          </div>
-        ) : (
-          <p className="text-sm text-gray-500">
-            If this error persists, please contact support or try refreshing the page.
-          </p>
-        )}
+          ) : (
+            <p className="text-sm text-gray-500">
+              If you believe this is a mistake, please contact the business directly.
+            </p>
+          )}
+          <Button
+            variant="outline"
+            onClick={() => window.location.href = '/'}
+            className="mt-4"
+          >
+            Return to Home
+          </Button>
+        </div>
       </div>
     </div>
   );

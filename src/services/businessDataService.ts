@@ -9,7 +9,7 @@ export const fetchBusinessData = async (shortCode: string) => {
       .from('business_short_codes')
       .select('profile_id')
       .eq('short_code', shortCode)
-      .single();
+      .maybeSingle();
 
     if (shortCodeError) {
       console.error('Error fetching short code:', shortCodeError);
@@ -29,7 +29,7 @@ export const fetchBusinessData = async (shortCode: string) => {
         business_settings (*)
       `)
       .eq('id', shortCodeData.profile_id)
-      .single();
+      .maybeSingle();
 
     if (businessError) {
       console.error('Error fetching business data:', businessError);
@@ -38,7 +38,7 @@ export const fetchBusinessData = async (shortCode: string) => {
 
     if (!businessData) {
       console.error('No business data found');
-      throw new Error('Business data not found');
+      throw new Error('Business profile not found');
     }
 
     console.log('Successfully fetched business data:', businessData);
