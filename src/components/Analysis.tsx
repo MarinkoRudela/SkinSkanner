@@ -11,9 +11,19 @@ interface AnalysisProps {
   };
   bookingUrl: string;
   onScanAgain: () => void;
+  profileId?: string;
+  shortCode?: string;
+  linkVisitId?: string;
 }
 
-export const Analysis = ({ analysis, bookingUrl, onScanAgain }: AnalysisProps) => {
+export const Analysis = ({ 
+  analysis, 
+  bookingUrl, 
+  onScanAgain,
+  profileId,
+  shortCode,
+  linkVisitId
+}: AnalysisProps) => {
   // Pair each concern with its corresponding recommendation
   const pairs = analysis.concerns.map((concern, index) => ({
     concern,
@@ -63,7 +73,13 @@ export const Analysis = ({ analysis, bookingUrl, onScanAgain }: AnalysisProps) =
             </div>
           </div>
 
-          <ActionButtons bookingUrl={bookingUrl} onScanAgain={onScanAgain} />
+          <ActionButtons 
+            bookingUrl={bookingUrl} 
+            onScanAgain={onScanAgain}
+            profileId={profileId}
+            shortCode={shortCode}
+            linkVisitId={linkVisitId}
+          />
           
           <p className="text-center text-sm text-muted-foreground mt-6 px-4">
             Disclaimer: These recommendations are for informational purposes only. Please consult with a licensed medical professional before proceeding with any treatments.

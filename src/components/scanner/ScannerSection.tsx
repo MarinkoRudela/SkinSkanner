@@ -14,9 +14,18 @@ interface CapturedImages {
 interface ScannerSectionProps {
   bookingUrl: string;
   onScanAgain: () => void;
+  profileId?: string;
+  shortCode?: string;
+  linkVisitId?: string;
 }
 
-export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps) => {
+export const ScannerSection = ({ 
+  bookingUrl, 
+  onScanAgain,
+  profileId,
+  shortCode,
+  linkVisitId
+}: ScannerSectionProps) => {
   const [capturedImages, setCapturedImages] = useState<CapturedImages | null>(null);
   const [analysis, setAnalysis] = useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -47,6 +56,21 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
       console.log('Analysis data received:', data);
       setAnalysis(data);
       
+      // Track scanner analytics if we have the required data
+      if (profileId && linkVisitId) {
+        await supabase
+          .from('scanner_analytics')
+          .insert([{
+            link_visit_id: linkVisitId,
+            profile_id: profileId,
+            scan_started_at: new Date().toISOString(),
+            scan_completed_at: new Date().toISOString(),
+            photos_uploaded: 3,
+            recommendations_generated: data.recommendations.length,
+            primary_concerns: data.concerns
+          }]);
+      }
+
       toast({
         title: "Analysis Complete",
         description: "We've analyzed your photos and prepared personalized recommendations.",
@@ -70,12 +94,7 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
   const handleScanAgain = () => {
     setCapturedImages(null);
     setAnalysis(null);
-    toast({
-      title: "Ready for New Scan",
-      description: "Please upload your photos for a new analysis.",
-      duration: 3000,
-      className: "top-center-toast"
-    });
+    onScanAgain();
   };
 
   return (
@@ -97,6 +116,9 @@ export const ScannerSection = ({ bookingUrl, onScanAgain }: ScannerSectionProps)
           analysis={analysis}
           bookingUrl={bookingUrl}
           onScanAgain={handleScanAgain}
+          profileId={profileId}
+          shortCode={shortCode}
+          linkVisitId={linkVisitId}
         />
       )}
     </div>

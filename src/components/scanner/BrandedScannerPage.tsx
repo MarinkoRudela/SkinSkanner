@@ -21,6 +21,7 @@ export const BrandedScannerPage = () => {
   const [businessData, setBusinessData] = useState<BusinessData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [linkVisitId, setLinkVisitId] = useState<string | null>(null);
 
   if (!shortCode) {
     return <ErrorDisplay error="Invalid URL" />;
@@ -28,10 +29,15 @@ export const BrandedScannerPage = () => {
 
   // Initialize visitor tracking when business data is loaded
   if (businessData) {
-    useVisitorTracking({
+    const { visitId } = useVisitorTracking({
       shortCode,
       profileId: businessData.profile_id
     });
+    
+    // Update linkVisitId when we get it from tracking
+    if (visitId && !linkVisitId) {
+      setLinkVisitId(visitId);
+    }
   }
 
   if (isLoading) {
@@ -69,6 +75,9 @@ export const BrandedScannerPage = () => {
         />
         <ScannerSection
           bookingUrl={businessData.booking_url}
+          profileId={businessData.profile_id}
+          shortCode={shortCode}
+          linkVisitId={linkVisitId || undefined}
           onScanAgain={() => {
             toast({
               title: "Ready",
