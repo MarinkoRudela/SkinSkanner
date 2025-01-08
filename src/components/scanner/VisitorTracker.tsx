@@ -8,18 +8,18 @@ interface VisitorTrackerProps {
 }
 
 export const VisitorTracker = ({ shortCode, profileId, onVisitIdReceived }: VisitorTrackerProps) => {
+  // Move hook to top level for proper React hooks compliance
+  const { visitId } = useVisitorTracking({
+    shortCode,
+    profileId
+  });
+  
   useEffect(() => {
-    console.log('Initializing visitor tracking');
-    const { visitId } = useVisitorTracking({
-      shortCode,
-      profileId
-    });
-    
     if (visitId) {
       console.log('Visit ID received:', visitId);
       onVisitIdReceived(visitId);
     }
-  }, [shortCode, profileId, onVisitIdReceived]);
+  }, [visitId, onVisitIdReceived]);
 
   return null;
 };

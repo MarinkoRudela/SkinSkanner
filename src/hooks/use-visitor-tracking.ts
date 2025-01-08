@@ -52,8 +52,10 @@ export const useVisitorTracking = ({ shortCode, profileId }: VisitorData) => {
       }
     };
 
-    // Track the visit when component mounts
-    trackVisit();
+    // Only track visit if we have both required parameters
+    if (shortCode && profileId) {
+      trackVisit();
+    }
   }, [shortCode, profileId]);
 
   return { visitId };
