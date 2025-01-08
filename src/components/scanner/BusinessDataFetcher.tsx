@@ -33,6 +33,11 @@ export const BusinessDataFetcher: React.FC<BusinessDataFetcherProps> = ({
 
         if (!businessData.business_settings?.booking_url) {
           console.warn('No booking URL found for business');
+          toast({
+            title: "Setup Incomplete",
+            description: "This business hasn't set up their booking URL yet.",
+            variant: "destructive"
+          });
         }
         
         onDataFetched(businessData);

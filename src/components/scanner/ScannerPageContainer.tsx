@@ -27,11 +27,13 @@ export const ScannerPageContainer = ({
     profileId: businessData.profile_id
   });
 
-  if (!businessData.business_settings?.booking_url) {
-    console.error('No booking URL found for business');
+  const bookingUrl = businessData.business_settings?.booking_url;
+  
+  if (!bookingUrl || bookingUrl.trim() === '') {
+    console.warn('No booking URL found for business');
     toast({
-      title: "Error",
-      description: "This business hasn't set up their booking URL yet.",
+      title: "Setup Required",
+      description: "This business hasn't completed their booking URL setup yet. Please try again later.",
       variant: "destructive"
     });
   }
@@ -45,7 +47,7 @@ export const ScannerPageContainer = ({
           tagline={businessData.tagline}
         />
         <ScannerSection
-          bookingUrl={businessData.business_settings?.booking_url || '/signup'}
+          bookingUrl={bookingUrl || '/signup'}
           profileId={businessData.profile_id}
           shortCode={shortCode}
           linkVisitId={linkVisitId}
