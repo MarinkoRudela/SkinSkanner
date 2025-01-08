@@ -6,6 +6,7 @@ interface BusinessData {
   logo_url: string;
   tagline: string;
   booking_url: string;
+  profile_id: string;
 }
 
 export const fetchBusinessShortCode = async (shortCode: string) => {
@@ -36,7 +37,7 @@ export const fetchBusinessShortCode = async (shortCode: string) => {
 export const fetchBusinessProfile = async (profileId: string) => {
   const { data, error } = await supabase
     .from('profiles')
-    .select('brand_name, logo_url, tagline')
+    .select('brand_name, logo_url, tagline, id')
     .eq('id', profileId)
     .maybeSingle();
 
@@ -50,7 +51,12 @@ export const fetchBusinessProfile = async (profileId: string) => {
     throw new Error('This business profile is not completely set up. Please make sure brand name is set.');
   }
 
-  return data;
+  return {
+    brand_name: data.brand_name,
+    logo_url: data.logo_url,
+    tagline: data.tagline,
+    profile_id: data.id
+  };
 };
 
 export const fetchBusinessSettings = async (profileId: string) => {
@@ -83,7 +89,8 @@ export const fetchBusinessData = async (shortCode: string): Promise<BusinessData
       brand_name: profileData.brand_name,
       logo_url: profileData.logo_url || '',
       tagline: profileData.tagline || '',
-      booking_url: settingsData.booking_url
+      booking_url: settingsData.booking_url,
+      profile_id: profileData.profile_id
     };
     
     console.log('Successfully loaded business data:', businessInfo);

@@ -7,6 +7,7 @@ interface BusinessData {
   logo_url: string;
   tagline: string;
   booking_url: string;
+  profile_id: string;
 }
 
 interface BusinessDataFetcherProps {
