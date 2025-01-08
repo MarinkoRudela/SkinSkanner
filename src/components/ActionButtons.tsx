@@ -19,6 +19,12 @@ export const ActionButtons = ({
 }: ActionButtonsProps) => {
   // Only show demo button if we're on the demo page
   const isDemoPage = window.location.pathname === '/demo';
+  
+  console.log('ActionButtons - isDemoPage:', isDemoPage);
+  console.log('ActionButtons - bookingUrl:', bookingUrl);
+  console.log('ActionButtons - profileId:', profileId);
+  console.log('ActionButtons - shortCode:', shortCode);
+  console.log('ActionButtons - linkVisitId:', linkVisitId);
 
   return (
     <div className="flex flex-col gap-3 sm:gap-4 w-full max-w-sm mx-auto pt-4">
