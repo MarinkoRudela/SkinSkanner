@@ -20,8 +20,16 @@ export const BookingButton = ({
   const { trackConversion } = useConversionTracking();
 
   const handleBookingClick = async () => {
+    console.log('BookingButton: Starting click handler with:', {
+      bookingUrl,
+      profileId,
+      shortCode,
+      linkVisitId,
+      currentDomain: window.location.hostname
+    });
+
     if (!bookingUrl) {
-      console.error('No booking URL provided');
+      console.error('BookingButton: No booking URL provided');
       toast({
         title: "Error",
         description: "No booking URL configured for this business",
@@ -30,28 +38,26 @@ export const BookingButton = ({
       return;
     }
 
-    console.log('Booking button clicked with:', {
-      bookingUrl,
-      profileId,
-      shortCode,
-      linkVisitId
-    });
-
     try {
       // Format the URL to ensure it has a protocol
+      console.log('BookingButton: Formatting URL:', bookingUrl);
       const formattedUrl = formatUrl(bookingUrl);
+      console.log('BookingButton: Formatted URL:', formattedUrl);
       
       // Track conversion first if we have all required data
       if (profileId && shortCode && linkVisitId) {
-        console.log('Tracking conversion before redirect');
+        console.log('BookingButton: Tracking conversion before redirect');
         await trackConversion(formattedUrl, { profileId, shortCode, linkVisitId });
-        console.log('Conversion tracked successfully');
+        console.log('BookingButton: Conversion tracked successfully');
+      } else {
+        console.log('BookingButton: Missing data for conversion tracking:', { profileId, shortCode, linkVisitId });
       }
 
       // Open in new tab immediately
+      console.log('BookingButton: Opening URL in new tab:', formattedUrl);
       window.open(formattedUrl, '_blank');
     } catch (error) {
-      console.error('Error handling booking click:', error);
+      console.error('BookingButton: Error handling booking click:', error);
       toast({
         title: "Error",
         description: "Failed to open booking page. Please try again.",
