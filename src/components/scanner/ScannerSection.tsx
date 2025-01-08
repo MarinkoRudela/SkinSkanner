@@ -37,6 +37,18 @@ export const ScannerSection = ({
     try {
       console.log('Calling analyze-skin function with images:', images);
       
+      // Track scan start if we have the required data
+      if (profileId && linkVisitId) {
+        await supabase
+          .from('scanner_analytics')
+          .insert([{
+            link_visit_id: linkVisitId,
+            profile_id: profileId,
+            scan_started_at: new Date().toISOString(),
+            photos_uploaded: 3
+          }]);
+      }
+
       const { data, error } = await supabase.functions.invoke('analyze-skin', {
         body: { images },
         headers: {
@@ -56,7 +68,7 @@ export const ScannerSection = ({
       console.log('Analysis data received:', data);
       setAnalysis(data);
       
-      // Track scanner analytics if we have the required data
+      // Track scan completion if we have the required data
       if (profileId && linkVisitId) {
         await supabase
           .from('scanner_analytics')
