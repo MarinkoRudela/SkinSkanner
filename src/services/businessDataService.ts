@@ -21,12 +21,15 @@ export const fetchBusinessData = async (shortCode: string) => {
       throw new Error('Business not found');
     }
 
-    // Then, get the business settings and profile info
+    // Then, get the business data with an explicit join
     const { data: businessData, error: businessError } = await supabase
       .from('profiles')
       .select(`
-        *,
-        business_settings (
+        id,
+        brand_name,
+        logo_url,
+        tagline,
+        business_settings!inner (
           booking_url
         )
       `)
@@ -43,9 +46,16 @@ export const fetchBusinessData = async (shortCode: string) => {
       throw new Error('Business profile not found');
     }
 
-    console.log('Successfully fetched business data:', businessData);
-    console.log('Business settings:', businessData.business_settings);
-    return businessData;
+    // Restructure the data to match the expected format
+    const formattedData = {
+      ...businessData,
+      business_settings: businessData.business_settings[0],
+      profile_id: businessData.id
+    };
+
+    console.log('Successfully fetched business data:', formattedData);
+    console.log('Business settings:', formattedData.business_settings);
+    return formattedData;
   } catch (error: any) {
     console.error('Error in fetchBusinessData:', error);
     throw error;
