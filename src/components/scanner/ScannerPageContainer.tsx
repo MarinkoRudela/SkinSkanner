@@ -27,8 +27,6 @@ export const ScannerPageContainer = ({
     profileId: businessData.profile_id
   });
 
-  const bookingUrl = businessData.business_settings?.booking_url;
-  
   // Only show the setup warning if business_settings is null
   if (!businessData.business_settings) {
     console.warn('No business settings found for business');
@@ -37,7 +35,11 @@ export const ScannerPageContainer = ({
       description: "This business hasn't completed their profile setup yet. Please try again later.",
       variant: "destructive"
     });
+    return null;
   }
+
+  // Get the booking URL from business settings
+  const bookingUrl = businessData.business_settings.booking_url;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
@@ -48,7 +50,7 @@ export const ScannerPageContainer = ({
           tagline={businessData.tagline}
         />
         <ScannerSection
-          bookingUrl={bookingUrl || '/signup'}
+          bookingUrl={bookingUrl}
           profileId={businessData.profile_id}
           shortCode={shortCode}
           linkVisitId={linkVisitId}
