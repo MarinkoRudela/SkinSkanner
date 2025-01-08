@@ -1,7 +1,6 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
-import { Header } from "@/components/Header";
 
 interface DashboardContainerProps {
   session: any;
@@ -22,7 +21,6 @@ export const DashboardContainer = ({ session, brandName, children }: DashboardCo
     <div className="relative min-h-screen">
       <div className="container mx-auto p-4 md:p-6 pt-16">
         <Navigation session={session} />
-        <Header />
         
         {!brandName && (
           <Alert variant="destructive" className="mb-6">
