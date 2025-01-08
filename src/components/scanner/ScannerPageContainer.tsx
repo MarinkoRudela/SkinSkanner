@@ -7,7 +7,9 @@ interface ScannerPageContainerProps {
     brand_name: string;
     logo_url: string;
     tagline: string;
-    booking_url: string;
+    business_settings: {
+      booking_url: string;
+    };
     profile_id: string;
   };
   shortCode: string;
@@ -21,7 +23,7 @@ export const ScannerPageContainer = ({
 }: ScannerPageContainerProps) => {
   console.log('ScannerPageContainer received:', {
     brandName: businessData.brand_name,
-    bookingUrl: businessData.booking_url,
+    bookingUrl: businessData.business_settings?.booking_url,
     profileId: businessData.profile_id
   });
 
@@ -34,7 +36,7 @@ export const ScannerPageContainer = ({
           tagline={businessData.tagline}
         />
         <ScannerSection
-          bookingUrl={businessData.booking_url}
+          bookingUrl={businessData.business_settings?.booking_url}
           profileId={businessData.profile_id}
           shortCode={shortCode}
           linkVisitId={linkVisitId}
