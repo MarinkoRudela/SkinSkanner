@@ -9,41 +9,60 @@ export const useAuthInitialization = () => {
   const { handleResponse } = useAuthResponse();
 
   useEffect(() => {
+    let mounted = true;
+
     const initializeAuth = async () => {
       try {
         console.log('Initializing auth...');
-        const { data: { session: authSession } } = await supabase.auth.getSession();
-        console.log('Auth session retrieved:', authSession?.user?.email);
         
-        const processedSession = await handleResponse(
-          new Response(JSON.stringify({ session: authSession })),
-          'auth-session'
-        );
+        // Get initial session
+        const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
         
-        setSession(processedSession.session);
-      } catch (error) {
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          throw sessionError;
+        }
+
+        if (mounted) {
+          console.log('Initial session retrieved:', initialSession?.user?.email);
+          setSession(initialSession);
+        }
+
+      } catch (error: any) {
         console.error('Auth initialization error:', error);
-        toast({
-          title: "Error",
-          description: "Failed to initialize authentication",
-          variant: "destructive"
-        });
+        if (mounted) {
+          toast({
+            title: "Error",
+            description: "Failed to initialize authentication",
+            variant: "destructive"
+          });
+        }
       } finally {
-        setIsInitializing(false);
+        if (mounted) {
+          setIsInitializing(false);
+        }
       }
     };
 
+    // Initialize auth
     initializeAuth();
 
+    // Set up auth state listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      console.log('Auth state changed:', _event, newSession?.user?.email);
-      setSession(newSession);
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      console.log("Auth state changed:", _event, newSession?.user?.email);
+      if (mounted) {
+        setSession(newSession);
+      }
     });
 
-    return () => subscription.unsubscribe();
-  }, [handleResponse]);
+    // Cleanup
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   return { session, isInitializing };
 };
