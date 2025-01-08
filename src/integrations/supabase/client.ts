@@ -9,7 +9,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     detectSessionInUrl: true,
     flowType: 'pkce',
-    storage: window?.localStorage,
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     storageKey: 'supabase.auth.token',
   },
   global: {
@@ -22,4 +22,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // Add debug logging for auth state changes
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session?.user?.email);
+  
+  // Log token status
+  if (session) {
+    console.log('Access token present:', !!session.access_token);
+    console.log('Refresh token present:', !!session.refresh_token);
+  }
 });
