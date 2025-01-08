@@ -27,7 +27,7 @@ export const ScannerSection = ({
   linkVisitId
 }: ScannerSectionProps) => {
   const [capturedImages, setCapturedImages] = useState<CapturedImages | null>(null);
-  const { analysis, isAnalyzing, analyzeImages } = useSkinAnalysis(profileId, linkVisitId);
+  const { analysis, isAnalyzing, analyzeImages, resetAnalysis } = useSkinAnalysis(profileId, linkVisitId);
 
   const handleImageCapture = async (images: CapturedImages) => {
     setCapturedImages(images);
@@ -36,7 +36,7 @@ export const ScannerSection = ({
 
   const handleScanAgain = () => {
     setCapturedImages(null);
-    setAnalysis(null);
+    resetAnalysis();
     onScanAgain();
   };
 

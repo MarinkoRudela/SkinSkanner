@@ -17,6 +17,10 @@ export const useSkinAnalysis = (profileId?: string, linkVisitId?: string) => {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
+  const resetAnalysis = () => {
+    setAnalysis(null);
+  };
+
   const analyzeImages = async (images: CapturedImages) => {
     setIsAnalyzing(true);
     
@@ -92,6 +96,7 @@ export const useSkinAnalysis = (profileId?: string, linkVisitId?: string) => {
   return {
     analysis,
     isAnalyzing,
-    analyzeImages
+    analyzeImages,
+    resetAnalysis
   };
 };
