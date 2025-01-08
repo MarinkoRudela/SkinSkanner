@@ -3,6 +3,7 @@ import { CalendarDays, ScanLine } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
+import { formatUrl } from '@/utils/urlFormatter';
 
 interface ActionButtonsProps {
   bookingUrl: string;
@@ -41,11 +42,14 @@ export const ActionButtons = ({
           }]);
       }
 
-      window.open(bookingUrl, '_blank');
+      // Format URL before opening
+      const formattedUrl = formatUrl(bookingUrl);
+      window.open(formattedUrl, '_blank');
     } catch (error) {
       console.error('Error tracking booking conversion:', error);
       // Still open the booking URL even if tracking fails
-      window.open(bookingUrl, '_blank');
+      const formattedUrl = formatUrl(bookingUrl);
+      window.open(formattedUrl, '_blank');
     }
   };
 

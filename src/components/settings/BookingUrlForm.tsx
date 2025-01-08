@@ -5,6 +5,7 @@ import { toast } from "@/hooks/use-toast";
 import { Label } from "../ui/label";
 import { Edit2, Save, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "../ui/alert";
+import { formatUrl } from "@/utils/urlFormatter";
 
 interface BookingUrlFormProps {
   initialUrl: string;
@@ -32,22 +33,21 @@ export const BookingUrlForm = ({ initialUrl, onSave, isLoading }: BookingUrlForm
       return false;
     }
     
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      url = 'https://' + url;
-      setLocalBookingUrl(url);
-    }
-
-    if (!isValidUrl(url)) {
+    // Format URL with protocol if needed
+    const formattedUrl = formatUrl(url);
+    
+    if (!isValidUrl(formattedUrl)) {
       setError("Please enter a valid URL");
       return false;
     }
 
     setError(null);
-    return true;
+    return formattedUrl;
   };
 
   const handleSave = async () => {
-    if (!validateUrl(localBookingUrl)) {
+    const formattedUrl = validateUrl(localBookingUrl);
+    if (!formattedUrl) {
       toast({
         title: "Error",
         description: "Please enter a valid booking URL",
@@ -57,8 +57,9 @@ export const BookingUrlForm = ({ initialUrl, onSave, isLoading }: BookingUrlForm
     }
 
     try {
-      await onSave(localBookingUrl);
+      await onSave(formattedUrl);
       setIsEditing(false);
+      setLocalBookingUrl(formattedUrl); // Update local state with formatted URL
       toast({
         title: "Success",
         description: "Booking URL updated successfully",
