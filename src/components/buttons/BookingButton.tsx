@@ -17,16 +17,24 @@ export const BookingButton = ({
 }: BookingButtonProps) => {
   const { trackConversion } = useConversionTracking();
 
-  const handleBookingClick = async () => {
+  const handleBookingClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault(); // Prevent default to handle tracking first
     console.log('Booking URL clicked:', bookingUrl);
-    await trackConversion(bookingUrl, { profileId, shortCode, linkVisitId });
+    
+    try {
+      await trackConversion(bookingUrl, { profileId, shortCode, linkVisitId });
+      // After tracking is complete, redirect to the booking URL
+      window.location.href = bookingUrl;
+    } catch (error) {
+      console.error('Error tracking conversion:', error);
+      // Even if tracking fails, still redirect to ensure functionality
+      window.location.href = bookingUrl;
+    }
   };
 
   return (
     <a
       href={bookingUrl}
-      target="_blank"
-      rel="noopener noreferrer"
       onClick={handleBookingClick}
       className="w-full"
     >
