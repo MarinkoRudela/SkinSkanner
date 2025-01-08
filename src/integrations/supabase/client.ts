@@ -21,9 +21,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true,
     flowType: 'pkce',
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-    storageKey: 'supabase.auth.token'
+    storageKey: 'supabase.auth.token',
+    cookieOptions
   },
-  cookies: cookieOptions,
   global: {
     headers: {
       'x-client-info': `lovable-app/1.0.0`,
