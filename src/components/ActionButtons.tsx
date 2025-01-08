@@ -17,11 +17,12 @@ export const ActionButtons = ({
   shortCode,
   linkVisitId 
 }: ActionButtonsProps) => {
-  const isDemo = bookingUrl === '/signup';
+  // Only show demo button if we're on the demo page
+  const isDemoPage = window.location.pathname === '/demo';
 
   return (
     <div className="flex flex-col gap-3 sm:gap-4 w-full max-w-sm mx-auto pt-4">
-      {isDemo ? (
+      {isDemoPage ? (
         <DemoButton />
       ) : (
         <>
