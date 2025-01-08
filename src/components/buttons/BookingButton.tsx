@@ -18,18 +18,29 @@ export const BookingButton = ({
   const { trackConversion } = useConversionTracking();
 
   const handleBookingClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault(); // Prevent default to handle tracking first
-    console.log('Booking URL clicked:', bookingUrl);
+    e.preventDefault();
+    console.log('Booking button clicked with URL:', bookingUrl);
     
-    try {
-      await trackConversion(bookingUrl, { profileId, shortCode, linkVisitId });
-      // After tracking is complete, redirect to the booking URL
-      window.location.href = bookingUrl;
-    } catch (error) {
-      console.error('Error tracking conversion:', error);
-      // Even if tracking fails, still redirect to ensure functionality
-      window.location.href = bookingUrl;
+    if (!bookingUrl) {
+      console.error('No booking URL provided');
+      return;
     }
+
+    // Track conversion first
+    if (profileId && shortCode && linkVisitId) {
+      console.log('Tracking conversion before redirect');
+      try {
+        await trackConversion(bookingUrl, { profileId, shortCode, linkVisitId });
+        console.log('Conversion tracked successfully');
+      } catch (error) {
+        console.error('Error tracking conversion:', error);
+        // Continue with redirect even if tracking fails
+      }
+    }
+
+    // Ensure redirect happens after tracking attempt
+    console.log('Redirecting to:', bookingUrl);
+    window.open(bookingUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
