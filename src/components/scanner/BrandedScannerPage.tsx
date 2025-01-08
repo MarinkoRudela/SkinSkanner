@@ -10,7 +10,9 @@ interface BusinessData {
   brand_name: string;
   logo_url: string;
   tagline: string;
-  booking_url: string;
+  business_settings: {
+    booking_url: string;
+  };
   profile_id: string;
 }
 
