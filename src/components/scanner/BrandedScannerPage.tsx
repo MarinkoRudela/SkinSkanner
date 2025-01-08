@@ -5,6 +5,7 @@ import { BusinessBrandedHeader } from "./BusinessBrandedHeader";
 import { ScannerSection } from "./ScannerSection";
 import { ErrorDisplay } from "./ErrorDisplay";
 import { BusinessDataFetcher } from "./BusinessDataFetcher";
+import { useVisitorTracking } from "@/hooks/use-visitor-tracking";
 import { toast } from "@/hooks/use-toast";
 
 interface BusinessData {
@@ -12,6 +13,7 @@ interface BusinessData {
   logo_url: string;
   tagline: string;
   booking_url: string;
+  profile_id: string;
 }
 
 export const BrandedScannerPage = () => {
@@ -22,6 +24,14 @@ export const BrandedScannerPage = () => {
 
   if (!shortCode) {
     return <ErrorDisplay error="Invalid URL" />;
+  }
+
+  // Initialize visitor tracking when business data is loaded
+  if (businessData) {
+    useVisitorTracking({
+      shortCode,
+      profileId: businessData.profile_id
+    });
   }
 
   if (isLoading) {

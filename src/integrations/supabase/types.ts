@@ -9,6 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      booking_conversions: {
+        Row: {
+          booking_url_clicked: string
+          conversion_timestamp: string | null
+          id: string
+          link_visit_id: string
+          profile_id: string
+          short_code: string
+        }
+        Insert: {
+          booking_url_clicked: string
+          conversion_timestamp?: string | null
+          id?: string
+          link_visit_id: string
+          profile_id: string
+          short_code: string
+        }
+        Update: {
+          booking_url_clicked?: string
+          conversion_timestamp?: string | null
+          id?: string
+          link_visit_id?: string
+          profile_id?: string
+          short_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_conversions_link_visit_id_fkey"
+            columns: ["link_visit_id"]
+            isOneToOne: false
+            referencedRelation: "link_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_conversions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       business_settings: {
         Row: {
           booking_url: string
@@ -73,6 +115,60 @@ export type Database = {
           },
         ]
       }
+      link_analytics: {
+        Row: {
+          browser: string | null
+          country: string | null
+          device_type: string | null
+          id: string
+          profile_id: string
+          region: string | null
+          session_duration: number | null
+          short_code: string
+          visit_timestamp: string | null
+          visitor_id: string
+        }
+        Insert: {
+          browser?: string | null
+          country?: string | null
+          device_type?: string | null
+          id?: string
+          profile_id: string
+          region?: string | null
+          session_duration?: number | null
+          short_code: string
+          visit_timestamp?: string | null
+          visitor_id: string
+        }
+        Update: {
+          browser?: string | null
+          country?: string | null
+          device_type?: string | null
+          id?: string
+          profile_id?: string
+          region?: string | null
+          session_duration?: number | null
+          short_code?: string
+          visit_timestamp?: string | null
+          visitor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_profile"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "link_analytics_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           brand_name: string
@@ -102,6 +198,54 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      scanner_analytics: {
+        Row: {
+          id: string
+          link_visit_id: string
+          photos_uploaded: number | null
+          primary_concerns: string[] | null
+          profile_id: string
+          recommendations_generated: number | null
+          scan_completed_at: string | null
+          scan_started_at: string | null
+        }
+        Insert: {
+          id?: string
+          link_visit_id: string
+          photos_uploaded?: number | null
+          primary_concerns?: string[] | null
+          profile_id: string
+          recommendations_generated?: number | null
+          scan_completed_at?: string | null
+          scan_started_at?: string | null
+        }
+        Update: {
+          id?: string
+          link_visit_id?: string
+          photos_uploaded?: number | null
+          primary_concerns?: string[] | null
+          profile_id?: string
+          recommendations_generated?: number | null
+          scan_completed_at?: string | null
+          scan_started_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scanner_analytics_link_visit_id_fkey"
+            columns: ["link_visit_id"]
+            isOneToOne: false
+            referencedRelation: "link_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scanner_analytics_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {
