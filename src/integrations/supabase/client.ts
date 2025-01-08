@@ -13,21 +13,21 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true,
     flowType: 'pkce',
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-    storageKey: 'supabase.auth.token',
-    cookieOptions: {
-      name: 'sb-auth-token',
-      lifetime: 60 * 60 * 24 * 365, // 1 year
-      domain: currentDomain === 'localhost' ? 'localhost' : `.${currentDomain}`,
-      sameSite: 'lax',
-      secure: currentDomain !== 'localhost',
-      path: '/'
-    }
+    storageKey: 'supabase.auth.token'
   },
   global: {
     headers: {
       'x-client-info': `lovable-app/1.0.0`,
     },
   },
+  cookies: {
+    name: 'sb-auth-token',
+    lifetime: 60 * 60 * 24 * 365, // 1 year
+    domain: currentDomain === 'localhost' ? 'localhost' : `.${currentDomain}`,
+    sameSite: 'lax',
+    secure: currentDomain !== 'localhost',
+    path: '/'
+  }
 })
 
 // Add debug logging for auth state changes
