@@ -1,55 +1,62 @@
-import { useEffect } from "react";
-import { fetchBusinessData } from "@/services/businessDataService";
-import { toast } from "@/hooks/use-toast";
-
-interface BusinessData {
-  brand_name: string;
-  logo_url: string;
-  tagline: string;
-  booking_url: string;
-  profile_id: string;
-}
+import React from 'react';
+import { fetchBusinessData } from '@/services/businessDataService';
+import { ErrorDisplay } from './ErrorDisplay';
+import { LoadingScreen } from '../LoadingScreen';
+import { toast } from '@/hooks/use-toast';
 
 interface BusinessDataFetcherProps {
   shortCode: string;
-  onDataFetched: (data: BusinessData) => void;
-  onError: (error: string) => void;
+  children: (data: any) => React.ReactNode;
 }
 
-export const BusinessDataFetcher = ({ 
-  shortCode, 
-  onDataFetched, 
-  onError 
-}: BusinessDataFetcherProps) => {
-  useEffect(() => {
-    const loadBusinessData = async () => {
+export const BusinessDataFetcher: React.FC<BusinessDataFetcherProps> = ({ shortCode, children }) => {
+  const [data, setData] = React.useState<any>(null);
+  const [error, setError] = React.useState<string | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const loadData = async () => {
       try {
         console.log('Fetching business data for shortCode:', shortCode);
-        const businessInfo = await fetchBusinessData(shortCode);
-        console.log('Business data fetched successfully:', businessInfo);
-        onDataFetched(businessInfo);
+        setIsLoading(true);
+        const businessData = await fetchBusinessData(shortCode);
+        console.log('Business data received:', businessData);
         
-        toast({
-          title: "Success",
-          description: "Welcome to the face analysis tool",
-        });
+        if (!businessData) {
+          throw new Error('No business data found');
+        }
+        
+        setData(businessData);
+        setError(null);
       } catch (err: any) {
-        console.error('Error in loadBusinessData:', err);
-        const errorMessage = err.message.includes('not completely set up')
-          ? "This business hasn't completed their profile setup yet. Please contact them directly or try again later."
-          : err.message;
-        console.error('Displaying error message:', errorMessage);
-        onError(errorMessage);
+        console.error('Error fetching business data:', err);
+        setError(err.message || 'Failed to load business data');
         toast({
           title: "Error",
-          description: errorMessage,
+          description: "Failed to load business data. Please try again.",
           variant: "destructive",
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    loadBusinessData();
-  }, [shortCode, onDataFetched, onError]);
+    if (shortCode) {
+      loadData();
+    }
+  }, [shortCode]);
 
-  return null;
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  if (error) {
+    return <ErrorDisplay message={error} />;
+  }
+
+  if (!data) {
+    return <ErrorDisplay message="No business data found" />;
+  }
+
+  return <>{children(data)}</>;
 };
