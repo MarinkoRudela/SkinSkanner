@@ -29,11 +29,12 @@ export const ScannerPageContainer = ({
 
   const bookingUrl = businessData.business_settings?.booking_url;
   
-  if (!bookingUrl || bookingUrl.trim() === '') {
-    console.warn('No booking URL found for business');
+  // Only show the setup warning if business_settings is null
+  if (!businessData.business_settings) {
+    console.warn('No business settings found for business');
     toast({
       title: "Setup Required",
-      description: "This business hasn't completed their booking URL setup yet. Please try again later.",
+      description: "This business hasn't completed their profile setup yet. Please try again later.",
       variant: "destructive"
     });
   }
