@@ -11,7 +11,7 @@ export const DemoButton = () => {
       className="w-full bg-primary hover:bg-primary-hover text-primary-foreground py-6 sm:py-4 text-base sm:text-sm rounded-xl"
     >
       <CalendarDays className="mr-2 h-5 w-5 sm:h-4 sm:w-4" />
-      Sign Up Now
+      Book Consultation
     </Button>
   );
 };
