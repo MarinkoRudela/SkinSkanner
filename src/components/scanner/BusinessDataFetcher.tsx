@@ -6,12 +6,15 @@ import { toast } from '@/hooks/use-toast';
 
 interface BusinessDataFetcherProps {
   shortCode: string;
-  children: (data: any) => React.ReactNode;
+  onDataFetched: (data: any) => void;
+  onError: (err: string) => void;
 }
 
-export const BusinessDataFetcher: React.FC<BusinessDataFetcherProps> = ({ shortCode, children }) => {
-  const [data, setData] = React.useState<any>(null);
-  const [error, setError] = React.useState<string | null>(null);
+export const BusinessDataFetcher: React.FC<BusinessDataFetcherProps> = ({ 
+  shortCode, 
+  onDataFetched, 
+  onError 
+}) => {
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -26,11 +29,10 @@ export const BusinessDataFetcher: React.FC<BusinessDataFetcherProps> = ({ shortC
           throw new Error('No business data found');
         }
         
-        setData(businessData);
-        setError(null);
+        onDataFetched(businessData);
       } catch (err: any) {
         console.error('Error fetching business data:', err);
-        setError(err.message || 'Failed to load business data');
+        onError(err.message || 'Failed to load business data');
         toast({
           title: "Error",
           description: "Failed to load business data. Please try again.",
@@ -44,19 +46,11 @@ export const BusinessDataFetcher: React.FC<BusinessDataFetcherProps> = ({ shortC
     if (shortCode) {
       loadData();
     }
-  }, [shortCode]);
+  }, [shortCode, onDataFetched, onError]);
 
   if (isLoading) {
     return <LoadingScreen />;
   }
 
-  if (error) {
-    return <ErrorDisplay message={error} />;
-  }
-
-  if (!data) {
-    return <ErrorDisplay message="No business data found" />;
-  }
-
-  return <>{children(data)}</>;
+  return null;
 };
