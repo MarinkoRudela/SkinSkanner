@@ -104,10 +104,10 @@ export const Features = () => {
             onClick={() => navigate("/signup")}
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg text-lg"
           >
-            Start Your Free Trial Today
+            Sign Up Now
           </Button>
           <p className="mt-4 text-gray-600">
-            No credit card required • 14-day free trial • Cancel anytime
+            Join the leading med spas revolutionizing their business with AI
           </p>
         </div>
       </div>
