@@ -19,7 +19,7 @@ export const PlanSelection = ({ planType, setPlanType }: PlanSelectionProps) => 
           <RadioGroupItem value="monthly" id="monthly" />
           <Label htmlFor="monthly" className="cursor-pointer">
             <div className="font-semibold">Monthly Plan</div>
-            <div className="text-sm text-gray-500">$148/month</div>
+            <div className="text-sm text-gray-500">$499/month</div>
           </Label>
         </div>
       </RadioGroup>
