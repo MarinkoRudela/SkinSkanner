@@ -24,7 +24,7 @@ export const features = [
     description: "Elevate your med spa's digital presence with a luxury, branded experience that sets you apart from competitors and justifies premium pricing.",
     benefits: [
       "Custom-branded analysis portal",
-      "Professional result presentations",
+      "Unlimited scans for your clients",
       "Shareable analysis links for social proof",
       "Mobile-optimized experience"
     ]
