@@ -21,7 +21,7 @@ export const Features = () => {
     },
     {
       title: "Automated Client Acquisition",
-      description: "Convert website visitors into high-value clients automatically. Our smart booking system captures leads 24/7, filling your consultation calendar while you focus on treatments.",
+      description: "Convert website and social media visitors into high-value clients automatically. Our smart booking system captures leads 24/7, filling your consultation calendar while you focus on treatments.",
       benefits: [
         "24/7 automated consultation booking",
         "Qualified leads with detailed skin analysis",
