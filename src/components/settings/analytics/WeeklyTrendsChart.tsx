@@ -3,10 +3,10 @@ import { ChartContainer } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Tables } from "@/integrations/supabase/types";
 
-type WeeklyAnalytics = Tables<"weekly_analytics">;
+type WeeklyAnalyticsData = Tables<"weekly_analytics">;
 
 interface WeeklyTrendsChartProps {
-  data: WeeklyAnalytics[];
+  data: WeeklyAnalyticsData[];
 }
 
 export const WeeklyTrendsChart = ({ data }: WeeklyTrendsChartProps) => {
