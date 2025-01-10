@@ -1,7 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { WeeklyAnalytics } from "@/integrations/supabase/types";
+import { Tables } from "@/integrations/supabase/types";
+
+type WeeklyAnalytics = Tables<"weekly_analytics">;
 
 interface WeeklyTrendsChartProps {
   data: WeeklyAnalytics[];
