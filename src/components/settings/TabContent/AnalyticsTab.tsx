@@ -1,15 +1,12 @@
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ChartBar, Users, TrendingUp, Clock } from "lucide-react";
 import { MetricCard } from "../analytics/MetricCard";
 import { WeeklyTrendsChart } from "../analytics/WeeklyTrendsChart";
-import { formatHour, formatDuration } from "../analytics/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tables } from "@/integrations/supabase/types/database";
 
-interface AnalyticsTabProps {
-  session: any;
-}
-
-interface TodayAnalytics {
+interface DailyAnalytics {
   total_visits_today: number;
   total_scans_today: number;
   total_booking_clicks_today: number;
@@ -17,71 +14,108 @@ interface TodayAnalytics {
   avg_session_duration_today: number;
 }
 
-export const AnalyticsTab = ({ session }: AnalyticsTabProps) => {
-  const { data: todayData, isLoading: todayLoading } = useQuery({
-    queryKey: ['analytics', 'today', session?.user?.id],
+export const AnalyticsTab = ({ session }: { session: any }) => {
+  // Fetch today's analytics
+  const { 
+    data: todayData,
+    isLoading: todayLoading,
+    refetch: refetchToday
+  } = useQuery({
+    queryKey: ['todayAnalytics', session?.user?.id],
     queryFn: async () => {
+      console.log('Fetching today analytics for user:', session?.user?.id);
       const { data, error } = await supabase
         .rpc('get_todays_analytics', {
-          profile_id_param: session.user.id
+          profile_id_param: session?.user?.id
         });
-      
-      if (error) throw error;
-      return data as TodayAnalytics;
+
+      if (error) {
+        console.error('Error fetching today analytics:', error);
+        throw error;
+      }
+
+      return data as DailyAnalytics;
     },
+    enabled: !!session?.user?.id,
   });
 
-  const { data: weeklyData, isLoading: weeklyLoading } = useQuery({
-    queryKey: ['analytics', 'weekly', session?.user?.id],
+  // Fetch weekly analytics
+  const {
+    data: weeklyData,
+    isLoading: weeklyLoading,
+    refetch: refetchWeekly
+  } = useQuery({
+    queryKey: ['weeklyAnalytics', session?.user?.id],
     queryFn: async () => {
+      console.log('Fetching weekly analytics for user:', session?.user?.id);
       const { data, error } = await supabase
         .from('weekly_analytics')
         .select('*')
-        .eq('profile_id', session.user.id)
-        .order('visit_date', { ascending: false })
+        .eq('profile_id', session?.user?.id)
+        .order('visit_date', { ascending: true })
         .limit(7);
-      
-      if (error) throw error;
-      return data;
+
+      if (error) {
+        console.error('Error fetching weekly analytics:', error);
+        throw error;
+      }
+
+      return data as Tables<'weekly_analytics'>[];
     },
+    enabled: !!session?.user?.id,
   });
 
-  if (todayLoading || weeklyLoading) {
-    return <div className="p-4">Loading analytics...</div>;
+  // Refresh data every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetchToday();
+      refetchWeekly();
+    }, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [refetchToday, refetchWeekly]);
+
+  if (todayLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-32 rounded-lg" />
+          ))}
+        </div>
+        <Skeleton className="h-[300px] rounded-lg" />
+      </div>
+    );
   }
 
   const metrics = [
     {
       title: "Total Visits Today",
       value: todayData?.total_visits_today || 0,
-      description: "Unique scanner visits",
-      icon: Users
+      description: "Number of unique visitors today"
     },
     {
-      title: "Scans Today",
+      title: "Completed Scans Today",
       value: todayData?.total_scans_today || 0,
-      description: "Completed skin analyses",
-      icon: ChartBar
+      description: "Number of completed skin analyses"
     },
     {
       title: "Booking Clicks Today",
       value: todayData?.total_booking_clicks_today || 0,
-      description: "Consultation bookings",
-      icon: TrendingUp
-    },
-    {
-      title: "Peak Hour",
-      value: todayData?.peak_hour_today !== undefined ? formatHour(todayData.peak_hour_today) : '-',
-      description: `Avg duration: ${formatDuration(todayData?.avg_session_duration_today || 0)}`,
-      icon: Clock
+      description: "Number of booking link clicks"
     }
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-4">
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {metrics.map((metric, index) => (
-          <MetricCard key={index} {...metric} />
+          <MetricCard
+            key={index}
+            title={metric.title}
+            value={metric.value}
+            description={metric.description}
+          />
         ))}
       </div>
       

@@ -35,29 +35,6 @@ export interface Database {
           booking_url_clicked?: string
         }
       }
-      business_settings: {
-        Row: {
-          id: string
-          profile_id: string | null
-          booking_url: string
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          profile_id?: string | null
-          booking_url: string
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          profile_id?: string | null
-          booking_url?: string
-          created_at?: string
-          updated_at?: string
-        }
-      }
       weekly_analytics: {
         Row: {
           id: string
@@ -98,10 +75,23 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_todays_analytics: {
+        Args: { profile_id_param: string }
+        Returns: {
+          total_visits_today: number
+          total_scans_today: number
+          total_booking_clicks_today: number
+          peak_hour_today: number
+          avg_session_duration_today: number
+        }
+      }
     }
     Enums: {
       [_ in never]: never
     }
   }
 }
+
+export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
+export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T]
+export type Functions<T extends keyof Database['public']['Functions']> = Database['public']['Functions'][T]
