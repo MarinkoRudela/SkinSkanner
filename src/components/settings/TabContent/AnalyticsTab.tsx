@@ -5,6 +5,7 @@ import { MetricCard } from "../analytics/MetricCard";
 import { WeeklyTrendsChart } from "../analytics/WeeklyTrendsChart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tables } from "@/integrations/supabase/types/database";
+import { Users, ScanLine, MousePointerClick } from "lucide-react";
 
 interface DailyAnalytics {
   total_visits_today: number;
@@ -92,17 +93,20 @@ export const AnalyticsTab = ({ session }: { session: any }) => {
     {
       title: "Total Visits Today",
       value: todayData?.total_visits_today || 0,
-      description: "Number of unique visitors today"
+      description: "Number of unique visitors today",
+      icon: Users
     },
     {
       title: "Completed Scans Today",
       value: todayData?.total_scans_today || 0,
-      description: "Number of completed skin analyses"
+      description: "Number of completed skin analyses",
+      icon: ScanLine
     },
     {
       title: "Booking Clicks Today",
       value: todayData?.total_booking_clicks_today || 0,
-      description: "Number of booking link clicks"
+      description: "Number of booking link clicks",
+      icon: MousePointerClick
     }
   ];
 
@@ -115,6 +119,7 @@ export const AnalyticsTab = ({ session }: { session: any }) => {
             title={metric.title}
             value={metric.value}
             description={metric.description}
+            icon={metric.icon}
           />
         ))}
       </div>
