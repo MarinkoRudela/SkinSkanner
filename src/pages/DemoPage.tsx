@@ -141,7 +141,7 @@ export const DemoPage = () => {
               onClick={() => navigate('/signup')}
               className="bg-primary hover:bg-primary-hover text-white px-8 py-6"
             >
-              Start Your Free Trial <ArrowRight className="ml-2" />
+              Sign Up Now <ArrowRight className="ml-2" />
             </Button>
           </Card>
         </div>
