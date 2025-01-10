@@ -324,12 +324,67 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_analytics: {
+        Row: {
+          avg_session_duration: number | null
+          created_at: string
+          daily_booking_clicks: number
+          daily_completed_scans: number
+          daily_visits: number
+          id: string
+          profile_id: string
+          updated_at: string
+          visit_date: string
+        }
+        Insert: {
+          avg_session_duration?: number | null
+          created_at?: string
+          daily_booking_clicks?: number
+          daily_completed_scans?: number
+          daily_visits?: number
+          id?: string
+          profile_id: string
+          updated_at?: string
+          visit_date: string
+        }
+        Update: {
+          avg_session_duration?: number | null
+          created_at?: string
+          daily_booking_clicks?: number
+          daily_completed_scans?: number
+          daily_visits?: number
+          id?: string
+          profile_id?: string
+          updated_at?: string
+          visit_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_analytics_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_todays_analytics: {
+        Args: {
+          profile_id_param: string
+        }
+        Returns: {
+          total_visits_today: number
+          total_scans_today: number
+          total_booking_clicks_today: number
+          peak_hour_today: number
+          avg_session_duration_today: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

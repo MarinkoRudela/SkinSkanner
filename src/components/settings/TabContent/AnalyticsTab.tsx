@@ -3,129 +3,153 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ChartBar, Users, TrendingUp } from "lucide-react";
+import { ChartBar, Users, TrendingUp, Clock } from "lucide-react";
 
 interface AnalyticsTabProps {
   session: any;
 }
 
+interface TodayAnalytics {
+  total_visits_today: number;
+  total_scans_today: number;
+  total_booking_clicks_today: number;
+  peak_hour_today: number;
+  avg_session_duration_today: number;
+}
+
+interface WeeklyAnalytics {
+  visit_date: string;
+  daily_visits: number;
+  daily_completed_scans: number;
+  daily_booking_clicks: number;
+  avg_session_duration: number;
+}
+
 export const AnalyticsTab = ({ session }: AnalyticsTabProps) => {
-  const { data: visitsData, isLoading: visitsLoading } = useQuery({
-    queryKey: ['analytics', 'visits', session?.user?.id],
+  const { data: todayData, isLoading: todayLoading } = useQuery({
+    queryKey: ['analytics', 'today', session?.user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('link_analytics')
-        .select('*')
-        .eq('profile_id', session.user.id);
+        .rpc('get_todays_analytics', {
+          profile_id_param: session.user.id
+        });
       
       if (error) throw error;
-      return data;
+      return data as TodayAnalytics;
     },
   });
 
-  const { data: conversionsData, isLoading: conversionsLoading } = useQuery({
-    queryKey: ['analytics', 'conversions', session?.user?.id],
+  const { data: weeklyData, isLoading: weeklyLoading } = useQuery({
+    queryKey: ['analytics', 'weekly', session?.user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('booking_conversions')
+        .from('weekly_analytics')
         .select('*')
-        .eq('profile_id', session.user.id);
+        .eq('profile_id', session.user.id)
+        .order('visit_date', { ascending: false })
+        .limit(7);
       
       if (error) throw error;
-      return data;
+      return data as WeeklyAnalytics[];
     },
   });
 
-  const { data: scannerData, isLoading: scannerLoading } = useQuery({
-    queryKey: ['analytics', 'scanner', session?.user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('scanner_analytics')
-        .select('*')
-        .eq('profile_id', session.user.id);
-      
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const totalVisits = visitsData?.length || 0;
-  const totalConversions = conversionsData?.length || 0;
-  const totalScans = scannerData?.length || 0;
-  const conversionRate = totalVisits ? ((totalConversions / totalVisits) * 100).toFixed(1) : '0';
-
-  // Sample data for the chart - in production, this would be processed from real data
-  const visitsByDay = [
-    { name: 'Mon', visits: 4 },
-    { name: 'Tue', visits: 3 },
-    { name: 'Wed', visits: 7 },
-    { name: 'Thu', visits: 5 },
-    { name: 'Fri', visits: 6 },
-    { name: 'Sat', visits: 8 },
-    { name: 'Sun', visits: 9 },
-  ];
-
-  const chartConfig = {
-    visits: {
-      label: 'Visits',
-      color: '#7E69AB'
-    }
-  };
-
-  if (visitsLoading || conversionsLoading || scannerLoading) {
+  if (todayLoading || weeklyLoading) {
     return <div className="p-4">Loading analytics...</div>;
   }
 
+  const formatHour = (hour: number) => {
+    return `${hour % 12 || 12}${hour < 12 ? 'AM' : 'PM'}`;
+  };
+
+  const formatDuration = (seconds: number) => {
+    if (!seconds) return '0s';
+    const minutes = Math.floor(seconds / 60);
+    return minutes > 0 ? `${minutes}m` : `${seconds}s`;
+  };
+
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Visits</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Visits Today</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalVisits}</div>
-            <p className="text-xs text-muted-foreground">Unique link visits</p>
+            <div className="text-2xl font-bold">{todayData?.total_visits_today || 0}</div>
+            <p className="text-xs text-muted-foreground">Unique scanner visits</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{conversionRate}%</div>
-            <p className="text-xs text-muted-foreground">From visits to bookings</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Scans</CardTitle>
+            <CardTitle className="text-sm font-medium">Scans Today</CardTitle>
             <ChartBar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalScans}</div>
+            <div className="text-2xl font-bold">{todayData?.total_scans_today || 0}</div>
             <p className="text-xs text-muted-foreground">Completed skin analyses</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Booking Clicks Today</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{todayData?.total_booking_clicks_today || 0}</div>
+            <p className="text-xs text-muted-foreground">Consultation bookings</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Peak Hour</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {todayData?.peak_hour_today !== undefined ? formatHour(todayData.peak_hour_today) : '-'}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Avg duration: {formatDuration(todayData?.avg_session_duration_today || 0)}
+            </p>
           </CardContent>
         </Card>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Weekly Visits</CardTitle>
+          <CardTitle>Weekly Trends</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[200px]">
-            <ChartContainer config={chartConfig}>
+          <div className="h-[300px]">
+            <ChartContainer>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={visitsByDay}>
-                  <XAxis dataKey="name" />
+                <BarChart data={weeklyData?.reverse() || []}>
+                  <XAxis 
+                    dataKey="visit_date" 
+                    tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', { weekday: 'short' })}
+                  />
                   <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="visits" fill="#7E69AB" />
+                  <Tooltip content={<ChartTooltipContent />} />
+                  <Bar 
+                    name="Visits" 
+                    dataKey="daily_visits" 
+                    fill="#7E69AB" 
+                  />
+                  <Bar 
+                    name="Scans" 
+                    dataKey="daily_completed_scans" 
+                    fill="#9F85D1" 
+                  />
+                  <Bar 
+                    name="Bookings" 
+                    dataKey="daily_booking_clicks" 
+                    fill="#BBA3E8" 
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
