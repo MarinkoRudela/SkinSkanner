@@ -85,7 +85,7 @@ export const AnalyticsTab = ({ session }: AnalyticsTabProps) => {
         ))}
       </div>
       
-      <WeeklyTrendsChart data={weeklyData || []} />
+      <WeeklyTrendsChart data={weeklyData || []} isLoading={weeklyLoading} />
     </div>
   );
 };
