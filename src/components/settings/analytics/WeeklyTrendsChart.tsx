@@ -1,63 +1,69 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { Tables } from "@/integrations/supabase/types";
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Card } from "@/components/ui/card";
+import { Tables } from "@/integrations/supabase/types/helpers";
+import { formatHour } from "./utils";
 
-type WeeklyAnalyticsData = Tables<"weekly_analytics">;
+type WeeklyAnalyticsData = Tables<'weekly_analytics'>;
 
 interface WeeklyTrendsChartProps {
   data: WeeklyAnalyticsData[];
+  isLoading: boolean;
 }
 
-export const WeeklyTrendsChart = ({ data }: WeeklyTrendsChartProps) => {
+export const WeeklyTrendsChart = ({ data, isLoading }: WeeklyTrendsChartProps) => {
+  if (isLoading) {
+    return (
+      <Card className="p-6 w-full h-[400px] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </Card>
+    );
+  }
+
   const chartConfig = {
-    visits: {
-      color: "#7E69AB"
-    },
-    scans: {
-      color: "#9F85D1"
-    },
-    bookings: {
-      color: "#BBA3E8"
-    }
+    width: "100%",
+    height: 400,
+    margin: { top: 20, right: 30, left: 0, bottom: 0 },
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Weekly Trends</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="h-[300px]">
-          <ChartContainer config={chartConfig}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data?.reverse() || []}>
-                <XAxis 
-                  dataKey="visit_date" 
-                  tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', { weekday: 'short' })}
-                />
-                <YAxis />
-                <Tooltip />
-                <Bar 
-                  name="Visits" 
-                  dataKey="daily_visits" 
-                  fill={chartConfig.visits.color}
-                />
-                <Bar 
-                  name="Scans" 
-                  dataKey="daily_completed_scans" 
-                  fill={chartConfig.scans.color}
-                />
-                <Bar 
-                  name="Bookings" 
-                  dataKey="daily_booking_clicks" 
-                  fill={chartConfig.bookings.color}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </div>
-      </CardContent>
+    <Card className="p-6">
+      <h3 className="text-lg font-semibold mb-4">Weekly Trends</h3>
+      <div style={{ width: '100%', height: 400 }}>
+        <ResponsiveContainer>
+          <LineChart data={data} margin={chartConfig.margin}>
+            <XAxis 
+              dataKey="visit_date" 
+              tickFormatter={(date) => new Date(date).toLocaleDateString()}
+            />
+            <YAxis />
+            <Tooltip
+              labelFormatter={(date) => new Date(date).toLocaleDateString()}
+              formatter={(value: number) => [value, '']}
+            />
+            <Line
+              type="monotone"
+              dataKey="daily_visits"
+              name="Visits"
+              stroke="#8884d8"
+              strokeWidth={2}
+            />
+            <Line
+              type="monotone"
+              dataKey="daily_completed_scans"
+              name="Completed Scans"
+              stroke="#82ca9d"
+              strokeWidth={2}
+            />
+            <Line
+              type="monotone"
+              dataKey="daily_booking_clicks"
+              name="Booking Clicks"
+              stroke="#ffc658"
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </Card>
   );
 };
