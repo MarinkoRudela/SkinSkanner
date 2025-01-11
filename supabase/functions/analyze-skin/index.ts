@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,7 +12,6 @@ serve(async (req) => {
   console.log('Request method:', req.method);
   console.log('Request headers:', Object.fromEntries(req.headers.entries()));
 
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     console.log('Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
@@ -20,38 +20,77 @@ serve(async (req) => {
   try {
     console.log('Starting request processing...');
     
-    // Log request body
     const requestText = await req.text();
     console.log('Raw request body:', requestText);
     
-    // Parse the request body
-    const { images } = JSON.parse(requestText);
-    console.log('Parsed images object keys:', Object.keys(images));
+    const { images, profileId } = JSON.parse(requestText);
+    console.log('Parsed request data:', { profileId, hasImages: !!images });
 
     if (!images || !images.front || !images.left || !images.right) {
-      console.error('❌ Missing required images:', {
-        front: !!images?.front,
-        left: !!images?.left,
-        right: !!images?.right
-      });
+      console.error('❌ Missing required images');
       throw new Error('Missing required images');
     }
+
+    if (!profileId) {
+      console.error('❌ Missing profileId');
+      throw new Error('Missing profile ID');
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Missing Supabase configuration');
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    // Fetch med spa's active treatments with their categories
+    console.log('Fetching treatments for profile:', profileId);
+    const { data: medSpaTreatments, error: treatmentsError } = await supabase
+      .from('med_spa_treatments')
+      .select(`
+        treatment_id,
+        treatments:treatment_id (
+          name,
+          description,
+          category:category_id (
+            name
+          )
+        )
+      `)
+      .eq('profile_id', profileId)
+      .eq('is_active', true);
+
+    if (treatmentsError) {
+      console.error('❌ Error fetching treatments:', treatmentsError);
+      throw treatmentsError;
+    }
+
+    console.log('Retrieved treatments:', medSpaTreatments);
+
+    // Format treatments for the prompt
+    const availableTreatments = medSpaTreatments.map(t => ({
+      name: t.treatments.name,
+      category: t.treatments.category.name,
+      description: t.treatments.description
+    }));
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openaiApiKey) {
       console.error('❌ OpenAI API key is not configured');
       throw new Error('OpenAI API key is not configured');
     }
-    console.log('✅ OpenAI API key found');
 
     console.log('📝 Preparing OpenAI request...');
     const messages = [
       {
         role: 'system',
-        content: `You are an expert medical aesthetician and dermatology specialist at a luxury medical spa. Your task is to analyze facial images and provide JSON-formatted recommendations for medical spa treatments. 
+        content: `You are an expert medical aesthetician and dermatology specialist at a luxury medical spa. Your task is to analyze facial images and provide JSON-formatted recommendations for medical spa treatments, specifically choosing from the following available treatments:
 
-When analyzing the images, focus on these key areas to provide a comprehensive JSON response:
+${availableTreatments.map(t => `- ${t.name} (${t.category}): ${t.description}`).join('\n')}
 
+When analyzing the images, focus on these key areas:
 1. Skin Analysis (look for):
    - Fine lines and wrinkles
    - Volume loss and facial contours
@@ -62,24 +101,17 @@ When analyzing the images, focus on these key areas to provide a comprehensive J
    - Skin laxity
    - Under-eye concerns
 
-2. Treatment Recommendations should focus on medical spa services such as:
-   - Botox/Neurotoxins for dynamic wrinkles
-   - Dermal fillers for volume restoration
-   - Laser treatments (e.g., IPL, Fraxel, CO2)
-   - Chemical peels
-   - Microneedling
-   - HydraFacial or similar treatments
-   - RF treatments for skin tightening
-   - LED light therapy
-   - Medical-grade skincare recommendations
-
 Your response must be formatted as a JSON object with exactly this structure:
 {
   "concerns": ["Observed condition 1", "Observed condition 2", "Observed condition 3", "Observed condition 4"],
   "recommendations": ["Specific treatment 1", "Specific treatment 2", "Specific treatment 3", "Specific treatment 4"]
 }
 
-Each concern must be paired with its corresponding treatment recommendation in the same array position. You must provide exactly 4 key observations and their matching treatment recommendations. Keep recommendations specific to medical spa treatments and procedures.`
+IMPORTANT:
+- Provide exactly 4 key observations and their matching treatment recommendations
+- Only recommend treatments from the provided list of available treatments
+- Each concern must be paired with its corresponding treatment recommendation in the same array position
+- Recommendations should be specific and match the med spa's actual treatment offerings`
       },
       {
         role: 'user',
@@ -126,9 +158,6 @@ Each concern must be paired with its corresponding treatment recommendation in t
       }),
     });
 
-    console.log('OpenAI response status:', openaiResponse.status);
-    console.log('OpenAI response headers:', Object.fromEntries(openaiResponse.headers.entries()));
-
     if (!openaiResponse.ok) {
       const errorText = await openaiResponse.text();
       console.error('❌ OpenAI API error:', {
@@ -147,7 +176,6 @@ Each concern must be paired with its corresponding treatment recommendation in t
       throw new Error('Invalid response format from OpenAI');
     }
 
-    // Parse and validate the analysis
     let analysis;
     try {
       console.log('🔄 Parsing OpenAI response content:', openaiData.choices[0].message.content);
@@ -156,9 +184,18 @@ Each concern must be paired with its corresponding treatment recommendation in t
       if (!analysis.concerns || !analysis.recommendations || 
           !Array.isArray(analysis.concerns) || !Array.isArray(analysis.recommendations) ||
           analysis.concerns.length !== analysis.recommendations.length ||
-          analysis.concerns.length !== 4) {  // Updated to expect exactly 4 items
+          analysis.concerns.length !== 4) {
         console.error('❌ Invalid analysis format:', analysis);
         throw new Error('Invalid analysis format');
+      }
+
+      // Validate that recommended treatments exist in availableTreatments
+      const availableTreatmentNames = new Set(availableTreatments.map(t => t.name));
+      const invalidTreatments = analysis.recommendations.filter(r => !availableTreatmentNames.has(r));
+      
+      if (invalidTreatments.length > 0) {
+        console.error('❌ Invalid treatments recommended:', invalidTreatments);
+        throw new Error('AI recommended unavailable treatments');
       }
 
       console.log('✅ Analysis validation passed:', analysis);
