@@ -64,7 +64,7 @@ export const TabsContainer = ({
       <TabsContent value="booking">
         <BookingTab
           bookingUrl={bookingUrl}
-          handleUpdateBookingUrl={handleUpdateBookingUrl}
+          updateBookingUrl={handleUpdateBookingUrl}
           uniqueLink={uniqueLink}
           isLoading={isLoading}
         />
