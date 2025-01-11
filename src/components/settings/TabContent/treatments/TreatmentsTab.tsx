@@ -1,8 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion } from "@/components/ui/accordion";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TreatmentCategory } from "./treatments/TreatmentCategory";
-import { useTreatments } from "./treatments/useTreatments";
+import { TreatmentCategory } from "./TreatmentCategory";
+import { useTreatments } from "./useTreatments";
 import { useState } from "react";
 
 interface TreatmentsTabProps {
@@ -27,13 +26,6 @@ export const TreatmentsTab = ({ profileId }: TreatmentsTabProps) => {
   // Filter treatments based on selected categories
   const filteredCategories = categories
     .filter(category => selectedCategories.includes(category.category_type))
-    .map(category => ({
-      ...category,
-      treatments: category.treatments.filter(treatment => 
-        treatment.business_types?.includes('med_spa') || 
-        treatment.business_types?.includes('aesthetician')
-      )
-    }))
     .filter(category => category.treatments.length > 0);
 
   const handleCategoryChange = (category: string) => {
