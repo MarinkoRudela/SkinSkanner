@@ -21,15 +21,7 @@ export const TreatmentItem = ({
   selectedAreas,
   businessType = 'med_spa'
 }: TreatmentItemProps) => {
-  const availableAreas = [
-    'Forehead',
-    'Eyes',
-    'Cheeks',
-    'Nose',
-    'Mouth',
-    'Chin',
-    'Neck'
-  ];
+  const showTreatmentAreas = treatment.category?.category_type !== 'eyebrow';
 
   return (
     <div className="space-y-4 p-4 rounded-lg border border-gray-200 hover:border-primary/50 transition-colors">
@@ -53,15 +45,6 @@ export const TreatmentItem = ({
                   License Required
                 </Badge>
               )}
-              {treatment.business_types && treatment.business_types.length > 0 && (
-                <Badge variant="outline" className="text-xs">
-                  {treatment.business_types.map(type => 
-                    type.split('_').map(word => 
-                      word.charAt(0).toUpperCase() + word.slice(1)
-                    ).join(' ')
-                  ).join(', ')}
-                </Badge>
-              )}
             </div>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -70,7 +53,7 @@ export const TreatmentItem = ({
         </div>
       </div>
       
-      {isSelected && (
+      {isSelected && showTreatmentAreas && (
         <div className="pl-7">
           <TreatmentAreaSelector
             areas={availableAreas}

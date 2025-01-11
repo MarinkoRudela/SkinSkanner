@@ -398,6 +398,7 @@ export type Database = {
       }
       treatment_categories: {
         Row: {
+          category_type: string | null
           created_at: string
           description: string | null
           display_order: number
@@ -406,6 +407,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category_type?: string | null
           created_at?: string
           description?: string | null
           display_order?: number
@@ -414,6 +416,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category_type?: string | null
           created_at?: string
           description?: string | null
           display_order?: number
