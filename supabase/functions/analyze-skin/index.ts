@@ -40,14 +40,16 @@ serve(async (req) => {
         if (size > 20 * 1024 * 1024) { // 20MB limit
           throw new Error('Image size exceeds 20MB limit');
         }
+
+        return imageUrl;
       } catch (error) {
         console.error('Image validation error:', error);
         throw new Error(`Image validation failed: ${error.message}`);
       }
     };
 
-    // Validate all images
-    await Promise.all([
+    // Validate all images in parallel
+    const [validatedFront, validatedLeft, validatedRight] = await Promise.all([
       validateImage(images.front),
       validateImage(images.left),
       validateImage(images.right)
@@ -95,7 +97,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -110,15 +112,15 @@ serve(async (req) => {
               },
               {
                 type: 'image_url',
-                image_url: { url: images.front }
+                image_url: { url: validatedFront }
               },
               {
                 type: 'image_url',
-                image_url: { url: images.left }
+                image_url: { url: validatedLeft }
               },
               {
                 type: 'image_url',
-                image_url: { url: images.right }
+                image_url: { url: validatedRight }
               }
             ]
           }
