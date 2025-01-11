@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
+import { Picture } from "@/components/ui/picture";
 
 interface BusinessBrandedHeaderProps {
   brandName: string;
@@ -19,23 +20,18 @@ export const BusinessBrandedHeader = ({
     setLogoError(true);
   };
 
+  const defaultLogo = "/lovable-uploads/779fe9aa-eef9-453e-b5da-89a3ae847a62.png";
+
   return (
     <Card className="glass-card p-8 mb-8 text-center">
-      {logoUrl ? (
-        <img
-          src={logoUrl}
-          alt={brandName}
-          className="h-32 mx-auto mb-4 object-contain"
-          onError={handleLogoError}
-        />
-      ) : (
-        <img
-          src="/lovable-uploads/779fe9aa-eef9-453e-b5da-89a3ae847a62.png"
-          alt="Skin Skanner AI"
-          className="h-32 mx-auto mb-4 object-contain"
-          onError={handleLogoError}
-        />
-      )}
+      <Picture
+        src={logoUrl || defaultLogo}
+        alt={brandName}
+        className="h-32 mx-auto mb-4 object-contain"
+        onError={handleLogoError}
+        sizes="(max-width: 768px) 100vw, 128px"
+        loading="lazy"
+      />
       <h1 className="text-2xl font-bold mb-2">{brandName}</h1>
       {tagline && (
         <p className="text-muted-foreground">{tagline}</p>

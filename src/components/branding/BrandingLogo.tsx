@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Picture } from "@/components/ui/picture";
 
 interface BrandingLogoProps {
   logoUrl: string | null;
@@ -20,19 +21,17 @@ export const BrandingLogo = ({ logoUrl, brandName, isLoading }: BrandingLogoProp
     );
   }
 
-  return logoUrl ? (
-    <img
-      src={logoUrl}
+  const defaultLogo = "/lovable-uploads/56380414-6671-46a7-99f4-723c10622c30.png";
+  const imgSrc = logoUrl || defaultLogo;
+
+  return (
+    <Picture
+      src={imgSrc}
       alt={brandName || "Business Logo"}
       className="mx-auto mb-4 h-80 w-auto"
       onError={handleLogoError}
-    />
-  ) : (
-    <img
-      src="/lovable-uploads/56380414-6671-46a7-99f4-723c10622c30.png"
-      alt="Skin Skanner AI"
-      className="mx-auto mb-4 h-80 w-auto"
-      onError={handleLogoError}
+      sizes="(max-width: 768px) 100vw, 320px"
+      loading="lazy"
     />
   );
 };
