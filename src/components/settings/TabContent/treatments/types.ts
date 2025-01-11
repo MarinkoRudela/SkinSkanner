@@ -5,6 +5,7 @@ export interface Treatment {
   requires_license: boolean;
   treatment_areas?: string[];
   category_id?: string;
+  business_types?: string[];
 }
 
 export interface TreatmentWithAreas {
@@ -26,3 +27,5 @@ export interface TreatmentState {
   selectedTreatments: Set<string>;
   treatmentAreas: Record<string, string[]>;
 }
+
+export type BusinessType = 'med_spa' | 'aesthetician' | 'brow_specialist';

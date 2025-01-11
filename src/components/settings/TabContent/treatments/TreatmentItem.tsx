@@ -38,18 +38,29 @@ export const TreatmentItem = ({
           onCheckedChange={onToggle}
         />
         <div className="grid gap-1.5 leading-none flex-1">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <label
               htmlFor={treatment.id}
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               {treatment.name}
             </label>
-            {treatment.requires_license && (
-              <Badge variant="secondary" className="ml-2">
-                License Required
-              </Badge>
-            )}
+            <div className="flex gap-2">
+              {treatment.requires_license && (
+                <Badge variant="secondary" className="text-xs">
+                  License Required
+                </Badge>
+              )}
+              {treatment.business_types && treatment.business_types.length > 0 && (
+                <Badge variant="outline" className="text-xs">
+                  {treatment.business_types.map(type => 
+                    type.split('_').map(word => 
+                      word.charAt(0).toUpperCase() + word.slice(1)
+                    ).join(' ')
+                  ).join(', ')}
+                </Badge>
+              )}
+            </div>
           </div>
           <p className="text-sm text-muted-foreground">
             {treatment.description}
