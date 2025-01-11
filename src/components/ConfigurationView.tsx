@@ -15,16 +15,14 @@ export const ConfigurationView = ({
   bookingUrl,
   updateBookingUrl,
 }: ConfigurationViewProps) => {
-  // Change the default tab to 'guide' instead of 'branding'
   const [activeTab, setActiveTab] = useState('guide');
-  const { brandName, logoUrl, tagline, fetchProfileData } = useProfileData(session);
+  const { brandName, logoUrl, tagline, businessType, fetchProfileData } = useProfileData(session);
   const { uniqueLink, isLoading, handleUpdateBookingUrl } = useBookingUrl(
     session,
     bookingUrl,
     updateBookingUrl
   );
 
-  // Only switch to branding tab if brandName is not set
   useEffect(() => {
     if (!brandName) {
       setActiveTab('branding');
@@ -44,6 +42,7 @@ export const ConfigurationView = ({
         brandName={brandName}
         logoUrl={logoUrl}
         tagline={tagline}
+        businessType={businessType}
         onBrandingSave={fetchProfileData}
       />
     </DashboardContainer>
