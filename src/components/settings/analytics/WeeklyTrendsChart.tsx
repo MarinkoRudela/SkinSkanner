@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
 import { Tables } from '@/integrations/supabase/types/database';
@@ -9,7 +9,7 @@ export interface WeeklyTrendsChartProps {
   isLoading: boolean;
 }
 
-export const WeeklyTrendsChart: FC<WeeklyTrendsChartProps> = ({ data, isLoading }) => {
+export const WeeklyTrendsChart: FC<WeeklyTrendsChartProps> = memo(({ data, isLoading }) => {
   if (isLoading) {
     return <Skeleton className="w-full h-[300px] rounded-lg" />;
   }
@@ -44,4 +44,6 @@ export const WeeklyTrendsChart: FC<WeeklyTrendsChartProps> = ({ data, isLoading 
       </ResponsiveContainer>
     </div>
   );
-};
+});
+
+WeeklyTrendsChart.displayName = 'WeeklyTrendsChart';

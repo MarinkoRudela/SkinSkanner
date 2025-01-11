@@ -1,5 +1,6 @@
 import { Users, ScanLine, MousePointerClick } from "lucide-react";
 import { MetricCard } from "./MetricCard";
+import { memo } from "react";
 
 interface DailyAnalytics {
   total_visits_today: number;
@@ -14,7 +15,7 @@ interface DailyMetricsProps {
   isLoading: boolean;
 }
 
-export const DailyMetrics = ({ todayData, isLoading }: DailyMetricsProps) => {
+export const DailyMetrics = memo(({ todayData, isLoading }: DailyMetricsProps) => {
   const metrics = [
     {
       title: "Total Visits Today",
@@ -59,4 +60,6 @@ export const DailyMetrics = ({ todayData, isLoading }: DailyMetricsProps) => {
       ))}
     </div>
   );
-};
+});
+
+DailyMetrics.displayName = 'DailyMetrics';
