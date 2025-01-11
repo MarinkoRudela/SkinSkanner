@@ -1,9 +1,22 @@
-import { Syringe, UserCircle, Sparkles, Zap, Droplet, Sun, Heart } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
+import { Syringe, UserCircle, Sparkles, Zap, Droplet } from 'lucide-react';
 
-export const treatmentCategories = [
+type TreatmentCategory = {
+  category: string;
+  icon: LucideIcon;
+  requiresLicense?: boolean;
+  treatments: {
+    name: string;
+    description: string;
+    requiresLicense?: boolean;
+    subtypes?: string[];
+  }[];
+};
+
+export const treatmentCategories: TreatmentCategory[] = [
   {
     category: "Facial Treatments",
-    icon: <UserCircle className="w-5 h-5" />,
+    icon: UserCircle,
     treatments: [
       {
         name: "Chemical Peels",
@@ -47,7 +60,7 @@ export const treatmentCategories = [
   },
   {
     category: "Injectable Treatments",
-    icon: <Syringe className="w-5 h-5" />,
+    icon: Syringe,
     requiresLicense: true,
     treatments: [
       {
@@ -86,7 +99,7 @@ export const treatmentCategories = [
   },
   {
     category: "Body Treatments",
-    icon: <Sparkles className="w-5 h-5" />,
+    icon: Sparkles,
     treatments: [
       {
         name: "Body Contouring",
@@ -120,7 +133,7 @@ export const treatmentCategories = [
   },
   {
     category: "Energy-Based Treatments",
-    icon: <Zap className="w-5 h-5" />,
+    icon: Zap,
     treatments: [
       {
         name: "Laser Treatments",
@@ -145,7 +158,7 @@ export const treatmentCategories = [
   },
   {
     category: "Hydration Treatments",
-    icon: <Droplet className="w-5 h-5" />,
+    icon: Droplet,
     treatments: [
       {
         name: "HydraFacial",

@@ -43,7 +43,7 @@ const TreatmentDemo = () => {
             <AccordionTrigger className="flex items-center py-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-full bg-primary/10">
-                  {category.icon}
+                  {React.createElement(category.icon, { className: "w-5 h-5" })}
                 </div>
                 <span className="text-lg font-medium">
                   {category.category}
