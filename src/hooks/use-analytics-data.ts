@@ -11,7 +11,6 @@ interface DailyAnalytics {
 }
 
 export const useAnalyticsData = (session: any) => {
-  // Today's analytics query
   const { 
     data: todayData,
     isLoading: todayLoading,
@@ -40,7 +39,6 @@ export const useAnalyticsData = (session: any) => {
     retry: 3,
   });
 
-  // Weekly analytics query with optimized select
   const {
     data: weeklyData,
     isLoading: weeklyLoading,
@@ -51,18 +49,18 @@ export const useAnalyticsData = (session: any) => {
       console.log('Fetching weekly analytics for user:', session?.user?.id);
       const { data, error } = await supabase
         .from('weekly_analytics')
-        .select('visit_date, daily_visits, daily_completed_scans, daily_booking_clicks')
+        .select('*')  // Select all fields to match the Tables type
         .eq('profile_id', session?.user?.id)
         .order('visit_date', { ascending: true })
-        .limit(7)
-        .maybeSingle();
+        .limit(7);  // Removed maybeSingle() since we want an array
 
       if (error) {
         console.error('Error fetching weekly analytics:', error);
         throw error;
       }
 
-      return data as Tables<'weekly_analytics'>[];
+      // Ensure we always return an array
+      return (data || []) as Tables<'weekly_analytics'>[];
     },
     enabled: !!session?.user?.id,
     staleTime: 15 * 60 * 1000, // Data considered fresh for 15 minutes
