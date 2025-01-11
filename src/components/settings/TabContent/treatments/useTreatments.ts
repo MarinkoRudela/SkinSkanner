@@ -56,7 +56,13 @@ export const useTreatments = (profileId: string) => {
     try {
       const { data, error } = await supabase
         .from('med_spa_treatments')
-        .select('treatment_id, treatments(treatment_areas)')
+        .select(`
+          treatment_id,
+          treatments (
+            id,
+            treatment_areas
+          )
+        `)
         .eq('profile_id', profileId)
         .eq('is_active', true);
 
@@ -66,9 +72,11 @@ export const useTreatments = (profileId: string) => {
       const areas: Record<string, string[]> = {};
 
       data.forEach(item => {
-        selectedIds.add(item.treatment_id);
-        if (item.treatments?.treatment_areas) {
-          areas[item.treatment_id] = item.treatments.treatment_areas;
+        if (item.treatment_id) {
+          selectedIds.add(item.treatment_id);
+          if (item.treatments?.treatment_areas) {
+            areas[item.treatment_id] = item.treatments.treatment_areas;
+          }
         }
       });
 
@@ -85,7 +93,9 @@ export const useTreatments = (profileId: string) => {
 
     if (isSelected) {
       newSelectedTreatments.delete(treatmentId);
-      delete treatmentAreas[treatmentId];
+      const newAreas = { ...treatmentAreas };
+      delete newAreas[treatmentId];
+      setTreatmentAreas(newAreas);
       
       try {
         const { error } = await supabase
@@ -106,7 +116,10 @@ export const useTreatments = (profileId: string) => {
       }
     } else {
       newSelectedTreatments.add(treatmentId);
-      treatmentAreas[treatmentId] = [];
+      setTreatmentAreas({
+        ...treatmentAreas,
+        [treatmentId]: []
+      });
       
       try {
         const { error } = await supabase
@@ -130,7 +143,6 @@ export const useTreatments = (profileId: string) => {
     }
 
     setSelectedTreatments(newSelectedTreatments);
-    setTreatmentAreas({ ...treatmentAreas });
     
     toast({
       title: "Success",

@@ -8,7 +8,14 @@ interface TreatmentsTabProps {
 }
 
 export const TreatmentsTab = ({ profileId }: TreatmentsTabProps) => {
-  const { categories, selectedTreatments, isLoading, handleTreatmentToggle } = useTreatments(profileId);
+  const { 
+    categories, 
+    selectedTreatments, 
+    treatmentAreas,
+    isLoading, 
+    handleTreatmentToggle,
+    handleAreaToggle 
+  } = useTreatments(profileId);
 
   if (isLoading) {
     return <div>Loading treatments...</div>;
@@ -27,6 +34,8 @@ export const TreatmentsTab = ({ profileId }: TreatmentsTabProps) => {
               category={category}
               selectedTreatments={selectedTreatments}
               onTreatmentToggle={handleTreatmentToggle}
+              treatmentAreas={treatmentAreas}
+              onAreaToggle={handleAreaToggle}
             />
           ))}
         </Accordion>
