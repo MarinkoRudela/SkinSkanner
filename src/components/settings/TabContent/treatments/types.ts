@@ -8,7 +8,7 @@ export interface Treatment {
 
 export interface TreatmentWithAreas {
   treatment_id: string;
-  treatments?: {
+  treatments: {
     id: string;
     treatment_areas: string[];
   };

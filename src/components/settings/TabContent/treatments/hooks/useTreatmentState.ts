@@ -19,25 +19,26 @@ export const useTreatmentState = (profileId: string) => {
         .from('med_spa_treatments')
         .select(`
           treatment_id,
-          treatments (
+          treatments:treatment_id (
             id,
             treatment_areas
           )
         `)
         .eq('profile_id', profileId)
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .single();
 
       if (error) throw error;
 
       const selectedIds = new Set<string>();
       const areas: Record<string, string[]> = {};
 
-      (data as TreatmentWithAreas[]).forEach((item) => {
-        selectedIds.add(item.treatment_id);
-        if (item.treatments?.treatment_areas) {
-          areas[item.treatment_id] = item.treatments.treatment_areas;
+      if (data) {
+        selectedIds.add(data.treatment_id);
+        if (data.treatments?.treatment_areas) {
+          areas[data.treatment_id] = data.treatments.treatment_areas;
         }
-      });
+      }
 
       setState({
         selectedTreatments: selectedIds,
