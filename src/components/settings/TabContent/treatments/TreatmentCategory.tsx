@@ -14,6 +14,7 @@ interface TreatmentCategoryProps {
   onTreatmentToggle: (treatmentId: string) => Promise<void>;
   treatmentAreas: Record<string, string[]>;
   onAreaToggle: (treatmentId: string, area: string) => Promise<void>;
+  businessType?: string;
 }
 
 export const TreatmentCategory = ({
@@ -21,7 +22,8 @@ export const TreatmentCategory = ({
   selectedTreatments,
   onTreatmentToggle,
   treatmentAreas,
-  onAreaToggle
+  onAreaToggle,
+  businessType = 'med_spa'
 }: TreatmentCategoryProps) => {
   return (
     <AccordionItem key={category.id} value={category.id} className="border-b">
@@ -44,6 +46,7 @@ export const TreatmentCategory = ({
               onToggle={() => onTreatmentToggle(treatment.id)}
               onAreaToggle={(area) => onAreaToggle(treatment.id, area)}
               selectedAreas={treatmentAreas[treatment.id] || []}
+              businessType={businessType}
             />
           ))}
         </div>

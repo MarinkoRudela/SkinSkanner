@@ -10,6 +10,7 @@ interface TreatmentItemProps {
   onToggle: () => void;
   onAreaToggle: (area: string) => void;
   selectedAreas: string[];
+  businessType?: string;
 }
 
 export const TreatmentItem = ({ 
@@ -17,7 +18,8 @@ export const TreatmentItem = ({
   isSelected, 
   onToggle,
   onAreaToggle,
-  selectedAreas 
+  selectedAreas,
+  businessType = 'med_spa'
 }: TreatmentItemProps) => {
   const availableAreas = [
     'Forehead',
@@ -74,6 +76,7 @@ export const TreatmentItem = ({
             areas={availableAreas}
             selectedAreas={selectedAreas}
             onAreaToggle={onAreaToggle}
+            businessType={businessType}
           />
         </div>
       )}

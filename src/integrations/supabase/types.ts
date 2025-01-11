@@ -460,6 +460,7 @@ export type Database = {
       }
       treatments: {
         Row: {
+          business_types: string[] | null
           category_id: string | null
           created_at: string
           description: string
@@ -470,6 +471,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          business_types?: string[] | null
           category_id?: string | null
           created_at?: string
           description: string
@@ -480,6 +482,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          business_types?: string[] | null
           category_id?: string | null
           created_at?: string
           description?: string
