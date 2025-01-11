@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { ActionButtons } from './ActionButtons';
@@ -16,7 +16,7 @@ interface AnalysisProps {
   linkVisitId?: string;
 }
 
-export const Analysis = ({ 
+export const Analysis = React.memo(({ 
   analysis, 
   bookingUrl, 
   onScanAgain,
@@ -26,11 +26,11 @@ export const Analysis = ({
 }: AnalysisProps) => {
   console.log('Analysis component received bookingUrl:', bookingUrl);
   
-  // Pair each concern with its corresponding recommendation
-  const pairs = analysis.concerns.map((concern, index) => ({
+  // Memoize the pairs calculation to prevent unnecessary recalculations
+  const pairs = useMemo(() => analysis.concerns.map((concern, index) => ({
     concern,
     recommendation: analysis.recommendations[index] || ''
-  }));
+  })), [analysis.concerns, analysis.recommendations]);
 
   return (
     <motion.div
@@ -90,4 +90,15 @@ export const Analysis = ({
       </Card>
     </motion.div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison function for React.memo
+  return (
+    prevProps.bookingUrl === nextProps.bookingUrl &&
+    prevProps.analysis.concerns.length === nextProps.analysis.concerns.length &&
+    prevProps.analysis.concerns.every((concern, i) => concern === nextProps.analysis.concerns[i]) &&
+    prevProps.analysis.recommendations.every((rec, i) => rec === nextProps.analysis.recommendations[i]) &&
+    prevProps.profileId === nextProps.profileId &&
+    prevProps.shortCode === nextProps.shortCode &&
+    prevProps.linkVisitId === nextProps.linkVisitId
+  );
+});

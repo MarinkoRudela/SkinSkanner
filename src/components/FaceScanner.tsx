@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
 import { ImagePreview } from './scanner/ImagePreview';
@@ -14,11 +14,11 @@ interface CapturedImages {
   right?: string;
 }
 
-export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: CapturedImages) => void }) => {
+export const FaceScanner = React.memo(({ onImageCapture }: { onImageCapture: (images: CapturedImages) => void }) => {
   const [currentView, setCurrentView] = useState<ViewType>('front');
   const [capturedImages, setCapturedImages] = useState<CapturedImages>({});
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -63,7 +63,7 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: Captu
     };
 
     reader.readAsDataURL(file);
-  };
+  }, [currentView, capturedImages]);
 
   const allImagesUploaded = Boolean(capturedImages.front && capturedImages.left && capturedImages.right);
 
@@ -111,4 +111,6 @@ export const FaceScanner = ({ onImageCapture }: { onImageCapture: (images: Captu
       </div>
     </Card>
   );
-};
+});
+
+FaceScanner.displayName = 'FaceScanner';

@@ -1,3 +1,4 @@
+import React from 'react';
 import { DemoButton } from './buttons/DemoButton';
 import { BookingButton } from './buttons/BookingButton';
 import { ScanAgainButton } from './buttons/ScanAgainButton';
@@ -10,7 +11,7 @@ interface ActionButtonsProps {
   linkVisitId?: string;
 }
 
-export const ActionButtons = ({ 
+export const ActionButtons = React.memo(({ 
   bookingUrl, 
   onScanAgain, 
   profileId,
@@ -43,4 +44,12 @@ export const ActionButtons = ({
       )}
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison function for React.memo
+  return (
+    prevProps.bookingUrl === nextProps.bookingUrl &&
+    prevProps.profileId === nextProps.profileId &&
+    prevProps.shortCode === nextProps.shortCode &&
+    prevProps.linkVisitId === nextProps.linkVisitId
+  );
+});
