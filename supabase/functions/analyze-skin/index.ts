@@ -43,9 +43,24 @@ serve(async (req) => {
 
       const supabase = createClient(supabaseUrl, supabaseServiceKey);
       availableTreatments = await fetchMedSpaTreatments(supabase, profileId);
+      
+      // Fetch business profile for branding
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('brand_name, business_type')
+        .eq('id', profileId)
+        .single();
+        
+      businessProfile = profile;
     }
 
-    const systemPrompt = createSystemPrompt(availableTreatments, businessType, brandName);
+    const systemPrompt = createSystemPrompt(
+      availableTreatments, 
+      businessProfile?.business_type || businessType || 'med_spa',
+      businessProfile?.brand_name || brandName
+    );
+    
+    console.log('System prompt:', systemPrompt);
     
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -90,13 +105,31 @@ serve(async (req) => {
 
     if (!openaiResponse.ok) {
       const errorText = await openaiResponse.text();
+      console.error('OpenAI API error response:', errorText);
       throw new Error(`OpenAI API error: ${openaiResponse.status} ${openaiResponse.statusText}`);
     }
 
     const openaiData = await openaiResponse.json();
     const analysis = JSON.parse(openaiData.choices[0].message.content);
     
+    console.log('Analysis result:', analysis);
+    
     validateAnalysis(analysis, availableTreatments);
+
+    // Track analytics if profile ID is provided
+    if (profileId) {
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL') as string,
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') as string
+      );
+      
+      await supabase.from('scanner_analytics').insert({
+        profile_id: profileId,
+        scan_completed_at: new Date().toISOString(),
+        recommendations_generated: 6,
+        primary_concerns: analysis.primary_concerns
+      });
+    }
 
     return new Response(JSON.stringify(analysis), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

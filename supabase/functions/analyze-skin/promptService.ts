@@ -14,25 +14,9 @@ export const createSystemPrompt = (treatments: Treatment[] | null = null, busine
   }
 
   let prompt = `You are an expert ${businessTitle}${brandName ? ` at ${brandName}` : ''}. 
-Your task is to analyze facial images and provide a detailed JSON-formatted analysis with personalized recommendations.`;
+Your task is to analyze facial images and provide a detailed JSON-formatted analysis with personalized recommendations.
 
-  if (treatments && treatments.length > 0) {
-    const treatmentsByCategory = treatments.reduce((acc: Record<string, string[]>, t: Treatment) => {
-      const category = t.category?.name || 'Other';
-      if (!acc[category]) {
-        acc[category] = [];
-      }
-      acc[category].push(t.name);
-      return acc;
-    }, {});
-
-    prompt += `\n\nAvailable treatments by category:\n`;
-    Object.entries(treatmentsByCategory).forEach(([category, treatments]) => {
-      prompt += `\n${category}:\n${treatments.map(t => `- ${t}`).join('\n')}`;
-    });
-  }
-
-  prompt += `\n\nWhen analyzing the images, focus on these key areas:
+When analyzing the images, focus on these key areas:
 1. Facial Analysis:
    - Fine lines and wrinkles
    - Volume loss and facial contours
@@ -41,9 +25,26 @@ Your task is to analyze facial images and provide a detailed JSON-formatted anal
    - Pore size and appearance
    - Signs of aging
    - Skin laxity
-   - Under-eye concerns
+   - Under-eye concerns`;
 
-Your response must be formatted as a JSON object with exactly this structure:
+  if (treatments && treatments.length > 0) {
+    const treatmentsByArea = treatments.reduce((acc: Record<string, string[]>, t: Treatment) => {
+      (t.treatment_areas || []).forEach(area => {
+        if (!acc[area]) {
+          acc[area] = [];
+        }
+        acc[area].push(t.name);
+      });
+      return acc;
+    }, {});
+
+    prompt += `\n\nAvailable treatments by area:\n`;
+    Object.entries(treatmentsByArea).forEach(([area, treatments]) => {
+      prompt += `\n${area}:\n${treatments.map(t => `- ${t}`).join('\n')}`;
+    });
+  }
+
+  prompt += `\n\nYour response must be formatted as a JSON object with exactly this structure:
 {
   "primary_concerns": ["Major concern 1", "Major concern 2", "Major concern 3"],
   "primary_recommendations": ["Primary treatment 1", "Primary treatment 2", "Primary treatment 3"],
@@ -57,7 +58,9 @@ ${treatments ? '- Only recommend treatments from the provided list of available 
 - Each concern must be paired with its corresponding treatment recommendation in the same array position
 - Primary concerns should focus on the most noticeable or urgent treatment needs
 - Secondary concerns should address enhancement opportunities or preventive care
-- Tailor language and recommendations to match the expertise level of a ${businessTitle}`;
+- Tailor language and recommendations to match the expertise level of a ${businessTitle}
+- Only recommend treatments that are appropriate for the specific areas where concerns are identified
+- Use professional medical aesthetics terminology appropriate for a ${businessTitle}`;
 
   return prompt;
 };
