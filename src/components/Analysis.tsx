@@ -1,13 +1,9 @@
 import React from 'react';
 import { AnalysisCard } from './analysis/AnalysisCard';
+import { AnalysisResult } from '@/hooks/use-skin-analysis';
 
 interface AnalysisProps {
-  analysis: {
-    primary_concerns: string[];
-    primary_recommendations: string[];
-    secondary_concerns: string[];
-    secondary_recommendations: string[];
-  };
+  analysis: AnalysisResult;
   bookingUrl: string;
   onScanAgain: () => void;
   profileId?: string;

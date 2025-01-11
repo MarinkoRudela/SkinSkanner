@@ -2,15 +2,11 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
 
-interface CapturedImages {
-  front?: string;
-  left?: string;
-  right?: string;
-}
-
-interface AnalysisResult {
-  concerns: string[];
-  recommendations: string[];
+export interface AnalysisResult {
+  primary_concerns: string[];
+  primary_recommendations: string[];
+  secondary_concerns: string[];
+  secondary_recommendations: string[];
 }
 
 export const useSkinAnalysis = (profileId?: string, linkVisitId?: string) => {
@@ -21,7 +17,7 @@ export const useSkinAnalysis = (profileId?: string, linkVisitId?: string) => {
     setAnalysis(null);
   };
 
-  const analyzeImages = async (images: CapturedImages) => {
+  const analyzeImages = async (images: { front?: string; left?: string; right?: string; }) => {
     setIsAnalyzing(true);
     
     try {
