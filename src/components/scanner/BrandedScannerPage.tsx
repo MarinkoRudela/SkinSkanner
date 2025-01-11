@@ -8,7 +8,10 @@ import { useVisitorTracking } from "@/hooks/use-visitor-tracking";
 export const BrandedScannerPage = () => {
   const { shortCode } = useParams();
   const { businessData, isLoading, error } = useBusinessData(shortCode);
-  const { linkVisitId } = useVisitorTracking(shortCode, businessData?.profile_id);
+  const { visitId } = useVisitorTracking({ 
+    shortCode: shortCode || '', 
+    profileId: businessData?.profile_id || '' 
+  });
 
   useEffect(() => {
     console.log('Business data loaded:', businessData);
@@ -19,14 +22,14 @@ export const BrandedScannerPage = () => {
   }
 
   if (error || !businessData) {
-    return <ErrorDisplay error={error} />;
+    return <ErrorDisplay error={error || 'No business data found'} />;
   }
 
   return (
     <ScannerPageContainer 
       businessData={businessData}
       shortCode={shortCode || ''}
-      linkVisitId={linkVisitId}
+      linkVisitId={visitId}
     />
   );
 };
