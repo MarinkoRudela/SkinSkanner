@@ -3,8 +3,10 @@ import { AnalysisCard } from './analysis/AnalysisCard';
 
 interface AnalysisProps {
   analysis: {
-    concerns: string[];
-    recommendations: string[];
+    primary_concerns: string[];
+    primary_recommendations: string[];
+    secondary_concerns: string[];
+    secondary_recommendations: string[];
   };
   bookingUrl: string;
   onScanAgain: () => void;

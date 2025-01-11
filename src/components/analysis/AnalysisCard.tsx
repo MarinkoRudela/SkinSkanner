@@ -6,8 +6,10 @@ import { ActionButtons } from '../ActionButtons';
 
 interface AnalysisCardProps {
   analysis: {
-    concerns: string[];
-    recommendations: string[];
+    primary_concerns: string[];
+    primary_recommendations: string[];
+    secondary_concerns: string[];
+    secondary_recommendations: string[];
   };
   bookingUrl: string;
   onScanAgain: () => void;
@@ -61,9 +63,12 @@ export const AnalysisCard = React.memo(({
 }, (prevProps, nextProps) => {
   return (
     prevProps.bookingUrl === nextProps.bookingUrl &&
-    prevProps.analysis.concerns.length === nextProps.analysis.concerns.length &&
-    prevProps.analysis.concerns.every((concern, i) => concern === nextProps.analysis.concerns[i]) &&
-    prevProps.analysis.recommendations.every((rec, i) => rec === nextProps.analysis.recommendations[i]) &&
+    prevProps.analysis.primary_concerns.length === nextProps.analysis.primary_concerns.length &&
+    prevProps.analysis.primary_concerns.every((concern, i) => concern === nextProps.analysis.primary_concerns[i]) &&
+    prevProps.analysis.primary_recommendations.every((rec, i) => rec === nextProps.analysis.primary_recommendations[i]) &&
+    prevProps.analysis.secondary_concerns.length === nextProps.analysis.secondary_concerns.length &&
+    prevProps.analysis.secondary_concerns.every((concern, i) => concern === nextProps.analysis.secondary_concerns[i]) &&
+    prevProps.analysis.secondary_recommendations.every((rec, i) => rec === nextProps.analysis.secondary_recommendations[i]) &&
     prevProps.profileId === nextProps.profileId &&
     prevProps.shortCode === nextProps.shortCode &&
     prevProps.linkVisitId === nextProps.linkVisitId
