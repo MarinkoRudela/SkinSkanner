@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "./components/ui/toaster";
 import { Support } from "./components/Support";
 import { Loader2 } from "lucide-react";
+import { initializeWebVitals } from "./utils/performanceMonitoring";
 import "./App.css";
 
 // Import the Index page normally since it's the landing page
@@ -24,6 +25,10 @@ const PageLoader = () => (
 );
 
 function App() {
+  useEffect(() => {
+    initializeWebVitals();
+  }, []);
+
   return (
     <Router>
       <Suspense fallback={<PageLoader />}>
