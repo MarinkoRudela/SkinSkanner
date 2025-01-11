@@ -1,14 +1,20 @@
-export const formatHour = (hour: number): string => {
-  return `${hour % 12 || 12}${hour < 12 ? 'AM' : 'PM'}`;
-};
-
-export const formatDuration = (seconds: number): string => {
-  if (!seconds) return '0s';
-  const minutes = Math.floor(seconds / 60);
-  return minutes > 0 ? `${minutes}m` : `${seconds}s`;
-};
-
-export const formatMetric = (value: number | undefined): string => {
-  if (value === undefined) return '-';
+/**
+ * Formats a metric value for display
+ * @param value The metric value to format
+ * @returns Formatted string representation of the metric
+ */
+export const formatMetric = (value: number | undefined | null): string => {
+  if (value === undefined || value === null) {
+    return '-';
+  }
+  
+  if (value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)}M`;
+  }
+  
+  if (value >= 1000) {
+    return `${(value / 1000).toFixed(1)}K`;
+  }
+  
   return value.toString();
 };
