@@ -26,6 +26,33 @@ serve(async (req) => {
       throw new Error('Missing required images');
     }
 
+    // Validate image sizes and formats
+    const validateImage = async (imageUrl: string) => {
+      try {
+        const response = await fetch(imageUrl);
+        const contentType = response.headers.get('content-type');
+        const size = parseInt(response.headers.get('content-length') || '0');
+        
+        if (!contentType?.startsWith('image/')) {
+          throw new Error('Invalid image format');
+        }
+        
+        if (size > 20 * 1024 * 1024) { // 20MB limit
+          throw new Error('Image size exceeds 20MB limit');
+        }
+      } catch (error) {
+        console.error('Image validation error:', error);
+        throw new Error(`Image validation failed: ${error.message}`);
+      }
+    };
+
+    // Validate all images
+    await Promise.all([
+      validateImage(images.front),
+      validateImage(images.left),
+      validateImage(images.right)
+    ]);
+
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openaiApiKey) {
       throw new Error('OpenAI API key is not configured');
@@ -44,7 +71,6 @@ serve(async (req) => {
       const supabase = createClient(supabaseUrl, supabaseServiceKey);
       availableTreatments = await fetchMedSpaTreatments(supabase, profileId);
       
-      // Fetch business profile for branding
       const { data: profile } = await supabase
         .from('profiles')
         .select('brand_name, business_type')

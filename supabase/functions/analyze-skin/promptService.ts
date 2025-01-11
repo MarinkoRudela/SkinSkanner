@@ -16,7 +16,19 @@ export const createSystemPrompt = (treatments: Treatment[] | null = null, busine
   let prompt = `You are an expert ${businessTitle}${brandName ? ` at ${brandName}` : ''}. 
 Your task is to analyze facial images and provide a detailed JSON-formatted analysis with personalized recommendations.
 
-When analyzing the images, focus on these key areas:
+When analyzing the images, focus on these key areas:`;
+
+  // Customize analysis areas based on business type
+  if (businessType === 'brow_specialist') {
+    prompt += `
+1. Eyebrow Analysis:
+   - Brow shape and symmetry
+   - Brow density and fullness
+   - Brow positioning
+   - Upper eye area concerns
+   - Arch definition`;
+  } else {
+    prompt += `
 1. Facial Analysis:
    - Fine lines and wrinkles
    - Volume loss and facial contours
@@ -26,9 +38,19 @@ When analyzing the images, focus on these key areas:
    - Signs of aging
    - Skin laxity
    - Under-eye concerns`;
+  }
 
   if (treatments && treatments.length > 0) {
-    const treatmentsByArea = treatments.reduce((acc: Record<string, string[]>, t: Treatment) => {
+    // Filter treatment areas based on business type
+    const relevantTreatments = businessType === 'brow_specialist' 
+      ? treatments.filter(t => 
+          (t.treatment_areas || []).some(area => 
+            ['Eyebrows', 'Eye Area', 'Upper Face'].includes(area)
+          )
+        )
+      : treatments;
+
+    const treatmentsByArea = relevantTreatments.reduce((acc: Record<string, string[]>, t: Treatment) => {
       (t.treatment_areas || []).forEach(area => {
         if (!acc[area]) {
           acc[area] = [];
