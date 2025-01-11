@@ -31,66 +31,64 @@ serve(async (req) => {
       throw new Error('Missing required images');
     }
 
-    if (!profileId) {
-      console.error('❌ Missing profileId');
-      throw new Error('Missing profile ID');
-    }
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    
-    if (!supabaseUrl || !supabaseServiceKey) {
-      throw new Error('Missing Supabase configuration');
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    
-    // Fetch med spa's active treatments with their categories
-    console.log('Fetching treatments for profile:', profileId);
-    const { data: medSpaTreatments, error: treatmentsError } = await supabase
-      .from('med_spa_treatments')
-      .select(`
-        treatment_id,
-        treatments:treatment_id (
-          name,
-          description,
-          category:category_id (
-            name
-          )
-        )
-      `)
-      .eq('profile_id', profileId)
-      .eq('is_active', true);
-
-    if (treatmentsError) {
-      console.error('❌ Error fetching treatments:', treatmentsError);
-      throw treatmentsError;
-    }
-
-    console.log('Retrieved treatments:', medSpaTreatments);
-
-    // Format treatments for the prompt
-    const availableTreatments = medSpaTreatments.map(t => ({
-      name: t.treatments.name,
-      category: t.treatments.category.name,
-      description: t.treatments.description
-    }));
-
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openaiApiKey) {
       console.error('❌ OpenAI API key is not configured');
       throw new Error('OpenAI API key is not configured');
     }
 
-    console.log('📝 Preparing OpenAI request...');
-    const messages = [
-      {
-        role: 'system',
-        content: `You are an expert medical aesthetician and dermatology specialist at a luxury medical spa. Your task is to analyze facial images and provide JSON-formatted recommendations for medical spa treatments, specifically choosing from the following available treatments:
+    let systemPrompt = '';
+    let availableTreatments = [];
 
-${availableTreatments.map(t => `- ${t.name} (${t.category}): ${t.description}`).join('\n')}
+    // If profileId is provided, fetch med spa specific treatments
+    if (profileId) {
+      console.log('Fetching treatments for profile:', profileId);
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
+      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+      
+      if (!supabaseUrl || !supabaseServiceKey) {
+        throw new Error('Missing Supabase configuration');
+      }
 
-When analyzing the images, focus on these key areas:
+      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+      
+      const { data: medSpaTreatments, error: treatmentsError } = await supabase
+        .from('med_spa_treatments')
+        .select(`
+          treatment_id,
+          treatments:treatment_id (
+            name,
+            description,
+            category:category_id (
+              name
+            )
+          )
+        `)
+        .eq('profile_id', profileId)
+        .eq('is_active', true);
+
+      if (treatmentsError) {
+        console.error('❌ Error fetching treatments:', treatmentsError);
+        throw treatmentsError;
+      }
+
+      console.log('Retrieved treatments:', medSpaTreatments);
+
+      availableTreatments = medSpaTreatments.map(t => ({
+        name: t.treatments.name,
+        category: t.treatments.category.name,
+        description: t.treatments.description
+      }));
+
+      systemPrompt = `You are an expert medical aesthetician and dermatology specialist at a luxury medical spa. Your task is to analyze facial images and provide JSON-formatted recommendations for medical spa treatments, specifically choosing from the following available treatments:
+
+${availableTreatments.map(t => `- ${t.name} (${t.category}): ${t.description}`).join('\n')}`;
+    } else {
+      // Demo mode - use generic prompt
+      systemPrompt = `You are an expert medical aesthetician and dermatology specialist at a luxury medical spa. Your task is to analyze facial images and provide JSON-formatted recommendations for common medical spa treatments.`;
+    }
+
+    systemPrompt += `\n\nWhen analyzing the images, focus on these key areas:
 1. Skin Analysis (look for):
    - Fine lines and wrinkles
    - Volume loss and facial contours
@@ -109,39 +107,10 @@ Your response must be formatted as a JSON object with exactly this structure:
 
 IMPORTANT:
 - Provide exactly 4 key observations and their matching treatment recommendations
-- Only recommend treatments from the provided list of available treatments
+${profileId ? '- Only recommend treatments from the provided list of available treatments' : '- Provide general treatment recommendations'}
 - Each concern must be paired with its corresponding treatment recommendation in the same array position
-- Recommendations should be specific and match the med spa's actual treatment offerings`
-      },
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'text',
-            text: 'Please analyze these facial images and provide personalized medical spa treatment recommendations:'
-          },
-          {
-            type: 'image_url',
-            image_url: {
-              url: images.front
-            }
-          },
-          {
-            type: 'image_url',
-            image_url: {
-              url: images.left
-            }
-          },
-          {
-            type: 'image_url',
-            image_url: {
-              url: images.right
-            }
-          }
-        ]
-      }
-    ];
-    
+- Recommendations should be specific${profileId ? ' and match the med spa\'s actual treatment offerings' : ''}`;
+
     console.log('🔄 Making request to OpenAI API...');
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -151,7 +120,39 @@ IMPORTANT:
       },
       body: JSON.stringify({
         model: 'gpt-4o',
-        messages,
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt
+          },
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: 'Please analyze these facial images and provide personalized medical spa treatment recommendations:'
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: images.front
+                }
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: images.left
+                }
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: images.right
+                }
+              }
+            ]
+          }
+        ],
         temperature: 0.2,
         max_tokens: 1000,
         response_format: { type: "json_object" }
@@ -189,13 +190,15 @@ IMPORTANT:
         throw new Error('Invalid analysis format');
       }
 
-      // Validate that recommended treatments exist in availableTreatments
-      const availableTreatmentNames = new Set(availableTreatments.map(t => t.name));
-      const invalidTreatments = analysis.recommendations.filter(r => !availableTreatmentNames.has(r));
-      
-      if (invalidTreatments.length > 0) {
-        console.error('❌ Invalid treatments recommended:', invalidTreatments);
-        throw new Error('AI recommended unavailable treatments');
+      // Validate recommendations against available treatments if in med spa mode
+      if (profileId && availableTreatments.length > 0) {
+        const availableTreatmentNames = new Set(availableTreatments.map(t => t.name));
+        const invalidTreatments = analysis.recommendations.filter(r => !availableTreatmentNames.has(r));
+        
+        if (invalidTreatments.length > 0) {
+          console.error('❌ Invalid treatments recommended:', invalidTreatments);
+          throw new Error('AI recommended unavailable treatments');
+        }
       }
 
       console.log('✅ Analysis validation passed:', analysis);
