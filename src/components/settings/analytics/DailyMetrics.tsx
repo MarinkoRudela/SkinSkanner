@@ -1,54 +1,40 @@
-import { Users, ScanLine, MousePointerClick } from "lucide-react";
+import { Users, Activity, MousePointerClick, Clock } from "lucide-react";
 import { MetricCard } from "./MetricCard";
-import { memo } from "react";
-
-interface DailyAnalytics {
-  total_visits_today: number;
-  total_scans_today: number;
-  total_booking_clicks_today: number;
-  peak_hour_today: number;
-  avg_session_duration_today: number;
-}
+import { MetricsSkeleton } from "@/components/ui/skeletons/ContentSkeleton";
 
 interface DailyMetricsProps {
-  todayData: DailyAnalytics | undefined;
+  todayData: any;
   isLoading: boolean;
 }
 
-export const DailyMetrics = memo(({ todayData, isLoading }: DailyMetricsProps) => {
+export const DailyMetrics = ({ todayData, isLoading }: DailyMetricsProps) => {
+  if (isLoading) {
+    return <MetricsSkeleton />;
+  }
+
   const metrics = [
     {
-      title: "Total Visits Today",
+      title: "Total Visits",
       value: todayData?.total_visits_today || 0,
-      description: "Number of unique visitors today",
+      description: "Unique visitors today",
       icon: Users
     },
     {
-      title: "Completed Scans Today",
+      title: "Completed Scans",
       value: todayData?.total_scans_today || 0,
-      description: "Number of completed skin analyses",
-      icon: ScanLine
+      description: "Successful analyses today",
+      icon: Activity
     },
     {
-      title: "Booking Clicks Today",
+      title: "Booking Clicks",
       value: todayData?.total_booking_clicks_today || 0,
-      description: "Number of booking link clicks",
+      description: "Booking link clicks today",
       icon: MousePointerClick
     }
   ];
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-32 animate-pulse bg-gray-100 rounded-lg" />
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid gap-4 md:grid-cols-3">
       {metrics.map((metric, index) => (
         <MetricCard
           key={index}
@@ -60,6 +46,4 @@ export const DailyMetrics = memo(({ todayData, isLoading }: DailyMetricsProps) =
       ))}
     </div>
   );
-});
-
-DailyMetrics.displayName = 'DailyMetrics';
+};

@@ -1,49 +1,76 @@
-import { FC, memo } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { format } from 'date-fns';
-import { Tables } from '@/integrations/supabase/types/database';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from "@/components/ui/card";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { ChartSkeleton } from "@/components/ui/skeletons/ContentSkeleton";
 
-export interface WeeklyTrendsChartProps {
-  data: Tables<'weekly_analytics'>[];
+interface WeeklyTrendsChartProps {
+  data: any[];
   isLoading: boolean;
 }
 
-export const WeeklyTrendsChart: FC<WeeklyTrendsChartProps> = memo(({ data, isLoading }) => {
+export const WeeklyTrendsChart = ({ data, isLoading }: WeeklyTrendsChartProps) => {
   if (isLoading) {
-    return <Skeleton className="w-full h-[300px] rounded-lg" />;
+    return (
+      <Card className="p-6">
+        <ChartSkeleton />
+      </Card>
+    );
   }
 
-  const chartData = data.map(item => ({
-    date: format(new Date(item.visit_date), 'MMM d'),
-    visits: Number(item.daily_visits) || 0,
-    scans: Number(item.daily_completed_scans) || 0,
-    bookings: Number(item.daily_booking_clicks) || 0,
-  }));
-
   return (
-    <div className="w-full h-[300px] mt-4">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={chartData}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Line type="monotone" dataKey="visits" stroke="#8884d8" name="Visits" />
-          <Line type="monotone" dataKey="scans" stroke="#82ca9d" name="Completed Scans" />
-          <Line type="monotone" dataKey="bookings" stroke="#ffc658" name="Booking Clicks" />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+    <Card className="p-6">
+      <h3 className="text-lg font-semibold mb-6">Weekly Trends</h3>
+      <div className="h-[300px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={data}
+            margin={{
+              top: 5,
+              right: 10,
+              left: 10,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <XAxis
+              dataKey="visit_date"
+              tickFormatter={(date) => new Date(date).toLocaleDateString()}
+              className="text-muted-foreground"
+            />
+            <YAxis className="text-muted-foreground" />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "white",
+                border: "1px solid #e2e8f0",
+                borderRadius: "8px",
+              }}
+            />
+            <Line
+              type="monotone"
+              dataKey="daily_visits"
+              name="Visits"
+              stroke="#7E69AB"
+              strokeWidth={2}
+              dot={false}
+            />
+            <Line
+              type="monotone"
+              dataKey="daily_completed_scans"
+              name="Completed Scans"
+              stroke="#6E59A5"
+              strokeWidth={2}
+              dot={false}
+            />
+            <Line
+              type="monotone"
+              dataKey="daily_booking_clicks"
+              name="Booking Clicks"
+              stroke="#E5DEFF"
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </Card>
   );
-});
-
-WeeklyTrendsChart.displayName = 'WeeklyTrendsChart';
+};
