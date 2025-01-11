@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { ChartSkeleton } from "@/components/ui/skeletons/ContentSkeleton";
+import { EmptyState } from "./EmptyState";
 
 interface WeeklyTrendsChartProps {
   data: any[];
@@ -13,6 +14,16 @@ export const WeeklyTrendsChart = ({ data, isLoading }: WeeklyTrendsChartProps) =
       <Card className="p-6">
         <ChartSkeleton />
       </Card>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <EmptyState
+        title="No data to display yet"
+        message="Share your scanner link with clients to start seeing visitor trends, completed scans, and booking clicks over time. Data will appear here as visitors interact with your scanner."
+        type="chart"
+      />
     );
   }
 

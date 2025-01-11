@@ -412,6 +412,12 @@ export type Database = {
           avg_session_duration_today: number
         }[]
       }
+      refresh_weekly_analytics: {
+        Args: {
+          profile_id_param: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
