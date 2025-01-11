@@ -3,7 +3,7 @@ import { GuideTab } from "../TabContent/GuideTab";
 import { BrandingTab } from "../TabContent/BrandingTab";
 import { BookingTab } from "../TabContent/BookingTab";
 import { AnalyticsTab } from "../TabContent/AnalyticsTab";
-import { TreatmentsTab } from "../TabContent/TreatmentsTab";
+import { TreatmentsTab } from "../TabContent/treatments/TreatmentsTab";
 import { SubscriptionTab } from "../TabContent/SubscriptionTab";
 import { FAQTab } from "../TabContent/FAQTab";
 
