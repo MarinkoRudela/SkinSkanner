@@ -73,15 +73,33 @@ const useSelectedTreatments = (profileId: string) => {
 const useTreatmentUpdates = (profileId: string, refreshTreatments: () => Promise<void>) => {
   const handleTreatmentToggle = async (treatmentId: string) => {
     try {
-      const { error } = await supabase
+      // First, check if the record exists and get its current state
+      const { data: existingData, error: fetchError } = await supabase
+        .from('med_spa_treatments')
+        .select('is_active')
+        .eq('profile_id', profileId)
+        .eq('treatment_id', treatmentId)
+        .single();
+
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        throw fetchError;
+      }
+
+      const newIsActive = existingData ? !existingData.is_active : true;
+
+      // Use upsert to handle both insert and update cases
+      const { error: upsertError } = await supabase
         .from('med_spa_treatments')
         .upsert({
           profile_id: profileId,
           treatment_id: treatmentId,
-          is_active: true
+          is_active: newIsActive
+        }, {
+          onConflict: 'profile_id,treatment_id',
+          ignoreDuplicates: false
         });
 
-      if (error) throw error;
+      if (upsertError) throw upsertError;
 
       await refreshTreatments();
       toast({
