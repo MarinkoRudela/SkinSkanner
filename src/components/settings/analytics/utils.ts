@@ -7,3 +7,8 @@ export const formatDuration = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60);
   return minutes > 0 ? `${minutes}m` : `${seconds}s`;
 };
+
+export const formatMetric = (value: number | undefined): string => {
+  if (value === undefined) return '-';
+  return value.toString();
+};

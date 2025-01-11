@@ -30,21 +30,25 @@ export const DailyMetrics = ({ todayData, isLoading }: DailyMetricsProps) => {
       <MetricCard
         title="Total Visits"
         value={formatMetric(todayData?.total_visits_today)}
+        description="Unique visitors today"
         isLoading={isLoading}
       />
       <MetricCard
         title="Completed Scans"
         value={formatMetric(todayData?.total_scans_today)}
+        description="Successful analyses today"
         isLoading={isLoading}
       />
       <MetricCard
         title="Booking Clicks"
         value={formatMetric(todayData?.total_booking_clicks_today)}
+        description="Booking link clicks today"
         isLoading={isLoading}
       />
       <MetricCard
         title="Peak Hour"
         value={todayData?.peak_hour_today !== undefined ? `${todayData.peak_hour_today}:00` : '-'}
+        description="Busiest hour of the day"
         isLoading={isLoading}
       />
     </div>
