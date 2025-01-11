@@ -1,6 +1,7 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { TreatmentItem } from "./TreatmentItem";
 import { Treatment } from "./types";
+import { Badge } from "@/components/ui/badge";
 
 interface TreatmentCategoryProps {
   category: {
@@ -23,9 +24,14 @@ export const TreatmentCategory = ({
   onAreaToggle
 }: TreatmentCategoryProps) => {
   return (
-    <AccordionItem key={category.id} value={category.id}>
-      <AccordionTrigger className="text-lg font-semibold">
-        {category.name}
+    <AccordionItem key={category.id} value={category.id} className="border-b">
+      <AccordionTrigger className="hover:no-underline">
+        <div className="flex items-center space-x-2">
+          <span className="text-lg font-semibold">{category.name}</span>
+          <Badge variant="secondary" className="ml-2">
+            {category.treatments.length} treatments
+          </Badge>
+        </div>
       </AccordionTrigger>
       <AccordionContent>
         <p className="text-sm text-muted-foreground mb-4">{category.description}</p>

@@ -4,6 +4,7 @@ export interface Treatment {
   description: string;
   requires_license: boolean;
   treatment_areas?: string[];
+  category_id?: string;
 }
 
 export interface TreatmentWithAreas {

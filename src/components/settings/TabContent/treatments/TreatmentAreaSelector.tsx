@@ -16,7 +16,7 @@ export const TreatmentAreaSelector = ({
   return (
     <div className="space-y-4">
       <h4 className="text-sm font-medium text-gray-700">Treatment Areas</h4>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {areas.map((area) => (
           <div key={area} className="flex items-center space-x-2">
             <Checkbox
