@@ -7,88 +7,53 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
-  console.log('🚀 Analyze-skin function called');
-  console.log('Request method:', req.method);
-  console.log('Request headers:', Object.fromEntries(req.headers.entries()));
+interface Treatment {
+  name: string;
+  category: { name: string };
+  description: string;
+}
 
-  if (req.method === 'OPTIONS') {
-    console.log('Handling CORS preflight request');
-    return new Response(null, { headers: corsHeaders });
+interface AnalysisResult {
+  concerns: string[];
+  recommendations: string[];
+}
+
+const fetchMedSpaTreatments = async (supabase: any, profileId: string): Promise<Treatment[]> => {
+  const { data: medSpaTreatments, error } = await supabase
+    .from('med_spa_treatments')
+    .select(`
+      treatment_id,
+      treatments:treatment_id (
+        name,
+        description,
+        category:category_id (
+          name
+        )
+      )
+    `)
+    .eq('profile_id', profileId)
+    .eq('is_active', true);
+
+  if (error) throw error;
+  return medSpaTreatments.map((t: any) => ({
+    name: t.treatments.name,
+    category: t.treatments.category,
+    description: t.treatments.description
+  }));
+};
+
+const createSystemPrompt = (treatments: Treatment[] | null = null): string => {
+  let prompt = `You are an expert medical aesthetician and dermatology specialist at a luxury medical spa. Your task is to analyze facial images and provide JSON-formatted recommendations`;
+
+  if (treatments && treatments.length > 0) {
+    prompt += ` specifically choosing from the following available treatments:\n\n${
+      treatments.map(t => `- ${t.name} (${t.category.name}): ${t.description}`).join('\n')
+    }`;
+  } else {
+    prompt += ` for common medical spa treatments.`;
   }
 
-  try {
-    console.log('Starting request processing...');
-    
-    const requestText = await req.text();
-    console.log('Raw request body:', requestText);
-    
-    const { images, profileId } = JSON.parse(requestText);
-    console.log('Parsed request data:', { profileId, hasImages: !!images });
-
-    if (!images || !images.front || !images.left || !images.right) {
-      console.error('❌ Missing required images');
-      throw new Error('Missing required images');
-    }
-
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openaiApiKey) {
-      console.error('❌ OpenAI API key is not configured');
-      throw new Error('OpenAI API key is not configured');
-    }
-
-    let systemPrompt = '';
-    let availableTreatments = [];
-
-    // If profileId is provided, fetch med spa specific treatments
-    if (profileId) {
-      console.log('Fetching treatments for profile:', profileId);
-      const supabaseUrl = Deno.env.get('SUPABASE_URL');
-      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-      
-      if (!supabaseUrl || !supabaseServiceKey) {
-        throw new Error('Missing Supabase configuration');
-      }
-
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
-      
-      const { data: medSpaTreatments, error: treatmentsError } = await supabase
-        .from('med_spa_treatments')
-        .select(`
-          treatment_id,
-          treatments:treatment_id (
-            name,
-            description,
-            category:category_id (
-              name
-            )
-          )
-        `)
-        .eq('profile_id', profileId)
-        .eq('is_active', true);
-
-      if (treatmentsError) {
-        console.error('❌ Error fetching treatments:', treatmentsError);
-        throw treatmentsError;
-      }
-
-      console.log('Retrieved treatments:', medSpaTreatments);
-
-      availableTreatments = medSpaTreatments.map(t => ({
-        name: t.treatments.name,
-        category: t.treatments.category.name,
-        description: t.treatments.description
-      }));
-
-      systemPrompt = `You are an expert medical aesthetician and dermatology specialist at a luxury medical spa. Your task is to analyze facial images and provide JSON-formatted recommendations for medical spa treatments, specifically choosing from the following available treatments:
-
-${availableTreatments.map(t => `- ${t.name} (${t.category}): ${t.description}`).join('\n')}`;
-    } else {
-      // Demo mode - use generic prompt
-      systemPrompt = `You are an expert medical aesthetician and dermatology specialist at a luxury medical spa. Your task is to analyze facial images and provide JSON-formatted recommendations for common medical spa treatments.`;
-    }
-
-    systemPrompt += `\n\nWhen analyzing the images, focus on these key areas:
+  prompt += `\n\nWhen analyzing the images, focus on these key areas:
 1. Skin Analysis (look for):
    - Fine lines and wrinkles
    - Volume loss and facial contours
@@ -107,11 +72,68 @@ Your response must be formatted as a JSON object with exactly this structure:
 
 IMPORTANT:
 - Provide exactly 4 key observations and their matching treatment recommendations
-${profileId ? '- Only recommend treatments from the provided list of available treatments' : '- Provide general treatment recommendations'}
-- Each concern must be paired with its corresponding treatment recommendation in the same array position
-- Recommendations should be specific${profileId ? ' and match the med spa\'s actual treatment offerings' : ''}`;
+${treatments ? '- Only recommend treatments from the provided list of available treatments' : '- Provide general treatment recommendations'}
+- Each concern must be paired with its corresponding treatment recommendation in the same array position`;
 
-    console.log('🔄 Making request to OpenAI API...');
+  return prompt;
+};
+
+const validateAnalysis = (
+  analysis: AnalysisResult, 
+  availableTreatments: Treatment[] | null = null
+): void => {
+  if (!analysis.concerns || !analysis.recommendations || 
+      !Array.isArray(analysis.concerns) || !Array.isArray(analysis.recommendations) ||
+      analysis.concerns.length !== analysis.recommendations.length ||
+      analysis.concerns.length !== 4) {
+    throw new Error('Invalid analysis format');
+  }
+
+  if (availableTreatments) {
+    const availableTreatmentNames = new Set(availableTreatments.map(t => t.name));
+    const invalidTreatments = analysis.recommendations.filter(r => !availableTreatmentNames.has(r));
+    
+    if (invalidTreatments.length > 0) {
+      throw new Error('AI recommended unavailable treatments');
+    }
+  }
+};
+
+serve(async (req) => {
+  console.log('🚀 Analyze-skin function called');
+  
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const requestText = await req.text();
+    const { images, profileId } = JSON.parse(requestText);
+
+    if (!images?.front || !images?.left || !images?.right) {
+      throw new Error('Missing required images');
+    }
+
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openaiApiKey) {
+      throw new Error('OpenAI API key is not configured');
+    }
+
+    let availableTreatments = null;
+    if (profileId) {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
+      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+      
+      if (!supabaseUrl || !supabaseServiceKey) {
+        throw new Error('Missing Supabase configuration');
+      }
+
+      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+      availableTreatments = await fetchMedSpaTreatments(supabase, profileId);
+    }
+
+    const systemPrompt = createSystemPrompt(availableTreatments);
+    
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -134,21 +156,15 @@ ${profileId ? '- Only recommend treatments from the provided list of available t
               },
               {
                 type: 'image_url',
-                image_url: {
-                  url: images.front
-                }
+                image_url: { url: images.front }
               },
               {
                 type: 'image_url',
-                image_url: {
-                  url: images.left
-                }
+                image_url: { url: images.left }
               },
               {
                 type: 'image_url',
-                image_url: {
-                  url: images.right
-                }
+                image_url: { url: images.right }
               }
             ]
           }
@@ -161,74 +177,25 @@ ${profileId ? '- Only recommend treatments from the provided list of available t
 
     if (!openaiResponse.ok) {
       const errorText = await openaiResponse.text();
-      console.error('❌ OpenAI API error:', {
-        status: openaiResponse.status,
-        statusText: openaiResponse.statusText,
-        errorDetails: errorText
-      });
       throw new Error(`OpenAI API error: ${openaiResponse.status} ${openaiResponse.statusText}`);
     }
 
     const openaiData = await openaiResponse.json();
-    console.log('✅ Received response from OpenAI:', openaiData);
+    const analysis = JSON.parse(openaiData.choices[0].message.content);
+    
+    validateAnalysis(analysis, availableTreatments);
 
-    if (!openaiData.choices?.[0]?.message?.content) {
-      console.error('❌ Invalid response format from OpenAI:', openaiData);
-      throw new Error('Invalid response format from OpenAI');
-    }
-
-    let analysis;
-    try {
-      console.log('🔄 Parsing OpenAI response content:', openaiData.choices[0].message.content);
-      analysis = JSON.parse(openaiData.choices[0].message.content);
-      
-      if (!analysis.concerns || !analysis.recommendations || 
-          !Array.isArray(analysis.concerns) || !Array.isArray(analysis.recommendations) ||
-          analysis.concerns.length !== analysis.recommendations.length ||
-          analysis.concerns.length !== 4) {
-        console.error('❌ Invalid analysis format:', analysis);
-        throw new Error('Invalid analysis format');
-      }
-
-      // Validate recommendations against available treatments if in med spa mode
-      if (profileId && availableTreatments.length > 0) {
-        const availableTreatmentNames = new Set(availableTreatments.map(t => t.name));
-        const invalidTreatments = analysis.recommendations.filter(r => !availableTreatmentNames.has(r));
-        
-        if (invalidTreatments.length > 0) {
-          console.error('❌ Invalid treatments recommended:', invalidTreatments);
-          throw new Error('AI recommended unavailable treatments');
-        }
-      }
-
-      console.log('✅ Analysis validation passed:', analysis);
-    } catch (error) {
-      console.error('❌ Error parsing analysis:', error);
-      console.error('Raw content:', openaiData.choices[0].message.content);
-      throw new Error('Failed to parse analysis results');
-    }
-
-    console.log('✅ Analysis completed successfully');
     return new Response(JSON.stringify(analysis), {
-      headers: { 
-        ...corsHeaders, 
-        'Content-Type': 'application/json'
-      }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error('❌ Error in analyze-skin function:', {
-      error: error.message,
-      stack: error.stack
-    });
+    console.error('❌ Error in analyze-skin function:', error);
     return new Response(JSON.stringify({ 
       error: error.message,
       details: 'Failed to analyze skin images'
     }), {
       status: 500,
-      headers: { 
-        ...corsHeaders, 
-        'Content-Type': 'application/json'
-      }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 });
