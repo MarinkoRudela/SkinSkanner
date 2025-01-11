@@ -28,4 +28,10 @@ export const validateAnalysis = (
       throw new Error('AI recommended unavailable treatments: ' + invalidTreatments.join(', '));
     }
   }
+
+  // Validate matching lengths
+  if (analysis.primary_concerns.length !== analysis.primary_recommendations.length ||
+      analysis.secondary_concerns.length !== analysis.secondary_recommendations.length) {
+    throw new Error('Number of concerns must match number of recommendations');
+  }
 };

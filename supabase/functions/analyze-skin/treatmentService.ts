@@ -1,4 +1,3 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { Treatment } from './types.ts';
 
 export const fetchMedSpaTreatments = async (supabase: any, profileId: string): Promise<Treatment[]> => {
@@ -11,7 +10,8 @@ export const fetchMedSpaTreatments = async (supabase: any, profileId: string): P
         description,
         category:category_id (
           name
-        )
+        ),
+        treatment_areas
       )
     `)
     .eq('profile_id', profileId)
@@ -22,6 +22,7 @@ export const fetchMedSpaTreatments = async (supabase: any, profileId: string): P
   return medSpaTreatments.map((t: any) => ({
     name: t.treatments.name,
     category: t.treatments.category,
-    description: t.treatments.description
+    description: t.treatments.description,
+    treatment_areas: t.treatments.treatment_areas
   }));
 };
