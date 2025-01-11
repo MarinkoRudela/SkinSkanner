@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { features } from '@/data/features';
 import { FeatureCard } from '@/components/features/FeatureCard';
+import TreatmentDemo from '@/components/features/TreatmentDemo';
+import IntegrationProcess from '@/components/features/IntegrationProcess';
 
 export const Features = () => {
   const navigate = useNavigate();
@@ -22,6 +24,22 @@ export const Features = () => {
           </p>
         </div>
 
+        {/* Treatment Selection Feature Highlight */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-indigo-900 mb-4">
+              Customized Treatment Recommendations
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Ensure your AI analysis only recommends treatments you actually offer, increasing booking conversion rates and client satisfaction
+            </p>
+          </div>
+          
+          <TreatmentDemo />
+          <IntegrationProcess />
+        </div>
+
+        {/* Other Features */}
         <div className="grid gap-8 mb-12">
           {features.map((feature, index) => (
             <FeatureCard
