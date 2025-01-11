@@ -74,6 +74,7 @@ export const BrandedScannerPage = () => {
         businessData={businessData}
         shortCode={shortCode}
         linkVisitId={linkVisitId || undefined}
+        profileId={businessData.profile_id}
       />
     </>
   );

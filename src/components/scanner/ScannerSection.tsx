@@ -26,7 +26,7 @@ export const ScannerSection = ({
   shortCode,
   linkVisitId
 }: ScannerSectionProps) => {
-  console.log('ScannerSection bookingUrl:', bookingUrl);
+  console.log('ScannerSection props:', { bookingUrl, profileId, shortCode, linkVisitId });
   
   const [capturedImages, setCapturedImages] = useState<CapturedImages | null>(null);
   const { analysis, isAnalyzing, analyzeImages, resetAnalysis } = useSkinAnalysis(profileId, linkVisitId);

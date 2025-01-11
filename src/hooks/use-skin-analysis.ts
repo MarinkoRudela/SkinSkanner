@@ -25,24 +25,13 @@ export const useSkinAnalysis = (profileId?: string, linkVisitId?: string) => {
     setIsAnalyzing(true);
     
     try {
-      console.log('Calling analyze-skin function with images:', images);
+      console.log('Calling analyze-skin function with:', { images, profileId });
       
-      // Track scan start if we have the required data
-      if (profileId && linkVisitId) {
-        await supabase
-          .from('scanner_analytics')
-          .insert([{
-            link_visit_id: linkVisitId,
-            profile_id: profileId,
-            scan_started_at: new Date().toISOString(),
-            photos_uploaded: 3
-          }]);
-      }
-
       const { data, error } = await supabase.functions.invoke('analyze-skin', {
-        body: { images },
-        headers: {
-          Authorization: undefined
+        body: { 
+          images,
+          profileId,
+          linkVisitId
         }
       });
 
@@ -58,21 +47,6 @@ export const useSkinAnalysis = (profileId?: string, linkVisitId?: string) => {
       console.log('Analysis data received:', data);
       setAnalysis(data);
       
-      // Track scan completion if we have the required data
-      if (profileId && linkVisitId) {
-        await supabase
-          .from('scanner_analytics')
-          .insert([{
-            link_visit_id: linkVisitId,
-            profile_id: profileId,
-            scan_started_at: new Date().toISOString(),
-            scan_completed_at: new Date().toISOString(),
-            photos_uploaded: 3,
-            recommendations_generated: data.recommendations.length,
-            primary_concerns: data.concerns
-          }]);
-      }
-
       toast({
         title: "Analysis Complete",
         description: "We've analyzed your photos and prepared personalized recommendations.",
