@@ -22,6 +22,7 @@ export const TreatmentItem = ({
   businessType = 'med_spa'
 }: TreatmentItemProps) => {
   const showTreatmentAreas = treatment.category?.category_type !== 'eyebrow';
+  const treatmentAreas = treatment.treatment_areas || [];
 
   return (
     <div className="space-y-4 p-4 rounded-lg border border-gray-200 hover:border-primary/50 transition-colors">
@@ -56,7 +57,7 @@ export const TreatmentItem = ({
       {isSelected && showTreatmentAreas && (
         <div className="pl-7">
           <TreatmentAreaSelector
-            areas={availableAreas}
+            areas={treatmentAreas}
             selectedAreas={selectedAreas}
             onAreaToggle={onAreaToggle}
             businessType={businessType}

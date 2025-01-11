@@ -1,9 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion } from "@/components/ui/accordion";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TreatmentCategory } from "./treatments/TreatmentCategory";
 import { useTreatments } from "./treatments/useTreatments";
-import { BusinessType } from "./treatments/types";
 import { useState } from "react";
 
 interface TreatmentsTabProps {
@@ -11,7 +9,7 @@ interface TreatmentsTabProps {
 }
 
 export const TreatmentsTab = ({ profileId }: TreatmentsTabProps) => {
-  const [businessType, setBusinessType] = useState<BusinessType>('med_spa');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(['skin']);
   const { 
     categories, 
     selectedTreatments, 
@@ -25,29 +23,38 @@ export const TreatmentsTab = ({ profileId }: TreatmentsTabProps) => {
     return <div>Loading treatments...</div>;
   }
 
-  // Filter treatments based on business type
-  const filteredCategories = categories.map(category => ({
-    ...category,
-    treatments: category.treatments.filter(treatment => 
-      !treatment.business_types || treatment.business_types.includes(businessType)
-    )
-  })).filter(category => category.treatments.length > 0);
+  // Filter treatments based on selected categories
+  const filteredCategories = categories
+    .filter(category => selectedCategories.includes(category.category_type))
+    .filter(category => category.treatments.length > 0);
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(category)) {
+        return prev.filter(c => c !== category);
+      }
+      return [...prev, category];
+    });
+  };
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Available Treatments</CardTitle>
-        <div className="mt-4">
-          <Select value={businessType} onValueChange={(value: BusinessType) => setBusinessType(value)}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select business type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="med_spa">Med Spa</SelectItem>
-              <SelectItem value="aesthetician">Aesthetician</SelectItem>
-              <SelectItem value="brow_specialist">Brow Specialist</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {['injectable', 'skin', 'eyebrow'].map((category) => (
+            <button
+              key={category}
+              onClick={() => handleCategoryChange(category)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                selectedCategories.includes(category)
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary hover:bg-secondary/80'
+              }`}
+            >
+              {category.charAt(0).toUpperCase() + category.slice(1)}
+            </button>
+          ))}
         </div>
       </CardHeader>
       <CardContent>

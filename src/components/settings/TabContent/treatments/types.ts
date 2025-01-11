@@ -1,3 +1,5 @@
+export type BusinessType = 'med_spa' | 'aesthetician' | 'brow_specialist';
+
 export interface Treatment {
   id: string;
   name: string;
