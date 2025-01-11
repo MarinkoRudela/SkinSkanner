@@ -32,12 +32,10 @@ export const useTreatmentState = (profileId: string) => {
       const selectedIds = new Set<string>();
       const areas: Record<string, string[]> = {};
 
-      data.forEach((item: TreatmentWithAreas) => {
-        if (item.treatment_id) {
-          selectedIds.add(item.treatment_id);
-          if (item.treatments?.treatment_areas) {
-            areas[item.treatment_id] = item.treatments.treatment_areas;
-          }
+      (data as TreatmentWithAreas[]).forEach((item) => {
+        selectedIds.add(item.treatment_id);
+        if (item.treatments?.treatment_areas) {
+          areas[item.treatment_id] = item.treatments.treatment_areas;
         }
       });
 

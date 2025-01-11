@@ -6,7 +6,8 @@ export interface Treatment {
   treatment_areas?: string[];
 }
 
-export interface TreatmentWithAreas extends Treatment {
+export interface TreatmentWithAreas {
+  treatment_id: string;
   treatments?: {
     id: string;
     treatment_areas: string[];
