@@ -6,6 +6,7 @@ export const useProfileData = (session: any) => {
   const [brandName, setBrandName] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [tagline, setTagline] = useState('');
+  const [businessType, setBusinessType] = useState('med_spa');
 
   const fetchProfileData = async () => {
     if (!session?.user?.id) return;
@@ -26,6 +27,7 @@ export const useProfileData = (session: any) => {
         setBrandName(profile.brand_name || '');
         setLogoUrl(profile.logo_url || '');
         setTagline(profile.tagline || '');
+        setBusinessType(profile.business_type || 'med_spa');
       }
     } catch (error) {
       console.error('Error in fetchProfileData:', error);
@@ -42,6 +44,7 @@ export const useProfileData = (session: any) => {
     brandName,
     logoUrl,
     tagline,
+    businessType,
     fetchProfileData
   };
 };

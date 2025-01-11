@@ -5,11 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { LogoUpload } from "./branding/LogoUpload";
 import { BrandNameInput } from "./branding/BrandNameInput";
 import { TaglineInput } from "./branding/TaglineInput";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 interface BrandingFormProps {
   initialBrandName?: string;
   initialLogoUrl?: string;
   initialTagline?: string;
+  initialBusinessType?: string;
   onSave: () => void;
 }
 
@@ -17,11 +19,13 @@ export const BrandingForm = ({
   initialBrandName = '', 
   initialLogoUrl = '',
   initialTagline = '',
+  initialBusinessType = 'med_spa',
   onSave 
 }: BrandingFormProps) => {
   const [brandName, setBrandName] = useState(initialBrandName);
   const [logoUrl, setLogoUrl] = useState(initialLogoUrl);
   const [tagline, setTagline] = useState(initialTagline);
+  const [businessType, setBusinessType] = useState(initialBusinessType);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
@@ -33,6 +37,7 @@ export const BrandingForm = ({
           brand_name: brandName,
           logo_url: logoUrl,
           tagline: tagline,
+          business_type: businessType,
         })
         .eq('id', (await supabase.auth.getUser()).data.user?.id);
 
@@ -70,6 +75,21 @@ export const BrandingForm = ({
           tagline={tagline}
           onChange={setTagline}
         />
+        <div className="space-y-2">
+          <label htmlFor="businessType" className="text-sm font-medium text-gray-700">
+            Business Type
+          </label>
+          <Select value={businessType} onValueChange={setBusinessType}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select your business type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="med_spa">Medical Spa</SelectItem>
+              <SelectItem value="aesthetician">Aesthetician</SelectItem>
+              <SelectItem value="brow_specialist">Brow Specialist</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <Button
           onClick={handleSave}
           disabled={isSaving}

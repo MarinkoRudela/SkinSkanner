@@ -242,6 +242,7 @@ export type Database = {
         Row: {
           brand_name: string
           business_name: string | null
+          business_type: string
           created_at: string
           id: string
           logo_url: string | null
@@ -251,6 +252,7 @@ export type Database = {
         Insert: {
           brand_name?: string
           business_name?: string | null
+          business_type?: string
           created_at?: string
           id: string
           logo_url?: string | null
@@ -260,6 +262,7 @@ export type Database = {
         Update: {
           brand_name?: string
           business_name?: string | null
+          business_type?: string
           created_at?: string
           id?: string
           logo_url?: string | null
@@ -463,6 +466,7 @@ export type Database = {
           id: string
           name: string
           requires_license: boolean | null
+          treatment_areas: string[] | null
           updated_at: string
         }
         Insert: {
@@ -472,6 +476,7 @@ export type Database = {
           id?: string
           name: string
           requires_license?: boolean | null
+          treatment_areas?: string[] | null
           updated_at?: string
         }
         Update: {
@@ -481,6 +486,7 @@ export type Database = {
           id?: string
           name?: string
           requires_license?: boolean | null
+          treatment_areas?: string[] | null
           updated_at?: string
         }
         Relationships: [
