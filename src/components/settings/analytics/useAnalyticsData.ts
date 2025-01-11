@@ -32,6 +32,11 @@ export const useAnalyticsData = (session: any) => {
       return data as DailyAnalytics;
     },
     enabled: !!session?.user?.id,
+    staleTime: 2 * 60 * 1000, // Data considered fresh for 2 minutes
+    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    refetchOnWindowFocus: true, // Refetch when tab becomes active
+    retry: 3, // Retry failed requests 3 times
   });
 
   const {
@@ -57,6 +62,11 @@ export const useAnalyticsData = (session: any) => {
       return data as Tables<'weekly_analytics'>[];
     },
     enabled: !!session?.user?.id,
+    staleTime: 15 * 60 * 1000, // Data considered fresh for 15 minutes
+    cacheTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
+    refetchInterval: 15 * 60 * 1000, // Refetch every 15 minutes
+    refetchOnWindowFocus: true,
+    retry: 3,
   });
 
   return {
