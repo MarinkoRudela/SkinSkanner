@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, ChevronDown, Syringe, Face, Sparkles } from 'lucide-react';
+import { Check, ChevronDown, Syringe, UserCircle, Sparkles } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -10,7 +10,7 @@ import {
 const treatments = [
   {
     category: "Facial Treatments",
-    icon: <Face className="w-5 h-5" />,
+    icon: <UserCircle className="w-5 h-5" />,
     treatments: [
       { name: "Chemical Peels", description: "Exfoliating treatments that improve skin texture" },
       { name: "Microdermabrasion", description: "Physical exfoliation for renewed skin" },
