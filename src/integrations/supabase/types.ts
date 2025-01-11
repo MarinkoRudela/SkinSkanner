@@ -169,6 +169,33 @@ export type Database = {
           },
         ]
       }
+      performance_metrics: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          path: string
+          timestamp: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          path: string
+          timestamp?: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          path?: string
+          timestamp?: string
+          value?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           brand_name: string
