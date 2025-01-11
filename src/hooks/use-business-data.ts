@@ -50,7 +50,7 @@ export const useBusinessData = (shortCode?: string) => {
             brand_name,
             logo_url,
             tagline,
-            business_settings (
+            business_settings!inner (
               booking_url
             )
           `)
@@ -65,14 +65,17 @@ export const useBusinessData = (shortCode?: string) => {
           throw new Error('Business profile not found');
         }
 
-        // Add profile_id to the data
-        const businessData = {
-          ...data,
+        // Transform the data to match the BusinessData interface
+        const transformedData: BusinessData = {
+          brand_name: data.brand_name,
+          logo_url: data.logo_url,
+          tagline: data.tagline,
+          business_settings: data.business_settings?.[0] || null,
           profile_id: shortCodeData.profile_id
         };
 
-        console.log('Business data fetched:', businessData);
-        setBusinessData(businessData);
+        console.log('Business data fetched:', transformedData);
+        setBusinessData(transformedData);
         setError(null);
       } catch (err: any) {
         console.error('Error fetching business data:', err);
