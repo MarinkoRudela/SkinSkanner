@@ -2,13 +2,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BrandingForm } from "../BrandingForm";
 
 interface BrandingTabProps {
+  session: any;
   brandName: string;
   logoUrl: string;
   tagline: string;
   onSave: () => void;
 }
 
-export const BrandingTab = ({ brandName, logoUrl, tagline, onSave }: BrandingTabProps) => {
+export const BrandingTab = ({ session, brandName, logoUrl, tagline, onSave }: BrandingTabProps) => {
   return (
     <Card>
       <CardHeader>
