@@ -1,14 +1,10 @@
 import React, { useMemo } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
+import { AnalysisResult } from '@/hooks/use-skin-analysis';
 
 interface AnalysisResultsProps {
-  analysis: {
-    primary_concerns: string[];
-    primary_recommendations: string[];
-    secondary_concerns: string[];
-    secondary_recommendations: string[];
-  };
+  analysis: AnalysisResult;
 }
 
 export const AnalysisResults = React.memo(({ analysis }: AnalysisResultsProps) => {
@@ -29,27 +25,20 @@ export const AnalysisResults = React.memo(({ analysis }: AnalysisResultsProps) =
   const allPairs = [...primaryPairs, ...secondaryPairs];
 
   return (
-    <div className="family-tree">
-      <div className="root-node glass-card p-4 rounded-2xl">
-        <span className="font-semibold text-primary">Skin Analysis</span>
-      </div>
-      
-      <div className="tree-container">
-        {allPairs.map((pair, index) => (
-          <div key={index} className="concern-branch">
-            <Popover>
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-primary">Primary Concerns</h3>
+          {primaryPairs.map((pair, index) => (
+            <Popover key={index}>
               <PopoverTrigger asChild>
                 <button 
-                  className={`concern-node glass-card p-3 rounded-xl w-full hover:bg-primary/5 transition-colors ${
-                    pair.isPrimary ? 'border-2 border-primary/30' : ''
-                  }`}
+                  className="w-full glass-card p-4 rounded-xl hover:bg-primary/5 transition-colors border-2 border-primary/30"
                 >
                   <div className="flex items-center gap-2">
-                    {pair.isPrimary && (
-                      <Badge variant="default" className="bg-primary/20 text-primary text-xs">
-                        Primary
-                      </Badge>
-                    )}
+                    <Badge variant="default" className="bg-primary/20 text-primary text-xs">
+                      Priority {index + 1}
+                    </Badge>
                     <span className="text-sm font-medium">{pair.concern}</span>
                   </div>
                 </button>
@@ -57,15 +46,47 @@ export const AnalysisResults = React.memo(({ analysis }: AnalysisResultsProps) =
               <PopoverContent className="glass-card border-none p-4 max-w-xs">
                 <div className="space-y-2">
                   <h4 className="font-medium text-sm text-primary">
-                    {pair.isPrimary ? 'Recommended Treatment' : 'Enhancement Option'}
+                    Recommended Treatment
                   </h4>
                   <p className="text-sm text-muted-foreground">{pair.recommendation}</p>
                 </div>
               </PopoverContent>
             </Popover>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-muted-foreground">Enhancement Options</h3>
+          {secondaryPairs.map((pair, index) => (
+            <Popover key={index}>
+              <PopoverTrigger asChild>
+                <button 
+                  className="w-full glass-card p-4 rounded-xl hover:bg-secondary/5 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="bg-secondary/20 text-secondary-foreground text-xs">
+                      Optional
+                    </Badge>
+                    <span className="text-sm font-medium text-muted-foreground">{pair.concern}</span>
+                  </div>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="glass-card border-none p-4 max-w-xs">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm text-secondary-foreground">
+                    Enhancement Treatment
+                  </h4>
+                  <p className="text-sm text-muted-foreground">{pair.recommendation}</p>
+                </div>
+              </PopoverContent>
+            </Popover>
+          ))}
+        </div>
       </div>
+
+      <p className="text-center text-sm text-muted-foreground mt-6">
+        Click on any concern to see the recommended treatment
+      </p>
     </div>
   );
 });

@@ -3,14 +3,10 @@ import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { AnalysisResults } from './AnalysisResults';
 import { ActionButtons } from '../ActionButtons';
+import { AnalysisResult } from '@/hooks/use-skin-analysis';
 
 interface AnalysisCardProps {
-  analysis: {
-    primary_concerns: string[];
-    primary_recommendations: string[];
-    secondary_concerns: string[];
-    secondary_recommendations: string[];
-  };
+  analysis: AnalysisResult;
   bookingUrl: string;
   onScanAgain: () => void;
   profileId?: string;
@@ -36,12 +32,8 @@ export const AnalysisCard = React.memo(({
       <Card className="glass-card p-8 w-full max-w-4xl mx-auto rounded-3xl">
         <div className="space-y-8">
           <h3 className="text-xl font-semibold text-center mb-8 purple-gradient bg-clip-text text-transparent">
-            Analysis Results
+            Your Personalized Analysis Results
           </h3>
-          
-          <p className="text-center text-muted-foreground text-sm mb-6">
-            Click on any analysis result to see recommended treatments
-          </p>
           
           <AnalysisResults analysis={analysis} />
 
@@ -74,3 +66,5 @@ export const AnalysisCard = React.memo(({
     prevProps.linkVisitId === nextProps.linkVisitId
   );
 });
+
+AnalysisCard.displayName = 'AnalysisCard';
