@@ -54,3 +54,15 @@
 .read-the-docs {
   color: black;
 }
+
+/* Add styles for the loading spinner container */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+/* Ensure the loading spinner is centered properly */
+.flex.items-center.justify-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
