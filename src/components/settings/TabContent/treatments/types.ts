@@ -3,6 +3,7 @@ export interface Treatment {
   name: string;
   description: string;
   requires_license: boolean;
+  treatment_areas?: string[];
 }
 
 export interface TreatmentCategory {
