@@ -33,7 +33,7 @@ export const useAnalyticsData = (session: any) => {
     },
     enabled: !!session?.user?.id,
     staleTime: 2 * 60 * 1000, // Data considered fresh for 2 minutes
-    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes (formerly cacheTime)
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
     refetchOnWindowFocus: true, // Refetch when tab becomes active
     retry: 3, // Retry failed requests 3 times
@@ -63,7 +63,7 @@ export const useAnalyticsData = (session: any) => {
     },
     enabled: !!session?.user?.id,
     staleTime: 15 * 60 * 1000, // Data considered fresh for 15 minutes
-    cacheTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
+    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes (formerly cacheTime)
     refetchInterval: 15 * 60 * 1000, // Refetch every 15 minutes
     refetchOnWindowFocus: true,
     retry: 3,
