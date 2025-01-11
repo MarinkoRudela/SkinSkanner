@@ -169,6 +169,48 @@ export type Database = {
           },
         ]
       }
+      med_spa_treatments: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          profile_id: string | null
+          treatment_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          profile_id?: string | null
+          treatment_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          profile_id?: string | null
+          treatment_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "med_spa_treatments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "med_spa_treatments_treatment_id_fkey"
+            columns: ["treatment_id"]
+            isOneToOne: false
+            referencedRelation: "treatments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       performance_metrics: {
         Row: {
           created_at: string
@@ -350,6 +392,106 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      treatment_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      treatment_subtypes: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          name: string
+          treatment_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          name: string
+          treatment_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          treatment_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "treatment_subtypes_treatment_id_fkey"
+            columns: ["treatment_id"]
+            isOneToOne: false
+            referencedRelation: "treatments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      treatments: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          description: string
+          id: string
+          name: string
+          requires_license: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          name: string
+          requires_license?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          requires_license?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "treatments_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "treatment_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       weekly_analytics: {
         Row: {
