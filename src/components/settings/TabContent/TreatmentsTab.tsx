@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion } from "@/components/ui/accordion";
-import { TreatmentCategory } from "./treatments/TreatmentCategory";
-import { useTreatments } from "./treatments/useTreatments";
+import { TreatmentCategory } from "@/components/settings/TabContent/treatments/TreatmentCategory";
+import { useTreatments } from "@/components/settings/TabContent/treatments/useTreatments";
 import { useState } from "react";
 
 interface TreatmentsTabProps {
