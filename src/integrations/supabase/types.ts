@@ -206,6 +206,13 @@ export type Database = {
             foreignKeyName: "med_spa_treatments_treatment_id_fkey"
             columns: ["treatment_id"]
             isOneToOne: false
+            referencedRelation: "available_business_treatments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "med_spa_treatments_treatment_id_fkey"
+            columns: ["treatment_id"]
+            isOneToOne: false
             referencedRelation: "treatments"
             referencedColumns: ["id"]
           },
@@ -456,6 +463,13 @@ export type Database = {
             foreignKeyName: "treatment_subtypes_treatment_id_fkey"
             columns: ["treatment_id"]
             isOneToOne: false
+            referencedRelation: "available_business_treatments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "treatment_subtypes_treatment_id_fkey"
+            columns: ["treatment_id"]
+            isOneToOne: false
             referencedRelation: "treatments"
             referencedColumns: ["id"]
           },
@@ -551,7 +565,28 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      available_business_treatments: {
+        Row: {
+          business_types: string[] | null
+          category_name: string | null
+          category_type: string | null
+          description: string | null
+          id: string | null
+          name: string | null
+          profile_id: string | null
+          requires_license: boolean | null
+          treatment_areas: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "med_spa_treatments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       get_todays_analytics: {
