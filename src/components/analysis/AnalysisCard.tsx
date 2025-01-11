@@ -29,25 +29,42 @@ export const AnalysisCard = React.memo(({
       transition={{ duration: 0.5 }}
       className="space-y-8"
     >
-      <Card className="glass-card p-8 w-full max-w-4xl mx-auto rounded-3xl">
+      <Card className="glass-card p-8 w-full max-w-4xl mx-auto rounded-3xl shadow-lg">
         <div className="space-y-8">
-          <h3 className="text-xl font-semibold text-center mb-8 purple-gradient bg-clip-text text-transparent">
-            Your Personalized Analysis Results
-          </h3>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <h3 className="text-2xl font-semibold text-center mb-8 purple-gradient bg-clip-text text-transparent">
+              Your Personalized Treatment Plan
+            </h3>
+          </motion.div>
           
           <AnalysisResults analysis={analysis} />
 
-          <ActionButtons 
-            bookingUrl={bookingUrl} 
-            onScanAgain={onScanAgain}
-            profileId={profileId}
-            shortCode={shortCode}
-            linkVisitId={linkVisitId}
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <ActionButtons 
+              bookingUrl={bookingUrl} 
+              onScanAgain={onScanAgain}
+              profileId={profileId}
+              shortCode={shortCode}
+              linkVisitId={linkVisitId}
+            />
+          </motion.div>
           
-          <p className="text-center text-sm text-muted-foreground mt-6 px-4">
-            Disclaimer: These recommendations are for informational purposes only. Please consult with a licensed medical professional before proceeding with any treatments.
-          </p>
+          <motion.p 
+            className="text-center text-sm text-muted-foreground mt-6 px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            Disclaimer: These recommendations are for informational purposes only. Please consult with a licensed professional before proceeding with any treatments.
+          </motion.p>
         </div>
       </Card>
     </motion.div>
