@@ -1,12 +1,10 @@
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { DashboardTabs } from "../DashboardTabs";
-import { BookingTab } from "../TabContent/BookingTab";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BrandingTab } from "../TabContent/BrandingTab";
-import { IntegrationTab } from "../TabContent/IntegrationTab";
-import { SubscriptionTab } from "../TabContent/SubscriptionTab";
+import { BookingTab } from "../TabContent/BookingTab";
 import { GuideTab } from "../TabContent/GuideTab";
-import { FAQTab } from "../TabContent/FAQTab";
 import { AnalyticsTab } from "../TabContent/AnalyticsTab";
+import { SubscriptionTab } from "../TabContent/SubscriptionTab";
+import { TreatmentsTab } from "../TabContent/TreatmentsTab";
 
 interface TabsContainerProps {
   session: any;
@@ -16,9 +14,9 @@ interface TabsContainerProps {
   handleUpdateBookingUrl: (url: string) => Promise<void>;
   uniqueLink: string;
   isLoading: boolean;
-  brandName: string | null;
-  logoUrl: string | null;
-  tagline: string | null;
+  brandName: string;
+  logoUrl: string;
+  tagline: string;
   onBrandingSave: () => void;
 }
 
@@ -36,24 +34,22 @@ export const TabsContainer = ({
   onBrandingSave,
 }: TabsContainerProps) => {
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-      <DashboardTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <TabsList>
+        <TabsTrigger value="guide">Setup Guide</TabsTrigger>
+        <TabsTrigger value="branding">Branding</TabsTrigger>
+        <TabsTrigger value="treatments">Treatments</TabsTrigger>
+        <TabsTrigger value="booking">Booking</TabsTrigger>
+        <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        <TabsTrigger value="subscription">Subscription</TabsTrigger>
+      </TabsList>
 
       <TabsContent value="guide">
         <GuideTab />
       </TabsContent>
 
-      <TabsContent value="booking">
-        <BookingTab 
-          bookingUrl={bookingUrl}
-          updateBookingUrl={handleUpdateBookingUrl}
-          uniqueLink={uniqueLink}
-          isLoading={isLoading}
-        />
-      </TabsContent>
-
       <TabsContent value="branding">
-        <BrandingTab 
+        <BrandingTab
           brandName={brandName}
           logoUrl={logoUrl}
           tagline={tagline}
@@ -61,8 +57,17 @@ export const TabsContainer = ({
         />
       </TabsContent>
 
-      <TabsContent value="integration">
-        <IntegrationTab userId={session.user.id} />
+      <TabsContent value="treatments">
+        <TreatmentsTab profileId={session?.user?.id} />
+      </TabsContent>
+
+      <TabsContent value="booking">
+        <BookingTab
+          bookingUrl={bookingUrl}
+          handleUpdateBookingUrl={handleUpdateBookingUrl}
+          uniqueLink={uniqueLink}
+          isLoading={isLoading}
+        />
       </TabsContent>
 
       <TabsContent value="analytics">
@@ -71,10 +76,6 @@ export const TabsContainer = ({
 
       <TabsContent value="subscription">
         <SubscriptionTab session={session} />
-      </TabsContent>
-
-      <TabsContent value="faq">
-        <FAQTab />
       </TabsContent>
     </Tabs>
   );
