@@ -29,6 +29,7 @@ export const Features = () => {
               title={feature.title}
               description={feature.description}
               benefits={feature.benefits}
+              isNew={feature.isNew}
             />
           ))}
         </div>

@@ -1,21 +1,26 @@
-import { Check } from "lucide-react";
+import { Check, Star } from "lucide-react";
+import { NewFeatureBadge } from "@/components/ui/new-feature-badge";
 
 const benefits = [
   {
     title: "Fully Customizable",
     description: "Brand the app with your logo, business name, and personalized tagline",
+    isNew: false,
   },
   {
-    title: "Instant Analysis",
-    description: "AI-powered skin analysis provides immediate, professional recommendations",
+    title: "AI-Powered Analysis",
+    description: "Advanced skin analysis with personalized treatment recommendations based on your service offerings",
+    isNew: true,
   },
   {
-    title: "Boost Bookings",
+    title: "Smart Booking Integration",
     description: "Direct clients to your booking system with personalized treatment plans",
+    isNew: false,
   },
   {
-    title: "Custom Links",
-    description: "Share your branded scanner page anywhere with unique, short links",
+    title: "Analytics Dashboard",
+    description: "Track visitor engagement, conversion rates, and ROI in real-time",
+    isNew: true,
   },
 ];
 
@@ -30,15 +35,18 @@ export const BenefitsSection = () => {
           {benefits.map((benefit, index) => (
             <div
               key={index}
-              className="glass-card p-6 rounded-xl flex items-start gap-4"
+              className="glass-card p-6 rounded-xl flex items-start gap-4 hover:shadow-lg transition-all duration-300"
             >
               <div className="rounded-full bg-primary/10 p-2 mt-1">
                 <Check className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-indigo-900 mb-2">
-                  {benefit.title}
-                </h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-xl font-semibold text-indigo-900">
+                    {benefit.title}
+                  </h3>
+                  {benefit.isNew && <NewFeatureBadge />}
+                </div>
                 <p className="text-indigo-700">{benefit.description}</p>
               </div>
             </div>

@@ -7,7 +7,8 @@ export const features = [
       "Medical-grade accuracy rivaling expensive hardware",
       "Custom-tailored treatment recommendations",
       "Multi-angle facial analysis for comprehensive results"
-    ]
+    ],
+    isNew: true
   },
   {
     title: "Automated Client Acquisition",
@@ -17,7 +18,8 @@ export const features = [
       "Qualified leads with detailed skin analysis",
       "Higher conversion rates with personalized recommendations",
       "Seamless integration with your existing booking system"
-    ]
+    ],
+    isNew: false
   },
   {
     title: "Premium Brand Experience",
@@ -27,7 +29,8 @@ export const features = [
       "Unlimited scans for your clients",
       "Shareable analysis links for social proof",
       "Mobile-optimized experience"
-    ]
+    ],
+    isNew: false
   },
   {
     title: "Business Intelligence Dashboard",
@@ -37,7 +40,8 @@ export const features = [
       "Detailed visitor analytics",
       "Treatment demand forecasting",
       "ROI performance metrics"
-    ]
+    ],
+    isNew: true
   },
   {
     title: "Client Engagement Tools",
@@ -47,6 +51,7 @@ export const features = [
       "Automated follow-up recommendations",
       "Social sharing capabilities",
       "Treatment journey documentation"
-    ]
+    ],
+    isNew: true
   }
 ];
