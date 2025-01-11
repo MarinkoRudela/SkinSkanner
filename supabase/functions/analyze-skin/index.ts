@@ -20,7 +20,7 @@ serve(async (req) => {
 
   try {
     const requestText = await req.text();
-    const { images, profileId }: AnalysisRequest = JSON.parse(requestText);
+    const { images, profileId, businessType, brandName }: AnalysisRequest = JSON.parse(requestText);
 
     if (!images?.front || !images?.left || !images?.right) {
       throw new Error('Missing required images');
@@ -32,6 +32,7 @@ serve(async (req) => {
     }
 
     let availableTreatments = null;
+    let businessProfile = null;
     if (profileId) {
       const supabaseUrl = Deno.env.get('SUPABASE_URL');
       const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -44,7 +45,7 @@ serve(async (req) => {
       availableTreatments = await fetchMedSpaTreatments(supabase, profileId);
     }
 
-    const systemPrompt = createSystemPrompt(availableTreatments);
+    const systemPrompt = createSystemPrompt(availableTreatments, businessType, brandName);
     
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -64,7 +65,7 @@ serve(async (req) => {
             content: [
               {
                 type: 'text',
-                text: 'Please analyze these facial images and provide personalized medical spa treatment recommendations:'
+                text: 'Please analyze these facial images and provide personalized treatment recommendations:'
               },
               {
                 type: 'image_url',

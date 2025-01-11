@@ -2,11 +2,14 @@ export interface Treatment {
   name: string;
   category: { name: string };
   description: string;
+  treatment_areas?: string[];
 }
 
 export interface AnalysisResult {
-  concerns: string[];
-  recommendations: string[];
+  primary_concerns: string[];
+  primary_recommendations: string[];
+  secondary_concerns: string[];
+  secondary_recommendations: string[];
 }
 
 export interface AnalysisImages {
@@ -18,4 +21,6 @@ export interface AnalysisImages {
 export interface AnalysisRequest {
   images: AnalysisImages;
   profileId?: string;
+  businessType?: string;
+  brandName?: string;
 }
