@@ -14,12 +14,14 @@ interface ScannerPageContainerProps {
   };
   shortCode: string;
   linkVisitId?: string;
+  profileId?: string;
 }
 
 export const ScannerPageContainer = ({ 
   businessData,
   shortCode,
-  linkVisitId
+  linkVisitId,
+  profileId
 }: ScannerPageContainerProps) => {
   console.log('ScannerPageContainer received:', {
     brandName: businessData.brand_name,
