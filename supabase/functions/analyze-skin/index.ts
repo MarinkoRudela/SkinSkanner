@@ -124,7 +124,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4-vision-preview',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
@@ -178,6 +178,30 @@ serve(async (req) => {
     } catch (error) {
       console.error('❌ Analysis validation failed:', error);
       throw error;
+    }
+
+    // 8. Store analytics data if profile ID is provided
+    if (profileId) {
+      try {
+        const { error: analyticsError } = await supabase
+          .from('scanner_analytics')
+          .insert({
+            profile_id: profileId,
+            scan_completed_at: new Date().toISOString(),
+            recommendations_generated: analysis.primary_recommendations.length + analysis.secondary_recommendations.length,
+            primary_concerns: analysis.primary_concerns
+          });
+
+        if (analyticsError) {
+          console.error('Error storing analytics:', analyticsError);
+          // Don't throw here, just log the error
+        } else {
+          console.log('✅ Analytics data stored successfully');
+        }
+      } catch (error) {
+        console.error('Error storing analytics:', error);
+        // Don't throw here, just log the error
+      }
     }
 
     return new Response(JSON.stringify(analysis), {
