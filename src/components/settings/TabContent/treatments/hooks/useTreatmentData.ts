@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
-import { TreatmentCategory, CategoryType } from '../types';
+import { TreatmentCategory } from '../types';
 import { toast } from "@/hooks/use-toast";
-
-const isValidCategoryType = (type: string): type is CategoryType => {
-  return ['injectable', 'skin', 'eyebrow'].includes(type);
-};
+import { validateCategoryType } from '@/utils/categoryTypeValidation';
 
 export const useTreatmentData = () => {
   const [categories, setCategories] = useState<TreatmentCategory[]>([]);
@@ -36,14 +33,16 @@ export const useTreatmentData = () => {
 
           if (treatmentsError) throw treatmentsError;
 
-          const categoryType = isValidCategoryType(category.category_type) 
-            ? category.category_type 
-            : 'skin';
-
           return {
             ...category,
-            category_type: categoryType,
-            treatments: treatments || []
+            category_type: validateCategoryType(category.category_type),
+            treatments: treatments?.map(treatment => ({
+              ...treatment,
+              category: treatment.category ? {
+                ...treatment.category,
+                category_type: validateCategoryType(treatment.category.category_type)
+              } : null
+            })) || []
           } as TreatmentCategory;
         })
       );
