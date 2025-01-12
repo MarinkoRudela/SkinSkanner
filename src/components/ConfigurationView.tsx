@@ -16,7 +16,7 @@ export const ConfigurationView = ({
   updateBookingUrl,
 }: ConfigurationViewProps) => {
   const [activeTab, setActiveTab] = useState('guide');
-  const { brandName, logoUrl, tagline, businessType, fetchProfileData } = useProfileData(session);
+  const { brandName, logoUrl, tagline, fetchProfileData } = useProfileData(session);
   const { uniqueLink, isLoading, handleUpdateBookingUrl } = useBookingUrl(
     session,
     bookingUrl,
@@ -42,7 +42,6 @@ export const ConfigurationView = ({
         brandName={brandName}
         logoUrl={logoUrl}
         tagline={tagline}
-        businessType={businessType}
         onBrandingSave={fetchProfileData}
       />
     </DashboardContainer>

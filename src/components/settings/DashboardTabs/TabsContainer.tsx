@@ -18,7 +18,6 @@ interface TabsContainerProps {
   brandName: string;
   logoUrl: string;
   tagline: string;
-  businessType: string;
   onBrandingSave: () => void;
 }
 
@@ -33,7 +32,6 @@ export const TabsContainer = ({
   brandName,
   logoUrl,
   tagline,
-  businessType,
   onBrandingSave,
 }: TabsContainerProps) => {
   return (
@@ -58,7 +56,6 @@ export const TabsContainer = ({
           brandName={brandName}
           logoUrl={logoUrl}
           tagline={tagline}
-          businessType={businessType}
           onSave={onBrandingSave}
         />
       </TabsContent>

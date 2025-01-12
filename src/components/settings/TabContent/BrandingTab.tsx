@@ -6,7 +6,6 @@ interface BrandingTabProps {
   brandName: string;
   logoUrl: string;
   tagline: string;
-  businessType: string;
   onSave: () => void;
 }
 
@@ -15,7 +14,6 @@ export const BrandingTab = ({
   brandName, 
   logoUrl, 
   tagline,
-  businessType, 
   onSave 
 }: BrandingTabProps) => {
   return (
@@ -28,7 +26,6 @@ export const BrandingTab = ({
           initialBrandName={brandName}
           initialLogoUrl={logoUrl}
           initialTagline={tagline}
-          initialBusinessType={businessType}
           onSave={onSave}
         />
       </CardContent>
