@@ -1,5 +1,43 @@
 import { AnalysisResult, Treatment } from './types.ts';
 
+const validateTreatmentForArea = (
+  treatment: string,
+  concern: string,
+  availableTreatments: Treatment[]
+): boolean => {
+  const treatmentObj = availableTreatments.find(t => t.name === treatment);
+  if (!treatmentObj) return false;
+
+  // Common facial areas and their variations
+  const areaKeywords: Record<string, string[]> = {
+    'forehead': ['forehead', 'upper face', 'front'],
+    'eyes': ['eye', 'under-eye', 'crow', 'upper face'],
+    'cheeks': ['cheek', 'mid face', 'middle face'],
+    'nose': ['nose', 'nasal'],
+    'mouth': ['mouth', 'lip', 'lower face'],
+    'jaw': ['jaw', 'lower face', 'chin'],
+    'neck': ['neck', 'under chin']
+  };
+
+  // Extract area from concern
+  const concernLower = concern.toLowerCase();
+  let matchedArea: string | null = null;
+
+  for (const [area, keywords] of Object.entries(areaKeywords)) {
+    if (keywords.some(keyword => concernLower.includes(keyword))) {
+      matchedArea = area;
+      break;
+    }
+  }
+
+  if (!matchedArea) return true; // If no specific area mentioned, consider it valid
+
+  // Check if treatment is available for the matched area
+  return treatmentObj.treatment_areas?.some(area => 
+    area.toLowerCase().includes(matchedArea!.toLowerCase())
+  ) ?? false;
+};
+
 export const validateAnalysis = (
   analysis: AnalysisResult, 
   availableTreatments: Treatment[] | null = null
@@ -27,6 +65,19 @@ export const validateAnalysis = (
     if (invalidTreatments.length > 0) {
       throw new Error('AI recommended unavailable treatments: ' + invalidTreatments.join(', '));
     }
+
+    // Validate treatment areas match concerns
+    [...analysis.primary_concerns.map((concern, i) => ({
+      concern,
+      treatment: analysis.primary_recommendations[i]
+    })), ...analysis.secondary_concerns.map((concern, i) => ({
+      concern,
+      treatment: analysis.secondary_recommendations[i]
+    }))].forEach(({ concern, treatment }) => {
+      if (!validateTreatmentForArea(treatment, concern, availableTreatments)) {
+        throw new Error(`Treatment "${treatment}" is not appropriate for concern: "${concern}"`);
+      }
+    });
   }
 
   // Validate matching lengths

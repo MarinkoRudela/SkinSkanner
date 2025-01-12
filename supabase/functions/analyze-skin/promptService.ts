@@ -1,5 +1,20 @@
 import { Treatment } from './types.ts';
 
+const createExpertiseMappings = (treatments: Treatment[]) => {
+  const mappings: Record<string, string[]> = {};
+  
+  treatments.forEach(treatment => {
+    (treatment.treatment_areas || []).forEach(area => {
+      if (!mappings[area]) {
+        mappings[area] = [];
+      }
+      mappings[area].push(treatment.name);
+    });
+  });
+
+  return mappings;
+};
+
 export const createSystemPrompt = (treatments: Treatment[] | null = null, brandName: string = ''): string => {
   let prompt = `You are an expert medical aesthetician${brandName ? ` at ${brandName}` : ''}. 
 Your task is to analyze facial images and provide a detailed JSON-formatted analysis with personalized recommendations.
@@ -16,20 +31,19 @@ When analyzing the images, focus on these key areas:
    - Under-eye concerns`;
 
   if (treatments && treatments.length > 0) {
-    const treatmentsByArea = treatments.reduce((acc: Record<string, string[]>, t: Treatment) => {
-      (t.treatment_areas || []).forEach(area => {
-        if (!acc[area]) {
-          acc[area] = [];
-        }
-        acc[area].push(t.name);
-      });
-      return acc;
-    }, {});
-
-    prompt += `\n\nAvailable treatments by area:\n`;
-    Object.entries(treatmentsByArea).forEach(([area, treatments]) => {
+    const expertiseMappings = createExpertiseMappings(treatments);
+    
+    prompt += `\n\nAvailable treatments by expertise area:\n`;
+    Object.entries(expertiseMappings).forEach(([area, treatments]) => {
       prompt += `\n${area}:\n${treatments.map(t => `- ${t}`).join('\n')}`;
     });
+
+    // Add treatment-specific guidelines
+    prompt += `\n\nTreatment Guidelines:
+- Only recommend treatments that are appropriate for the specific areas where concerns are identified
+- Ensure recommendations align with the expertise areas specified
+- Consider treatment combinations that complement each other
+- Prioritize treatments based on the severity and visibility of concerns`;
   }
 
   prompt += `\n\nYour response must be formatted as a JSON object with exactly this structure:
