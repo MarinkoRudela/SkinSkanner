@@ -1,6 +1,5 @@
 import React from 'react';
 import { Checkbox } from "@/components/ui/checkbox";
-import { TreatmentAreaSelector } from './TreatmentAreaSelector';
 import { Treatment } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -9,16 +8,12 @@ interface TreatmentItemProps {
   treatment: Treatment;
   isSelected: boolean;
   onToggle: () => void;
-  onAreaToggle: (area: string) => void;
-  selectedAreas: string[];
 }
 
 export const TreatmentItem = ({ 
   treatment, 
   isSelected, 
   onToggle,
-  onAreaToggle,
-  selectedAreas,
 }: TreatmentItemProps) => {
   return (
     <Card className="space-y-4 p-4 hover:border-primary/50 transition-colors">
@@ -54,16 +49,6 @@ export const TreatmentItem = ({
           </p>
         </div>
       </div>
-      
-      {isSelected && treatment.treatment_areas && treatment.treatment_areas.length > 0 && (
-        <div className="pl-7">
-          <TreatmentAreaSelector
-            areas={treatment.treatment_areas}
-            selectedAreas={selectedAreas}
-            onAreaToggle={onAreaToggle}
-          />
-        </div>
-      )}
     </Card>
   );
 };

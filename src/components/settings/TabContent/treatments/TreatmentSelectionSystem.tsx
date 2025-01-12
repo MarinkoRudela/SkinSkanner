@@ -13,11 +13,9 @@ interface TreatmentSelectionSystemProps {
 export const TreatmentSelectionSystem = ({ profileId }: TreatmentSelectionSystemProps) => {
   const { 
     categories, 
-    selectedTreatments, 
-    treatmentAreas,
+    selectedTreatments,
     isLoading, 
     handleTreatmentToggle,
-    handleAreaToggle 
   } = useTreatments(profileId);
 
   const handleTreatmentChange = async (treatmentId: string) => {
@@ -65,8 +63,6 @@ export const TreatmentSelectionSystem = ({ profileId }: TreatmentSelectionSystem
               category={category}
               selectedTreatments={selectedTreatments}
               onTreatmentToggle={handleTreatmentChange}
-              treatmentAreas={treatmentAreas}
-              onAreaToggle={handleAreaToggle}
             />
           ))}
         </Accordion>

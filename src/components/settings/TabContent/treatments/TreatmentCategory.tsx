@@ -12,16 +12,12 @@ interface TreatmentCategoryProps {
   };
   selectedTreatments: Set<string>;
   onTreatmentToggle: (treatmentId: string) => Promise<void>;
-  treatmentAreas: Record<string, string[]>;
-  onAreaToggle: (treatmentId: string, area: string) => Promise<void>;
 }
 
 export const TreatmentCategory = ({
   category,
   selectedTreatments,
   onTreatmentToggle,
-  treatmentAreas,
-  onAreaToggle,
 }: TreatmentCategoryProps) => {
   return (
     <AccordionItem key={category.id} value={category.id} className="border-b">
@@ -42,8 +38,6 @@ export const TreatmentCategory = ({
               treatment={treatment}
               isSelected={selectedTreatments.has(treatment.id)}
               onToggle={() => onTreatmentToggle(treatment.id)}
-              onAreaToggle={(area) => onAreaToggle(treatment.id, area)}
-              selectedAreas={treatmentAreas[treatment.id] || []}
             />
           ))}
         </div>
