@@ -17,9 +17,9 @@ export interface Treatment {
   };
 }
 
-// New interface for raw database response
 export interface RawTreatmentData {
   treatment_id: string;
+  expertise_areas: string[] | null;
   treatments: {
     id: string;
     name: string;
