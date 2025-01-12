@@ -55,9 +55,40 @@ export const useTreatmentState = (profileId: string) => {
     }
   };
 
+  const handleTreatmentToggle = async (treatmentId: string) => {
+    const newSelectedTreatments = new Set(state.selectedTreatments);
+    if (newSelectedTreatments.has(treatmentId)) {
+      newSelectedTreatments.delete(treatmentId);
+    } else {
+      newSelectedTreatments.add(treatmentId);
+    }
+    
+    setState(prev => ({
+      ...prev,
+      selectedTreatments: newSelectedTreatments
+    }));
+  };
+
+  const handleAreaToggle = async (treatmentId: string, area: string) => {
+    const currentAreas = state.treatmentAreas[treatmentId] || [];
+    const newAreas = currentAreas.includes(area)
+      ? currentAreas.filter(a => a !== area)
+      : [...currentAreas, area];
+    
+    setState(prev => ({
+      ...prev,
+      treatmentAreas: {
+        ...prev.treatmentAreas,
+        [treatmentId]: newAreas
+      }
+    }));
+  };
+
   return {
-    state,
-    setState,
+    selectedTreatments: state.selectedTreatments,
+    treatmentAreas: state.treatmentAreas,
+    handleTreatmentToggle,
+    handleAreaToggle,
     refreshTreatments: fetchSelectedTreatments
   };
 };

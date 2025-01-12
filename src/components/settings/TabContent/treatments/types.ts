@@ -17,12 +17,9 @@ export interface Treatment {
   };
 }
 
-export interface TreatmentCategory {
-  id: string;
-  name: string;
-  description: string;
-  category_type: CategoryType;
-  treatments: Treatment[];
+export interface TreatmentData {
+  treatment_id: string;
+  treatments: Treatment; // Fixed: Now a single Treatment object instead of array
 }
 
 export interface TreatmentState {
@@ -30,7 +27,10 @@ export interface TreatmentState {
   treatmentAreas: Record<string, string[]>;
 }
 
-export interface TreatmentData {
-  treatment_id: string;
-  treatments: Treatment;
+export interface TreatmentCategory {
+  id: string;
+  name: string;
+  description: string;
+  category_type: CategoryType;
+  treatments: Treatment[];
 }
