@@ -169,31 +169,35 @@ export type Database = {
           },
         ]
       }
-      med_spa_treatments: {
-        Row: {
-          created_at: string
-          id: string
-          is_active: boolean | null
-          profile_id: string | null
-          treatment_id: string | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_active?: boolean | null
-          profile_id?: string | null
-          treatment_id?: string | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_active?: boolean | null
-          profile_id?: string | null
-          treatment_id?: string | null
-          updated_at?: string
-        }
+
+med_spa_treatments: {
+  Row: {
+    id: string
+    profile_id: string | null
+    treatment_id: string | null
+    is_active: boolean | null
+    created_at: string
+    updated_at: string
+    expertise_areas: string[] | null
+  }
+  Insert: {
+    id?: string
+    profile_id?: string | null
+    treatment_id?: string | null
+    is_active?: boolean | null
+    created_at?: string
+    updated_at?: string
+    expertise_areas?: string[] | null
+  }
+  Update: {
+    id?: string
+    profile_id?: string | null
+    treatment_id?: string | null
+    is_active?: boolean | null
+    created_at?: string
+    updated_at?: string
+    expertise_areas?: string[] | null
+  }
         Relationships: [
           {
             foreignKeyName: "med_spa_treatments_profile_id_fkey"
@@ -217,7 +221,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
+}
+
       performance_metrics: {
         Row: {
           created_at: string
@@ -713,3 +718,4 @@ export type CompositeTypes<
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+

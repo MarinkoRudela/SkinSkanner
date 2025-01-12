@@ -33,7 +33,8 @@ export const useTreatmentState = (profileId: string) => {
               name,
               category_type
             )
-          )
+          ),
+          expertise_areas
         `)
         .eq('profile_id', profileId)
         .eq('is_active', true);
@@ -44,13 +45,11 @@ export const useTreatmentState = (profileId: string) => {
       const areas: Record<string, string[]> = {};
 
       if (data) {
-        // Transform raw data to ensure type safety
         (data as RawTreatmentData[]).forEach((item) => {
           selectedIds.add(item.treatment_id);
-          if (item.treatments?.treatment_areas) {
-            areas[item.treatment_id] = item.treatments.treatment_areas;
+          if (item.expertise_areas) {
+            areas[item.treatment_id] = item.expertise_areas;
           }
-          // Validate category_type if it exists
           if (item.treatments?.category?.category_type) {
             item.treatments.category.category_type = validateCategoryType(
               item.treatments.category.category_type
@@ -77,8 +76,29 @@ export const useTreatmentState = (profileId: string) => {
     const newSelectedTreatments = new Set(state.selectedTreatments);
     if (newSelectedTreatments.has(treatmentId)) {
       newSelectedTreatments.delete(treatmentId);
+      
+      // Delete the treatment record
+      const { error } = await supabase
+        .from('med_spa_treatments')
+        .delete()
+        .eq('profile_id', profileId)
+        .eq('treatment_id', treatmentId);
+        
+      if (error) throw error;
     } else {
       newSelectedTreatments.add(treatmentId);
+      
+      // Insert new treatment record
+      const { error } = await supabase
+        .from('med_spa_treatments')
+        .insert({
+          profile_id: profileId,
+          treatment_id: treatmentId,
+          is_active: true,
+          expertise_areas: []
+        });
+        
+      if (error) throw error;
     }
     
     setState(prev => ({
@@ -92,6 +112,15 @@ export const useTreatmentState = (profileId: string) => {
     const newAreas = currentAreas.includes(area)
       ? currentAreas.filter(a => a !== area)
       : [...currentAreas, area];
+    
+    // Update expertise areas in database
+    const { error } = await supabase
+      .from('med_spa_treatments')
+      .update({ expertise_areas: newAreas })
+      .eq('profile_id', profileId)
+      .eq('treatment_id', treatmentId);
+      
+    if (error) throw error;
     
     setState(prev => ({
       ...prev,
