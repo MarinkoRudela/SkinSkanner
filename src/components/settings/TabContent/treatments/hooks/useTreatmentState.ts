@@ -8,7 +8,7 @@ interface TreatmentData {
   treatments: {
     id: string;
     treatment_areas: string[];
-  }[];
+  };
 }
 
 const useSelectedTreatments = (profileId: string) => {
@@ -43,8 +43,8 @@ const useSelectedTreatments = (profileId: string) => {
       if (data) {
         data.forEach((item: TreatmentData) => {
           selectedIds.add(item.treatment_id);
-          if (item.treatments && item.treatments[0]?.treatment_areas) {
-            areas[item.treatment_id] = item.treatments[0].treatment_areas;
+          if (item.treatments?.treatment_areas) {
+            areas[item.treatment_id] = item.treatments.treatment_areas;
           }
         });
       }

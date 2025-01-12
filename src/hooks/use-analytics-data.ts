@@ -29,12 +29,13 @@ export const useAnalyticsData = (session: any) => {
         throw error;
       }
 
-      return data as DailyAnalytics;
+      // Ensure we return the first item if it's an array, or the data itself if it's an object
+      return (Array.isArray(data) ? data[0] : data) as DailyAnalytics;
     },
     enabled: !!session?.user?.id,
-    staleTime: 2 * 60 * 1000, // Data considered fresh for 2 minutes
-    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
-    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
     retry: 3,
   });

@@ -25,8 +25,17 @@ export const useTreatmentData = () => {
 
           if (treatmentsError) throw treatmentsError;
 
+          // Ensure category_type is one of the allowed values
+          const validCategoryType = (type: string): "injectable" | "skin" | "eyebrow" => {
+            if (type === "injectable" || type === "skin" || type === "eyebrow") {
+              return type;
+            }
+            return "skin"; // Default fallback
+          };
+
           return {
             ...category,
+            category_type: validCategoryType(category.category_type),
             treatments: treatments || []
           };
         })
