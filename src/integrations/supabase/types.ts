@@ -221,6 +221,30 @@ export type Database = {
           },
         ]
       }
+      pending_business_names: {
+        Row: {
+          business_name: string
+          created_at: string
+          id: string
+          processed: boolean | null
+          user_id: string | null
+        }
+        Insert: {
+          business_name: string
+          created_at?: string
+          id?: string
+          processed?: boolean | null
+          user_id?: string | null
+        }
+        Update: {
+          business_name?: string
+          created_at?: string
+          id?: string
+          processed?: boolean | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       performance_metrics: {
         Row: {
           created_at: string

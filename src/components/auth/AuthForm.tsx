@@ -65,7 +65,7 @@ export const AuthForm = () => {
           },
         }}
         theme="light"
-        providers={[]}
+        providers={["google"]}
         redirectTo={window.location.origin}
         onlyThirdPartyProviders={false}
       />
