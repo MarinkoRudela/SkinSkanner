@@ -17,6 +17,25 @@ export interface Treatment {
   };
 }
 
+// New interface for raw database response
+export interface RawTreatmentData {
+  treatment_id: string;
+  treatments: {
+    id: string;
+    name: string;
+    description: string;
+    requires_license: boolean;
+    treatment_areas?: string[];
+    category_id?: string;
+    business_types?: string[];
+    category?: {
+      id: string;
+      name: string;
+      category_type: string;
+    };
+  };
+}
+
 export interface TreatmentData {
   treatment_id: string;
   treatments: Treatment;
