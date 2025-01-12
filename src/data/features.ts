@@ -1,57 +1,46 @@
 export const features = [
   {
-    title: "Advanced AI Skin Analysis",
-    description: "Our cutting-edge AI technology provides medical-grade skin analysis in seconds, detecting concerns that might be invisible to the naked eye. Transform your consultation process with precision diagnostics.",
+    title: "AI-Powered Skin Analysis",
+    description: "Our advanced AI technology provides detailed facial skin analysis and personalized treatment recommendations",
     benefits: [
-      "Instant detection of 20+ skin concerns",
-      "Medical-grade accuracy rivaling expensive hardware",
-      "Custom-tailored treatment recommendations",
-      "Multi-angle facial analysis for comprehensive results"
+      "Instant skin analysis from photos",
+      "Personalized treatment recommendations",
+      "Detailed skin concern mapping",
+      "Scientific approach to skincare"
+    ],
+    isNew: false
+  },
+  {
+    title: "Smart Treatment Matching",
+    description: "Automatically match your med spa's treatments to client needs for higher booking conversion",
+    benefits: [
+      "Customized to your service menu",
+      "Increases treatment bookings",
+      "Builds client trust",
+      "Streamlines consultation process"
     ],
     isNew: true
   },
   {
-    title: "Automated Client Acquisition",
-    description: "Convert website and social media visitors into high-value clients automatically. Our smart booking system captures leads 24/7, filling your consultation calendar while you focus on treatments.",
-    benefits: [
-      "24/7 automated consultation booking",
-      "Qualified leads with detailed skin analysis",
-      "Higher conversion rates with personalized recommendations",
-      "Seamless integration with your existing booking system"
-    ],
-    isNew: false
-  },
-  {
-    title: "Premium Brand Experience",
-    description: "Elevate your med spa's digital presence with a luxury, branded experience that sets you apart from competitors and justifies premium pricing.",
-    benefits: [
-      "Custom-branded analysis portal",
-      "Unlimited scans for your clients",
-      "Shareable analysis links for social proof",
-      "Mobile-optimized experience"
-    ],
-    isNew: false
-  },
-  {
-    title: "Business Intelligence Dashboard",
-    description: "Gain unprecedented insights into your client acquisition funnel with our comprehensive analytics suite.",
+    title: "Business Analytics Dashboard",
+    description: "Track your scanner performance and conversion metrics in real-time",
     benefits: [
       "Real-time conversion tracking",
-      "Detailed visitor analytics",
-      "Treatment demand forecasting",
-      "ROI performance metrics"
+      "Visitor analytics",
+      "Performance metrics",
+      "ROI measurement"
     ],
-    isNew: true
+    isNew: false
   },
   {
-    title: "Client Engagement Tools",
-    description: "Keep clients coming back with our suite of engagement features that drive repeat visits and referrals.",
+    title: "Branded Experience",
+    description: "Customize the scanner with your med spa's branding for a cohesive client experience",
     benefits: [
-      "Progress tracking over time",
-      "Automated follow-up recommendations",
-      "Social sharing capabilities",
-      "Treatment journey documentation"
+      "Custom logo integration",
+      "Branded color schemes",
+      "Personalized messaging",
+      "Professional presentation"
     ],
-    isNew: true
+    isNew: false
   }
 ];
