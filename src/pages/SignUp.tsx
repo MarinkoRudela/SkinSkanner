@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
@@ -6,17 +6,40 @@ import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
 import { PlanSelection } from "@/components/signup/PlanSelection";
 import { SignUpForm } from "@/components/signup/SignUpForm";
+import { BusinessNameForm } from "@/components/signup/BusinessNameForm";
 
 const SignUp = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [planType, setPlanType] = useState("monthly");
   const [session, setSession] = useState<any>(null);
+  const [planType, setPlanType] = useState("monthly");
+  const [showBusinessNameForm, setShowBusinessNameForm] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     businessName: "",
   });
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      // If user is authenticated via Google but hasn't entered business name
+      if (session?.provider === 'google') {
+        setShowBusinessNameForm(true);
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.provider === 'google') {
+        setShowBusinessNameForm(true);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,15 +98,24 @@ const SignUp = () => {
       <div className="container max-w-md mx-auto px-4 py-8">
         <Header />
         <div className="mt-8 bg-white p-8 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-semibold mb-6 text-center">Business Owner Sign Up</h2>
-          <PlanSelection planType={planType} setPlanType={setPlanType} />
-          <SignUpForm
-            loading={loading}
-            formData={formData}
-            setFormData={setFormData}
-            onSubmit={handleSignUp}
-            onLoginClick={() => navigate("/login")}
-          />
+          {showBusinessNameForm ? (
+            <BusinessNameForm 
+              userId={session?.user?.id} 
+              onComplete={() => setShowBusinessNameForm(false)} 
+            />
+          ) : (
+            <>
+              <h2 className="text-2xl font-semibold mb-6 text-center">Business Owner Sign Up</h2>
+              <PlanSelection planType={planType} setPlanType={setPlanType} />
+              <SignUpForm
+                loading={loading}
+                formData={formData}
+                setFormData={setFormData}
+                onSubmit={handleSignUp}
+                onLoginClick={() => navigate("/login")}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>
