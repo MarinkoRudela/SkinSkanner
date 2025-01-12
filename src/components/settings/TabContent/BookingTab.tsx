@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Copy } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { BookingUrlGuide } from "../BookingUrlGuide";
+import { QRCodeGenerator } from "../QRCodeGenerator";
 
 interface BookingTabProps {
   bookingUrl: string;
@@ -35,6 +36,9 @@ export const BookingTab = ({
     }
   };
 
+  // Extract short code from unique link
+  const shortCode = uniqueLink.split('/').pop() || '';
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -48,27 +52,31 @@ export const BookingTab = ({
         />
         
         {bookingUrl && uniqueLink && (
-          <div className="mt-6">
-            <h3 className="text-xl font-semibold mb-4">Your Unique Scanner Link</h3>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Input 
-                value={uniqueLink} 
-                readOnly 
-                className="flex-1 text-sm"
-              />
-              <Button 
-                onClick={copyToClipboard} 
-                variant="outline"
-                className="w-full sm:w-auto"
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Link
-              </Button>
+          <>
+            <div className="mt-6">
+              <h3 className="text-xl font-semibold mb-4">Your Unique Scanner Link</h3>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Input 
+                  value={uniqueLink} 
+                  readOnly 
+                  className="flex-1 text-sm"
+                />
+                <Button 
+                  onClick={copyToClipboard} 
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy Link
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                Share this link with your clients to let them book appointments through your customized scanner.
+              </p>
             </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              Share this link with your clients to let them book appointments through your customized scanner.
-            </p>
-          </div>
+
+            <QRCodeGenerator shortCode={shortCode} />
+          </>
         )}
 
         <BookingUrlGuide />
