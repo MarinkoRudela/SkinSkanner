@@ -5,6 +5,7 @@ const validateTreatmentForArea = (
   concern: string,
   availableTreatments: Treatment[]
 ): { isValid: boolean; reason?: string } => {
+  // Find the treatment in available treatments
   const treatmentObj = availableTreatments.find(t => t.name === treatment);
   if (!treatmentObj) {
     return { 
@@ -41,7 +42,7 @@ const validateTreatmentForArea = (
 
   // Check if treatment is available for the matched area
   const isValidForArea = treatmentObj.treatment_areas?.some(area => 
-    area.toLowerCase().includes(matchedArea!.toLowerCase())
+    area.toLowerCase() === matchedArea!.toLowerCase()
   ) ?? false;
 
   return {
@@ -63,6 +64,7 @@ export const validateAnalysis = (
     throw new Error('Invalid analysis format: missing required arrays');
   }
 
+  // Validate arrays
   if (!Array.isArray(analysis.primary_concerns) || !Array.isArray(analysis.primary_recommendations) ||
       !Array.isArray(analysis.secondary_concerns) || !Array.isArray(analysis.secondary_recommendations)) {
     throw new Error('Invalid analysis format: arrays expected');
@@ -84,9 +86,11 @@ export const validateAnalysis = (
   if (availableTreatments) {
     console.log('Validating against available treatments...');
     const availableTreatmentNames = new Set(availableTreatments.map(t => t.name));
-    const allRecommendations = [...analysis.primary_recommendations, ...analysis.secondary_recommendations];
     
+    // Validate all recommendations exist in available treatments
+    const allRecommendations = [...analysis.primary_recommendations, ...analysis.secondary_recommendations];
     const invalidTreatments = allRecommendations.filter(r => !availableTreatmentNames.has(r));
+    
     if (invalidTreatments.length > 0) {
       throw new Error(`AI recommended unavailable treatments: ${invalidTreatments.join(', ')}`);
     }
