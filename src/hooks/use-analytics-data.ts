@@ -64,9 +64,9 @@ export const useAnalyticsData = (session: any) => {
       return (data || []) as Tables<'weekly_analytics'>[];
     },
     enabled: !!session?.user?.id,
-    staleTime: 15 * 60 * 1000, // Data considered fresh for 15 minutes
-    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
-    refetchInterval: 15 * 60 * 1000, // Refetch every 15 minutes
+    staleTime: 15 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchInterval: 15 * 60 * 1000,
     refetchOnWindowFocus: true,
     retry: 3,
   });
