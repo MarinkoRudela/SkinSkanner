@@ -50,6 +50,10 @@ export const validateAnalysis = (
     if (invalidTreatments.length > 0) {
       errors.push(`AI recommended unavailable treatments: ${invalidTreatments.join(', ')}`);
     }
+
+    // Log available and recommended treatments for debugging
+    console.log('Available treatment names:', Array.from(availableTreatmentNames));
+    console.log('Recommended treatments:', allRecommendations);
   }
 
   // Validate matching lengths
