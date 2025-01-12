@@ -3,7 +3,7 @@
   margin: 0 auto;
   padding: 1rem;
   text-align: center;
-  color: black;
+  color: white;
 }
 
 @media (min-width: 768px) {
@@ -18,31 +18,17 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+  filter: drop-shadow(0 0 2em #FFB800);
 }
 
 .card {
   padding: 1.5em;
-  color: black;
+  color: white;
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 @media (min-width: 768px) {
@@ -52,7 +38,7 @@
 }
 
 .read-the-docs {
-  color: black;
+  color: white;
 }
 
 /* Add styles for the loading spinner container */
@@ -65,4 +51,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Navigation dropdown styles */
+.dropdown-trigger {
+  @apply h-10 w-10 md:h-9 md:w-9 bg-secondary/80 border-white/10 hover:bg-primary hover:text-primary-foreground transition-colors;
+}
+
+.dropdown-content {
+  @apply bg-secondary/95 border border-white/10 shadow-lg backdrop-blur-lg;
 }
