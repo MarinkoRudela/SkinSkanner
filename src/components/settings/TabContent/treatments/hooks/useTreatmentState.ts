@@ -25,7 +25,6 @@ export const useTreatmentState = (profileId: string) => {
             name,
             description,
             requires_license,
-            treatment_areas,
             category_id,
             business_types,
             category:treatment_categories (
@@ -33,8 +32,7 @@ export const useTreatmentState = (profileId: string) => {
               name,
               category_type
             )
-          ),
-          expertise_areas
+          )
         `)
         .eq('profile_id', profileId)
         .eq('is_active', true);
@@ -42,14 +40,10 @@ export const useTreatmentState = (profileId: string) => {
       if (error) throw error;
 
       const selectedIds = new Set<string>();
-      const areas: Record<string, string[]> = {};
 
       if (data) {
         (data as RawTreatmentData[]).forEach((item) => {
           selectedIds.add(item.treatment_id);
-          if (item.expertise_areas) {
-            areas[item.treatment_id] = item.expertise_areas;
-          }
           if (item.treatments?.category?.category_type) {
             item.treatments.category.category_type = validateCategoryType(
               item.treatments.category.category_type
@@ -60,7 +54,7 @@ export const useTreatmentState = (profileId: string) => {
 
       setState({
         selectedTreatments: selectedIds,
-        treatmentAreas: areas
+        treatmentAreas: {}
       });
     } catch (error) {
       console.error('Error fetching selected treatments:', error);
@@ -73,69 +67,50 @@ export const useTreatmentState = (profileId: string) => {
   };
 
   const handleTreatmentToggle = async (treatmentId: string) => {
-    const newSelectedTreatments = new Set(state.selectedTreatments);
-    if (newSelectedTreatments.has(treatmentId)) {
-      newSelectedTreatments.delete(treatmentId);
-      
-      // Delete the treatment record
+    try {
+      const isCurrentlySelected = state.selectedTreatments.has(treatmentId);
+      console.log('Toggling treatment:', treatmentId, 'Currently selected:', isCurrentlySelected);
+
+      // Upsert the treatment record with is_active flag
       const { error } = await supabase
         .from('med_spa_treatments')
-        .delete()
-        .eq('profile_id', profileId)
-        .eq('treatment_id', treatmentId);
-        
-      if (error) throw error;
-    } else {
-      newSelectedTreatments.add(treatmentId);
-      
-      // Insert new treatment record
-      const { error } = await supabase
-        .from('med_spa_treatments')
-        .insert({
+        .upsert({
           profile_id: profileId,
           treatment_id: treatmentId,
-          is_active: true,
-          expertise_areas: []
+          is_active: !isCurrentlySelected,
+        }, {
+          onConflict: 'profile_id,treatment_id'
         });
-        
-      if (error) throw error;
-    }
-    
-    setState(prev => ({
-      ...prev,
-      selectedTreatments: newSelectedTreatments
-    }));
-  };
 
-  const handleAreaToggle = async (treatmentId: string, area: string) => {
-    const currentAreas = state.treatmentAreas[treatmentId] || [];
-    const newAreas = currentAreas.includes(area)
-      ? currentAreas.filter(a => a !== area)
-      : [...currentAreas, area];
-    
-    // Update expertise areas in database
-    const { error } = await supabase
-      .from('med_spa_treatments')
-      .update({ expertise_areas: newAreas })
-      .eq('profile_id', profileId)
-      .eq('treatment_id', treatmentId);
-      
-    if (error) throw error;
-    
-    setState(prev => ({
-      ...prev,
-      treatmentAreas: {
-        ...prev.treatmentAreas,
-        [treatmentId]: newAreas
+      if (error) {
+        console.error('Error in handleTreatmentToggle:', error);
+        throw error;
       }
-    }));
+
+      // Update local state
+      const newSelectedTreatments = new Set(state.selectedTreatments);
+      if (isCurrentlySelected) {
+        newSelectedTreatments.delete(treatmentId);
+      } else {
+        newSelectedTreatments.add(treatmentId);
+      }
+      
+      setState(prev => ({
+        ...prev,
+        selectedTreatments: newSelectedTreatments
+      }));
+
+      console.log('Treatment toggle successful');
+    } catch (error) {
+      console.error('Error toggling treatment:', error);
+      throw error;
+    }
   };
 
   return {
     selectedTreatments: state.selectedTreatments,
     treatmentAreas: state.treatmentAreas,
     handleTreatmentToggle,
-    handleAreaToggle,
     refreshTreatments: fetchSelectedTreatments
   };
 };
