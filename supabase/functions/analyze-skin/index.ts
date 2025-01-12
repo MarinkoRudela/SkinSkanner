@@ -23,7 +23,20 @@ serve(async (req) => {
     console.log('Initializing Supabase client...');
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     
+    // Check required environment variables
+    const requiredEnvVars = {
+      SUPABASE_URL: supabaseUrl,
+      SUPABASE_SERVICE_KEY: supabaseServiceKey,
+      OPENAI_API_KEY: openaiApiKey
+    };
+
+    console.log('Environment variables status:', 
+      Object.entries(requiredEnvVars)
+        .map(([key, value]) => `${key}: ${value ? '✅' : '❌'}`)
+    );
+
     if (!supabaseUrl || !supabaseServiceKey) {
       console.error('Missing Supabase configuration');
       throw new Error('Missing Supabase configuration');
@@ -31,6 +44,20 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     console.log('✅ Supabase client initialized');
+
+    // Test Supabase connection
+    try {
+      const { data: testData, error: testError } = await supabase
+        .from('profiles')
+        .select('id')
+        .limit(1);
+        
+      if (testError) throw testError;
+      console.log('✅ Supabase connection test successful');
+    } catch (error) {
+      console.error('❌ Supabase connection test failed:', error);
+      throw error;
+    }
 
     // 2. Parse request with error handling
     console.log('Parsing request body...');
@@ -86,7 +113,6 @@ serve(async (req) => {
     console.log('System prompt:', systemPrompt);
 
     // 6. Call OpenAI with error handling
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openaiApiKey) {
       console.error('OpenAI API key is not configured');
       throw new Error('OpenAI API key is not configured');
@@ -100,7 +126,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4-vision-preview',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
