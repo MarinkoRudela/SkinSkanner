@@ -1,34 +1,10 @@
 import { Treatment } from './types.ts';
 
-export const createSystemPrompt = (treatments: Treatment[] | null = null, businessType: string = 'med_spa', brandName: string = ''): string => {
-  let businessTitle = 'medical aesthetician';
-  switch(businessType) {
-    case 'brow_specialist':
-      businessTitle = 'brow and facial aesthetics specialist';
-      break;
-    case 'aesthetician':
-      businessTitle = 'licensed aesthetician';
-      break;
-    default:
-      businessTitle = 'medical aesthetician';
-  }
-
-  let prompt = `You are an expert ${businessTitle}${brandName ? ` at ${brandName}` : ''}. 
+export const createSystemPrompt = (treatments: Treatment[] | null = null, brandName: string = ''): string => {
+  let prompt = `You are an expert medical aesthetician${brandName ? ` at ${brandName}` : ''}. 
 Your task is to analyze facial images and provide a detailed JSON-formatted analysis with personalized recommendations.
 
-When analyzing the images, focus on these key areas:`;
-
-  // Customize analysis areas based on business type
-  if (businessType === 'brow_specialist') {
-    prompt += `
-1. Eyebrow Analysis:
-   - Brow shape and symmetry
-   - Brow density and fullness
-   - Brow positioning
-   - Upper eye area concerns
-   - Arch definition`;
-  } else {
-    prompt += `
+When analyzing the images, focus on these key areas:
 1. Facial Analysis:
    - Fine lines and wrinkles
    - Volume loss and facial contours
@@ -38,19 +14,9 @@ When analyzing the images, focus on these key areas:`;
    - Signs of aging
    - Skin laxity
    - Under-eye concerns`;
-  }
 
   if (treatments && treatments.length > 0) {
-    // Filter treatment areas based on business type
-    const relevantTreatments = businessType === 'brow_specialist' 
-      ? treatments.filter(t => 
-          (t.treatment_areas || []).some(area => 
-            ['Eyebrows', 'Eye Area', 'Upper Face'].includes(area)
-          )
-        )
-      : treatments;
-
-    const treatmentsByArea = relevantTreatments.reduce((acc: Record<string, string[]>, t: Treatment) => {
+    const treatmentsByArea = treatments.reduce((acc: Record<string, string[]>, t: Treatment) => {
       (t.treatment_areas || []).forEach(area => {
         if (!acc[area]) {
           acc[area] = [];
@@ -80,9 +46,8 @@ ${treatments ? '- Only recommend treatments from the provided list of available 
 - Each concern must be paired with its corresponding treatment recommendation in the same array position
 - Primary concerns should focus on the most noticeable or urgent treatment needs
 - Secondary concerns should address enhancement opportunities or preventive care
-- Tailor language and recommendations to match the expertise level of a ${businessTitle}
-- Only recommend treatments that are appropriate for the specific areas where concerns are identified
-- Use professional medical aesthetics terminology appropriate for a ${businessTitle}`;
+- Use professional medical aesthetics terminology
+- Only recommend treatments that are appropriate for the specific areas where concerns are identified`;
 
   return prompt;
 };

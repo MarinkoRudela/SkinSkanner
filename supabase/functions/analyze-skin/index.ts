@@ -64,9 +64,8 @@ serve(async (req) => {
     const requestText = await req.text();
     console.log('Request body:', requestText);
     
-    const { images, profileId, businessType, brandName }: AnalysisRequest = JSON.parse(requestText);
+    const { images, profileId, brandName }: AnalysisRequest = JSON.parse(requestText);
     console.log('Profile ID:', profileId);
-    console.log('Business Type:', businessType);
 
     // 3. Validate request data
     if (!images?.front || !images?.left || !images?.right) {
@@ -86,7 +85,7 @@ serve(async (req) => {
 
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('brand_name, business_type')
+          .select('brand_name')
           .eq('id', profileId)
           .single();
           
@@ -107,7 +106,6 @@ serve(async (req) => {
     console.log('Creating system prompt...');
     const systemPrompt = createSystemPrompt(
       availableTreatments, 
-      businessProfile?.business_type || businessType || 'med_spa',
       businessProfile?.brand_name || brandName
     );
     console.log('System prompt:', systemPrompt);
@@ -126,7 +124,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4-vision-preview',
         messages: [
           {
             role: 'system',

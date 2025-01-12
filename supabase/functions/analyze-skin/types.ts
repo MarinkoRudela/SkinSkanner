@@ -21,6 +21,5 @@ export interface AnalysisImages {
 export interface AnalysisRequest {
   images: AnalysisImages;
   profileId?: string;
-  businessType?: string;
   brandName?: string;
 }
