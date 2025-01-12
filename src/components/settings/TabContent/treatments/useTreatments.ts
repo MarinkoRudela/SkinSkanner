@@ -1,5 +1,5 @@
-import { useTreatmentData } from './useTreatmentData';
-import { useTreatmentState } from './useTreatmentState';
+import { useTreatmentData } from './hooks/useTreatmentData';
+import { useTreatmentState } from './hooks/useTreatmentState';
 import { useCallback } from 'react';
 
 export const useTreatments = (profileId: string) => {
