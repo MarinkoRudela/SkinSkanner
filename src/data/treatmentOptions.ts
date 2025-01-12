@@ -9,7 +9,6 @@ type TreatmentCategory = {
     name: string;
     description: string;
     requiresLicense?: boolean;
-    subtypes?: string[];
   }[];
 };
 
@@ -20,41 +19,19 @@ export const treatmentCategories: TreatmentCategory[] = [
     treatments: [
       {
         name: "Chemical Peels",
-        description: "Professional exfoliating treatments for skin renewal",
-        subtypes: [
-          "Glycolic Acid Peel",
-          "Salicylic Acid Peel",
-          "TCA Peel",
-          "Jessner Peel"
-        ]
+        description: "Professional exfoliating treatments for skin renewal"
       },
       {
         name: "Microdermabrasion",
-        description: "Physical exfoliation for improved skin texture",
-        subtypes: [
-          "Diamond Tip",
-          "Crystal",
-          "Hydradermabrasion"
-        ]
+        description: "Physical exfoliation for improved skin texture"
       },
       {
         name: "LED Light Therapy",
-        description: "Light-based treatment for various skin concerns",
-        subtypes: [
-          "Blue Light (Acne)",
-          "Red Light (Anti-aging)",
-          "Near-Infrared (Healing)"
-        ]
+        description: "Light-based treatment for various skin concerns"
       },
       {
         name: "Facial Treatments",
-        description: "Customized facials for specific skin concerns",
-        subtypes: [
-          "Hydrating Facial",
-          "Anti-aging Facial",
-          "Acne Facial",
-          "Oxygen Facial"
-        ]
+        description: "Customized facials for specific skin concerns"
       }
     ]
   },
@@ -66,34 +43,17 @@ export const treatmentCategories: TreatmentCategory[] = [
       {
         name: "Neurotoxins",
         description: "Reduces appearance of fine lines and wrinkles",
-        requiresLicense: true,
-        subtypes: [
-          "Botox",
-          "Dysport",
-          "Xeomin",
-          "Jeuveau"
-        ]
+        requiresLicense: true
       },
       {
         name: "Dermal Fillers",
         description: "Restores volume and enhances facial features",
-        requiresLicense: true,
-        subtypes: [
-          "Hyaluronic Acid Fillers",
-          "Calcium Hydroxylapatite",
-          "Poly-L-lactic Acid",
-          "Polymethyl-methacrylate"
-        ]
+        requiresLicense: true
       },
       {
         name: "Collagen Stimulators",
         description: "Promotes natural collagen production",
-        requiresLicense: true,
-        subtypes: [
-          "Sculptra",
-          "Radiesse",
-          "PCL Collagen Stimulator"
-        ]
+        requiresLicense: true
       }
     ]
   },
@@ -103,31 +63,15 @@ export const treatmentCategories: TreatmentCategory[] = [
     treatments: [
       {
         name: "Body Contouring",
-        description: "Non-invasive fat reduction and body sculpting",
-        subtypes: [
-          "CoolSculpting",
-          "Ultrasound Therapy",
-          "Radio Frequency",
-          "Electromagnetic Muscle Stimulation"
-        ]
+        description: "Non-invasive fat reduction and body sculpting"
       },
       {
         name: "Cellulite Reduction",
-        description: "Improves appearance of cellulite",
-        subtypes: [
-          "Acoustic Wave Therapy",
-          "Vacuum Therapy",
-          "Injectable Treatments"
-        ]
+        description: "Improves appearance of cellulite"
       },
       {
         name: "Skin Tightening",
-        description: "Firms and tightens loose skin",
-        subtypes: [
-          "RF Skin Tightening",
-          "Ultrasound Therapy",
-          "Infrared Light Treatment"
-        ]
+        description: "Firms and tightens loose skin"
       }
     ]
   },
@@ -137,22 +81,11 @@ export const treatmentCategories: TreatmentCategory[] = [
     treatments: [
       {
         name: "Laser Treatments",
-        description: "Various laser therapies for skin concerns",
-        subtypes: [
-          "IPL Photofacial",
-          "Fractional Laser",
-          "CO2 Laser",
-          "Nd:YAG Laser"
-        ]
+        description: "Various laser therapies for skin concerns"
       },
       {
         name: "Radiofrequency Treatments",
-        description: "Heat-based skin tightening and rejuvenation",
-        subtypes: [
-          "Monopolar RF",
-          "Bipolar RF",
-          "Fractional RF"
-        ]
+        description: "Heat-based skin tightening and rejuvenation"
       }
     ]
   },
@@ -162,21 +95,11 @@ export const treatmentCategories: TreatmentCategory[] = [
     treatments: [
       {
         name: "HydraFacial",
-        description: "Multi-step facial treatment for deep hydration",
-        subtypes: [
-          "Signature HydraFacial",
-          "Deluxe HydraFacial",
-          "Platinum HydraFacial"
-        ]
+        description: "Multi-step facial treatment for deep hydration"
       },
       {
         name: "Moisture Infusion",
-        description: "Deep hydration treatments",
-        subtypes: [
-          "Hyaluronic Acid Treatment",
-          "Oxygen Infusion",
-          "Aquagold"
-        ]
+        description: "Deep hydration treatments"
       }
     ]
   }

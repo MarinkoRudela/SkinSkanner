@@ -2,18 +2,35 @@ import React, { useState } from 'react';
 import { Accordion } from "@/components/ui/accordion";
 import { TreatmentCategory } from './TreatmentCategory';
 import { treatmentCategories } from '@/data/treatmentOptions';
+import { toast } from '@/hooks/use-toast';
 
 const TreatmentDemo = () => {
   const [selectedTreatments, setSelectedTreatments] = useState<Set<string>>(new Set());
 
   const toggleTreatment = (treatmentName: string) => {
-    const newSelected = new Set(selectedTreatments);
-    if (newSelected.has(treatmentName)) {
-      newSelected.delete(treatmentName);
-    } else {
-      newSelected.add(treatmentName);
+    try {
+      const newSelected = new Set(selectedTreatments);
+      if (newSelected.has(treatmentName)) {
+        newSelected.delete(treatmentName);
+      } else {
+        newSelected.add(treatmentName);
+      }
+      setSelectedTreatments(newSelected);
+      
+      toast({
+        title: "Treatment updated",
+        description: newSelected.has(treatmentName) 
+          ? "Treatment added to your menu" 
+          : "Treatment removed from your menu",
+      });
+    } catch (error) {
+      console.error('Error toggling treatment:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update treatment selection",
+        variant: "destructive"
+      });
     }
-    setSelectedTreatments(newSelected);
   };
 
   return (
@@ -45,7 +62,7 @@ const TreatmentDemo = () => {
             <span className="font-medium">Pro tip:</span> Customize this list to match your med spa's offerings
           </div>
           <div className="text-sm text-primary">
-            {treatmentCategories.reduce((acc, cat) => acc + cat.treatments.length, 0)} Treatments Available
+            {selectedTreatments.size} Treatments Selected
           </div>
         </div>
       </div>

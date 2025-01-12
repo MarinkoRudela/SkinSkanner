@@ -1,13 +1,11 @@
 import React from 'react';
 import { Check } from 'lucide-react';
-import { TreatmentSubtypes } from './TreatmentSubtypes';
 
 interface TreatmentItemProps {
   treatment: {
     name: string;
     description: string;
     requiresLicense?: boolean;
-    subtypes?: string[];
   };
   isSelected: boolean;
   onToggle: () => void;
@@ -34,12 +32,6 @@ export const TreatmentItem = ({ treatment, isSelected, onToggle }: TreatmentItem
           )}
         </div>
         <p className="text-sm text-gray-500 mt-1">{treatment.description}</p>
-        {treatment.subtypes && (
-          <TreatmentSubtypes
-            subtypes={treatment.subtypes}
-            isParentSelected={isSelected}
-          />
-        )}
       </div>
     </div>
   );

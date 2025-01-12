@@ -16,7 +16,6 @@ interface TreatmentCategoryProps {
       name: string;
       description: string;
       requiresLicense?: boolean;
-      subtypes?: string[];
     }[];
   };
   selectedTreatments: Set<string>;
