@@ -3,7 +3,8 @@ import { Accordion } from "@/components/ui/accordion";
 import { Card } from "@/components/ui/card";
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Syringe, Sparkles, Zap } from "lucide-react";
+import { TreatmentCategory } from './TreatmentCategory';
 
 const TreatmentDemo = () => {
   const { data: categories, isLoading } = useQuery({
@@ -27,6 +28,17 @@ const TreatmentDemo = () => {
     }
   });
 
+  const getCategoryIcon = (categoryName: string) => {
+    switch (categoryName.toLowerCase()) {
+      case 'injectables':
+        return Syringe;
+      case 'laser treatments':
+        return Zap;
+      default:
+        return Sparkles;
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[200px]">
@@ -47,37 +59,29 @@ const TreatmentDemo = () => {
       </div>
 
       <Accordion type="single" collapsible className="w-full space-y-4">
-        {categories?.map((category) => (
-          <Card key={category.id} className="p-4">
-            <h4 className="text-lg font-semibold text-indigo-900 mb-3">
-              {category.name}
-            </h4>
-            <div className="space-y-2">
-              {category.treatments?.map((treatment) => (
-                <div
-                  key={treatment.id}
-                  className="flex items-start space-x-3 p-3 rounded-lg bg-secondary/20"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h5 className="font-medium text-gray-900">
-                        {treatment.name}
-                      </h5>
-                      {treatment.requires_license && (
-                        <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">
-                          License Required
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {treatment.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        ))}
+        {categories?.map((category, index) => {
+          const icon = getCategoryIcon(category.name);
+          const mappedCategory = {
+            category: category.name,
+            icon,
+            requiresLicense: false,
+            treatments: category.treatments?.map(t => ({
+              name: t.name,
+              description: t.description,
+              requiresLicense: t.requires_license
+            })) || []
+          };
+
+          return (
+            <TreatmentCategory
+              key={category.id}
+              category={mappedCategory}
+              selectedTreatments={new Set()}
+              onTreatmentToggle={() => {}}
+              index={index}
+            />
+          );
+        })}
       </Accordion>
 
       <div className="mt-6 p-4 bg-secondary/50 rounded-lg">
