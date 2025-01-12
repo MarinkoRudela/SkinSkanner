@@ -24,7 +24,7 @@ const SignUp = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       // If user is authenticated via Google but hasn't entered business name
-      if (session?.provider === 'google') {
+      if (session?.user?.app_metadata?.provider === 'google') {
         setShowBusinessNameForm(true);
       }
     });
@@ -33,7 +33,7 @@ const SignUp = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (session?.provider === 'google') {
+      if (session?.user?.app_metadata?.provider === 'google') {
         setShowBusinessNameForm(true);
       }
     });
