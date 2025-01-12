@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { TreatmentState, TreatmentData } from '../types';
 import { toast } from "@/hooks/use-toast";
+import { validateCategoryType } from '@/utils/categoryTypeValidation';
 
 export const useTreatmentState = (profileId: string) => {
   const [state, setState] = useState<TreatmentState>({
@@ -47,6 +48,12 @@ export const useTreatmentState = (profileId: string) => {
           selectedIds.add(item.treatment_id);
           if (item.treatments?.treatment_areas) {
             areas[item.treatment_id] = item.treatments.treatment_areas;
+          }
+          // Validate category_type if it exists
+          if (item.treatments?.category?.category_type) {
+            item.treatments.category.category_type = validateCategoryType(
+              item.treatments.category.category_type
+            );
           }
         });
       }
