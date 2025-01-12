@@ -1,8 +1,11 @@
-export interface Treatment {
-  name: string;
-  category: { name: string };
-  description: string;
-  treatment_areas?: string[];
+export interface AnalysisRequest {
+  images: {
+    front?: string;
+    left?: string;
+    right?: string;
+  };
+  profileId?: string;
+  linkVisitId?: string;
 }
 
 export interface AnalysisResult {
@@ -10,16 +13,4 @@ export interface AnalysisResult {
   primary_recommendations: string[];
   secondary_concerns: string[];
   secondary_recommendations: string[];
-}
-
-export interface AnalysisImages {
-  front?: string;
-  left?: string;
-  right?: string;
-}
-
-export interface AnalysisRequest {
-  images: AnalysisImages;
-  profileId?: string;
-  brandName?: string;
 }
