@@ -67,6 +67,7 @@ serve(async (req) => {
         }
         
         console.log('Fetched treatments:', treatments?.length || 0, 'treatments found');
+        console.log('Treatment details:', JSON.stringify(treatments, null, 2));
         
         availableTreatments = treatments?.map(t => ({
           name: t.treatments.name,
@@ -95,6 +96,8 @@ serve(async (req) => {
 
     // Create system prompt and call OpenAI
     const systemPrompt = createSystemPrompt(availableTreatments, businessProfile?.brand_name);
+    console.log('System prompt created:', systemPrompt);
+    
     console.log('Calling OpenAI with system prompt');
     const openaiData = await callOpenAI(systemPrompt, images);
     

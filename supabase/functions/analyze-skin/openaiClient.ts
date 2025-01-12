@@ -56,7 +56,7 @@ export const callOpenAI = async (systemPrompt: string, images: { front?: string;
     }
 
     const data = await response.json();
-    console.log('OpenAI API response:', JSON.stringify(data, null, 2));
+    console.log('Raw OpenAI API response:', JSON.stringify(data, null, 2));
     return data;
   } catch (error) {
     console.error('Error calling OpenAI API:', error);
