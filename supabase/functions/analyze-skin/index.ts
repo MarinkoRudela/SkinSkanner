@@ -182,23 +182,6 @@ serve(async (req) => {
       throw error;
     }
 
-    // 8. Track analytics if profile ID is provided
-    if (profileId) {
-      console.log('Tracking analytics...');
-      try {
-        await supabase.from('scanner_analytics').insert({
-          profile_id: profileId,
-          scan_completed_at: new Date().toISOString(),
-          recommendations_generated: 6,
-          primary_concerns: analysis.primary_concerns
-        });
-        console.log('✅ Analytics tracked successfully');
-      } catch (error) {
-        console.error('Error tracking analytics:', error);
-        // Don't throw here, as this is not critical to the main function
-      }
-    }
-
     return new Response(JSON.stringify(analysis), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
