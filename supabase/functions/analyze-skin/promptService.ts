@@ -1,20 +1,5 @@
 import { Treatment } from './types.ts';
 
-const createExpertiseMappings = (treatments: Treatment[]) => {
-  const mappings: Record<string, string[]> = {};
-  
-  treatments.forEach(treatment => {
-    (treatment.treatment_areas || []).forEach(area => {
-      if (!mappings[area]) {
-        mappings[area] = [];
-      }
-      mappings[area].push(treatment.name);
-    });
-  });
-
-  return mappings;
-};
-
 const formatTreatmentsList = (treatments: Treatment[]): string => {
   const categories: Record<string, Treatment[]> = {};
   
@@ -34,13 +19,15 @@ const formatTreatmentsList = (treatments: Treatment[]): string => {
     });
   });
 
-  formattedList += '\nAllowed treatment names:\n';
+  formattedList += '\nSTRICTLY use ONLY these treatment names:\n';
   formattedList += treatments.map(t => `"${t.name}"`).join(', ');
   
   return formattedList;
 };
 
 export const createSystemPrompt = (treatments: Treatment[] | null = null, brandName: string = ''): string => {
+  console.log('Creating system prompt with brand name:', brandName);
+  
   let prompt = `You are an expert medical aesthetician${brandName ? ` at ${brandName}` : ''}. 
 Your task is to analyze facial images and provide a detailed JSON-formatted analysis with personalized recommendations.
 
@@ -56,23 +43,12 @@ When analyzing the images, focus on these key areas:
    - Under-eye concerns\n\n`;
 
   if (treatments && treatments.length > 0) {
-    // Add formatted treatments list
+    console.log('Adding treatments to prompt:', treatments.length, 'treatments available');
     prompt += formatTreatmentsList(treatments);
     
-    // Add expertise mappings
-    const expertiseMappings = createExpertiseMappings(treatments);
-    if (Object.keys(expertiseMappings).length > 0) {
-      prompt += '\n\nTreatments by facial area:\n';
-      Object.entries(expertiseMappings).forEach(([area, areatreatments]) => {
-        prompt += `\n${area}:\n${areatreatments.map(t => `- ${t}`).join('\n')}`;
-      });
-    }
-
     prompt += `\n\nSTRICT RULES FOR RECOMMENDATIONS:
 - You can ONLY recommend treatments from the list above
-- Each recommendation must EXACTLY match one of these names: ${treatments.map(t => `"${t.name}"`).join(', ')}
-- Recommendations must be appropriate for the specific facial areas where concerns are identified
-- Match treatments to areas based on the "Treatments by facial area" mapping above
+- Each recommendation must EXACTLY match one of the listed treatment names
 - Do not suggest any treatments not listed, even if they might be beneficial`;
   }
 
@@ -90,8 +66,8 @@ IMPORTANT GUIDELINES:
 - Each concern must be paired with its corresponding treatment recommendation in the same array position
 - Primary concerns should focus on the most noticeable or urgent treatment needs
 - Secondary concerns should address enhancement opportunities or preventive care
-- Use professional medical aesthetics terminology
-- Only recommend treatments that are appropriate for the specific areas where concerns are identified`;
+- Use professional medical aesthetics terminology`;
 
+  console.log('Generated system prompt:', prompt);
   return prompt;
 };

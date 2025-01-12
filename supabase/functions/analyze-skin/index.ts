@@ -44,6 +44,8 @@ serve(async (req) => {
 
     if (profileId) {
       try {
+        console.log('Fetching treatments for profile:', profileId);
+        
         const { data: treatments, error: treatmentsError } = await supabase
           .from('med_spa_treatments')
           .select(`
@@ -53,19 +55,23 @@ serve(async (req) => {
               description,
               category:category_id (
                 name
-              ),
-              treatment_areas
+              )
             )
           `)
           .eq('profile_id', profileId)
           .eq('is_active', true);
 
-        if (treatmentsError) throw treatmentsError;
-        availableTreatments = treatments.map(t => ({
+        if (treatmentsError) {
+          console.error('Error fetching treatments:', treatmentsError);
+          throw treatmentsError;
+        }
+        
+        console.log('Fetched treatments:', treatments?.length || 0, 'treatments found');
+        
+        availableTreatments = treatments?.map(t => ({
           name: t.treatments.name,
           category: t.treatments.category,
-          description: t.treatments.description,
-          treatment_areas: t.treatments.treatment_areas
+          description: t.treatments.description
         }));
 
         const { data: profile, error: profileError } = await supabase
@@ -74,7 +80,12 @@ serve(async (req) => {
           .eq('id', profileId)
           .single();
           
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          throw profileError;
+        }
+        
+        console.log('Fetched business profile:', profile);
         businessProfile = profile;
       } catch (error) {
         console.error('Error fetching business data:', error);
@@ -84,10 +95,14 @@ serve(async (req) => {
 
     // Create system prompt and call OpenAI
     const systemPrompt = createSystemPrompt(availableTreatments, businessProfile?.brand_name);
+    console.log('Calling OpenAI with system prompt');
     const openaiData = await callOpenAI(systemPrompt, images);
     
     // Parse and validate analysis
+    console.log('Parsing OpenAI response');
     const analysis = JSON.parse(openaiData.choices[0].message.content);
+    console.log('Parsed analysis:', JSON.stringify(analysis, null, 2));
+    
     validateAnalysis(analysis, availableTreatments);
 
     // Store analytics if profile ID is provided
