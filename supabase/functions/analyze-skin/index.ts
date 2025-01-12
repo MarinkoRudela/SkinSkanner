@@ -93,13 +93,13 @@ serve(async (req) => {
     const systemPrompt = createSystemPrompt(availableTreatments, businessProfile?.brand_name);
     console.log('System prompt:', systemPrompt);
 
-    // 6. Call OpenAI with error handling and updated model
+    // 6. Call OpenAI with updated model and error handling
     if (!openaiApiKey) {
       console.error('OpenAI API key is not configured');
       throw new Error('OpenAI API key is not configured');
     }
 
-    console.log('Calling OpenAI API...');
+    console.log('Calling OpenAI API with gpt-4o model...');
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -107,7 +107,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4-vision-preview',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
