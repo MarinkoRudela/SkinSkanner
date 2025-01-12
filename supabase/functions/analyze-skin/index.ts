@@ -45,26 +45,12 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     console.log('✅ Supabase client initialized');
 
-    // Test Supabase connection
-    try {
-      const { data: testData, error: testError } = await supabase
-        .from('profiles')
-        .select('id')
-        .limit(1);
-        
-      if (testError) throw testError;
-      console.log('✅ Supabase connection test successful');
-    } catch (error) {
-      console.error('❌ Supabase connection test failed:', error);
-      throw error;
-    }
-
     // 2. Parse request with error handling
     console.log('Parsing request body...');
     const requestText = await req.text();
     console.log('Request body:', requestText);
     
-    const { images, profileId, brandName }: AnalysisRequest = JSON.parse(requestText);
+    const { images, profileId }: AnalysisRequest = JSON.parse(requestText);
     console.log('Profile ID:', profileId);
 
     // 3. Validate request data
@@ -104,13 +90,10 @@ serve(async (req) => {
 
     // 5. Create system prompt with logging
     console.log('Creating system prompt...');
-    const systemPrompt = createSystemPrompt(
-      availableTreatments, 
-      businessProfile?.brand_name || brandName
-    );
+    const systemPrompt = createSystemPrompt(availableTreatments, businessProfile?.brand_name);
     console.log('System prompt:', systemPrompt);
 
-    // 6. Call OpenAI with error handling
+    // 6. Call OpenAI with error handling and updated model
     if (!openaiApiKey) {
       console.error('OpenAI API key is not configured');
       throw new Error('OpenAI API key is not configured');
@@ -124,7 +107,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4-vision-preview',
         messages: [
           {
             role: 'system',
@@ -194,13 +177,11 @@ serve(async (req) => {
 
         if (analyticsError) {
           console.error('Error storing analytics:', analyticsError);
-          // Don't throw here, just log the error
         } else {
           console.log('✅ Analytics data stored successfully');
         }
       } catch (error) {
         console.error('Error storing analytics:', error);
-        // Don't throw here, just log the error
       }
     }
 
