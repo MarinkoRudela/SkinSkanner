@@ -19,77 +19,80 @@ serve(async (req) => {
   }
 
   try {
-    const requestText = await req.text();
-    const { images, profileId, businessType, brandName }: AnalysisRequest = JSON.parse(requestText);
+    // 1. Initialize Supabase client with logging
+    console.log('Initializing Supabase client...');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('Missing Supabase configuration');
+      throw new Error('Missing Supabase configuration');
+    }
 
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    console.log('✅ Supabase client initialized');
+
+    // 2. Parse request with error handling
+    console.log('Parsing request body...');
+    const requestText = await req.text();
+    console.log('Request body:', requestText);
+    
+    const { images, profileId, businessType, brandName }: AnalysisRequest = JSON.parse(requestText);
+    console.log('Profile ID:', profileId);
+    console.log('Business Type:', businessType);
+
+    // 3. Validate request data
     if (!images?.front || !images?.left || !images?.right) {
+      console.error('Missing required images');
       throw new Error('Missing required images');
     }
 
-    // Validate image sizes and formats
-    const validateImage = async (imageUrl: string) => {
-      try {
-        const response = await fetch(imageUrl);
-        const contentType = response.headers.get('content-type');
-        const size = parseInt(response.headers.get('content-length') || '0');
-        
-        if (!contentType?.startsWith('image/')) {
-          throw new Error('Invalid image format');
-        }
-        
-        if (size > 20 * 1024 * 1024) { // 20MB limit
-          throw new Error('Image size exceeds 20MB limit');
-        }
-
-        return imageUrl;
-      } catch (error) {
-        console.error('Image validation error:', error);
-        throw new Error(`Image validation failed: ${error.message}`);
-      }
-    };
-
-    // Validate all images in parallel
-    const [validatedFront, validatedLeft, validatedRight] = await Promise.all([
-      validateImage(images.front),
-      validateImage(images.left),
-      validateImage(images.right)
-    ]);
-
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openaiApiKey) {
-      throw new Error('OpenAI API key is not configured');
-    }
-
+    // 4. Fetch treatments with detailed logging
+    console.log('🔍 Fetching treatments for profile:', profileId);
     let availableTreatments = null;
     let businessProfile = null;
-    if (profileId) {
-      const supabaseUrl = Deno.env.get('SUPABASE_URL');
-      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-      
-      if (!supabaseUrl || !supabaseServiceKey) {
-        throw new Error('Missing Supabase configuration');
-      }
 
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
-      availableTreatments = await fetchMedSpaTreatments(supabase, profileId);
-      
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('brand_name, business_type')
-        .eq('id', profileId)
-        .single();
-        
-      businessProfile = profile;
+    if (profileId) {
+      try {
+        availableTreatments = await fetchMedSpaTreatments(supabase, profileId);
+        console.log('Available treatments:', JSON.stringify(availableTreatments, null, 2));
+
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('brand_name, business_type')
+          .eq('id', profileId)
+          .single();
+          
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          throw profileError;
+        }
+
+        businessProfile = profile;
+        console.log('Business profile:', JSON.stringify(businessProfile, null, 2));
+      } catch (error) {
+        console.error('Error fetching business data:', error);
+        throw new Error(`Failed to fetch business data: ${error.message}`);
+      }
     }
 
+    // 5. Create system prompt with logging
+    console.log('Creating system prompt...');
     const systemPrompt = createSystemPrompt(
       availableTreatments, 
       businessProfile?.business_type || businessType || 'med_spa',
       businessProfile?.brand_name || brandName
     );
-    
     console.log('System prompt:', systemPrompt);
-    
+
+    // 6. Call OpenAI with error handling
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openaiApiKey) {
+      console.error('OpenAI API key is not configured');
+      throw new Error('OpenAI API key is not configured');
+    }
+
+    console.log('Calling OpenAI API...');
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -97,7 +100,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4-vision-preview',
         messages: [
           {
             role: 'system',
@@ -112,15 +115,15 @@ serve(async (req) => {
               },
               {
                 type: 'image_url',
-                image_url: { url: validatedFront }
+                image_url: { url: images.front }
               },
               {
                 type: 'image_url',
-                image_url: { url: validatedLeft }
+                image_url: { url: images.left }
               },
               {
                 type: 'image_url',
-                image_url: { url: validatedRight }
+                image_url: { url: images.right }
               }
             ]
           }
@@ -138,25 +141,36 @@ serve(async (req) => {
     }
 
     const openaiData = await openaiResponse.json();
+    console.log('OpenAI response:', JSON.stringify(openaiData, null, 2));
+    
     const analysis = JSON.parse(openaiData.choices[0].message.content);
-    
-    console.log('Analysis result:', analysis);
-    
-    validateAnalysis(analysis, availableTreatments);
+    console.log('Parsed analysis:', JSON.stringify(analysis, null, 2));
 
-    // Track analytics if profile ID is provided
+    // 7. Validate analysis with logging
+    console.log('Validating analysis...');
+    try {
+      validateAnalysis(analysis, availableTreatments);
+      console.log('✅ Analysis validation passed');
+    } catch (error) {
+      console.error('❌ Analysis validation failed:', error);
+      throw error;
+    }
+
+    // 8. Track analytics if profile ID is provided
     if (profileId) {
-      const supabase = createClient(
-        Deno.env.get('SUPABASE_URL') as string,
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') as string
-      );
-      
-      await supabase.from('scanner_analytics').insert({
-        profile_id: profileId,
-        scan_completed_at: new Date().toISOString(),
-        recommendations_generated: 6,
-        primary_concerns: analysis.primary_concerns
-      });
+      console.log('Tracking analytics...');
+      try {
+        await supabase.from('scanner_analytics').insert({
+          profile_id: profileId,
+          scan_completed_at: new Date().toISOString(),
+          recommendations_generated: 6,
+          primary_concerns: analysis.primary_concerns
+        });
+        console.log('✅ Analytics tracked successfully');
+      } catch (error) {
+        console.error('Error tracking analytics:', error);
+        // Don't throw here, as this is not critical to the main function
+      }
     }
 
     return new Response(JSON.stringify(analysis), {
@@ -164,9 +178,11 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('❌ Error in analyze-skin function:', error);
+    console.error('Error stack:', error.stack);
     return new Response(JSON.stringify({ 
       error: error.message,
-      details: 'Failed to analyze skin images'
+      details: 'Failed to analyze skin images',
+      stack: error.stack
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
