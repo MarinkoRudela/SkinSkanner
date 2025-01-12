@@ -1,8 +1,9 @@
 import React from 'react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { TreatmentAreaSelector } from './TreatmentAreaSelector';
-import { Treatment } from './types';
+import { Treatment } from '@/types';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 
 interface TreatmentItemProps {
   treatment: Treatment;
@@ -10,7 +11,6 @@ interface TreatmentItemProps {
   onToggle: () => void;
   onAreaToggle: (area: string) => void;
   selectedAreas: string[];
-  businessType?: string;
 }
 
 export const TreatmentItem = ({ 
@@ -19,13 +19,9 @@ export const TreatmentItem = ({
   onToggle,
   onAreaToggle,
   selectedAreas,
-  businessType = 'med_spa'
 }: TreatmentItemProps) => {
-  const showTreatmentAreas = treatment.category?.category_type !== 'eyebrow';
-  const treatmentAreas = treatment.treatment_areas || [];
-
   return (
-    <div className="space-y-4 p-4 rounded-lg border border-gray-200 hover:border-primary/50 transition-colors">
+    <Card className="space-y-4 p-4 hover:border-primary/50 transition-colors">
       <div className="flex items-start space-x-3">
         <Checkbox
           id={treatment.id}
@@ -46,6 +42,11 @@ export const TreatmentItem = ({
                   License Required
                 </Badge>
               )}
+              {treatment.category && (
+                <Badge variant="outline" className="text-xs">
+                  {treatment.category.name}
+                </Badge>
+              )}
             </div>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -54,16 +55,15 @@ export const TreatmentItem = ({
         </div>
       </div>
       
-      {isSelected && showTreatmentAreas && (
+      {isSelected && treatment.treatment_areas && treatment.treatment_areas.length > 0 && (
         <div className="pl-7">
           <TreatmentAreaSelector
-            areas={treatmentAreas}
+            areas={treatment.treatment_areas}
             selectedAreas={selectedAreas}
             onAreaToggle={onAreaToggle}
-            businessType={businessType}
           />
         </div>
       )}
-    </div>
+    </Card>
   );
 };
