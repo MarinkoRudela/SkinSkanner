@@ -21,7 +21,17 @@ export const useTreatmentState = (profileId: string) => {
           treatment_id,
           treatments:treatment_id (
             id,
-            treatment_areas
+            name,
+            description,
+            requires_license,
+            treatment_areas,
+            category_id,
+            business_types,
+            category:treatment_categories (
+              id,
+              name,
+              category_type
+            )
           )
         `)
         .eq('profile_id', profileId)

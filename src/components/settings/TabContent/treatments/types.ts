@@ -19,7 +19,7 @@ export interface Treatment {
 
 export interface TreatmentData {
   treatment_id: string;
-  treatments: Treatment; // Fixed: Now a single Treatment object instead of array
+  treatments: Treatment;
 }
 
 export interface TreatmentState {
