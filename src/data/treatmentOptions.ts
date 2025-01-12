@@ -58,24 +58,6 @@ export const treatmentCategories: TreatmentCategory[] = [
     ]
   },
   {
-    category: "Body Treatments",
-    icon: Sparkles,
-    treatments: [
-      {
-        name: "Body Contouring",
-        description: "Non-invasive fat reduction and body sculpting"
-      },
-      {
-        name: "Cellulite Reduction",
-        description: "Improves appearance of cellulite"
-      },
-      {
-        name: "Skin Tightening",
-        description: "Firms and tightens loose skin"
-      }
-    ]
-  },
-  {
     category: "Energy-Based Treatments",
     icon: Zap,
     treatments: [
