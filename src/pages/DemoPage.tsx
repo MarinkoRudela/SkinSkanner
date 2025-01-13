@@ -1,10 +1,12 @@
 import React from 'react';
-import { ValidationScenarios } from '@/components/testing/ValidationScenarios';
+import { DemoScanner } from '@/components/demo/DemoScanner';
+import { Navigation } from '@/components/Navigation';
 
 const DemoPage = () => {
   return (
     <div className="container mx-auto py-8">
-      <ValidationScenarios />
+      <Navigation session={null} />
+      <DemoScanner />
     </div>
   );
 };
