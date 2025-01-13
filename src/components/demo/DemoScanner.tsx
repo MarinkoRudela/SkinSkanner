@@ -22,41 +22,25 @@ export const DemoScanner = () => {
     setIsAnalyzing(true);
     
     try {
-      console.log('Calling analyze-skin function with images:', images);
-      
-      const { data, error } = await supabase.functions.invoke('analyze-skin', {
-        body: { images },
-        headers: {
-          Authorization: undefined
-        }
+      const { data, error } = await supabase.functions.invoke('analyze-skin-demo', {
+        body: { images }
       });
 
-      if (error) {
-        console.error('Analysis error:', error);
-        throw error;
-      }
-
-      if (!data) {
-        throw new Error('No analysis data received');
-      }
-
-      console.log('Analysis data received:', data);
+      if (error) throw error;
+      
+      console.log('Demo analysis results:', data);
       setAnalysis(data);
       
       toast({
         title: "Analysis Complete",
         description: "We've analyzed your photos and prepared personalized recommendations.",
-        duration: 3000,
-        className: "top-center-toast"
       });
     } catch (error) {
       console.error('Analysis error:', error);
       toast({
         title: "Analysis Failed",
         description: "We couldn't analyze your photos. Please try again.",
-        variant: "destructive",
-        duration: 3000,
-        className: "top-center-toast"
+        variant: "destructive"
       });
     } finally {
       setIsAnalyzing(false);
