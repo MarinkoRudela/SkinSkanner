@@ -281,6 +281,7 @@ export type Database = {
           id: string
           logo_url: string | null
           tagline: string | null
+          theme_id: string | null
           updated_at: string
         }
         Insert: {
@@ -291,6 +292,7 @@ export type Database = {
           id: string
           logo_url?: string | null
           tagline?: string | null
+          theme_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -301,9 +303,18 @@ export type Database = {
           id?: string
           logo_url?: string | null
           tagline?: string | null
+          theme_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "themes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scanner_analytics: {
         Row: {
@@ -426,6 +437,45 @@ export type Database = {
           is_featured?: boolean | null
           rating?: number | null
           testimonial?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      themes: {
+        Row: {
+          background_gradient_end: string
+          background_gradient_start: string
+          button_color: string
+          card_background: string
+          created_at: string
+          id: string
+          is_default: boolean | null
+          name: string
+          text_color: string
+          updated_at: string
+        }
+        Insert: {
+          background_gradient_end: string
+          background_gradient_start: string
+          button_color: string
+          card_background: string
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name: string
+          text_color: string
+          updated_at?: string
+        }
+        Update: {
+          background_gradient_end?: string
+          background_gradient_start?: string
+          button_color?: string
+          card_background?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          text_color?: string
           updated_at?: string
         }
         Relationships: []
