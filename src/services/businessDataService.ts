@@ -21,7 +21,7 @@ export const fetchBusinessData = async (shortCode: string) => {
       throw new Error('Business not found');
     }
 
-    // Then, get the business data with an explicit join
+    // Then, get the business data with theme information
     const { data: businessData, error: businessError } = await supabase
       .from('profiles')
       .select(`
@@ -29,6 +29,17 @@ export const fetchBusinessData = async (shortCode: string) => {
         brand_name,
         logo_url,
         tagline,
+        theme_id,
+        themes!inner (
+          id,
+          name,
+          background_gradient_start,
+          background_gradient_end,
+          card_background,
+          button_color,
+          text_color,
+          is_default
+        ),
         business_settings!inner (
           booking_url
         )
@@ -49,11 +60,13 @@ export const fetchBusinessData = async (shortCode: string) => {
     // Restructure the data to match the expected format
     const formattedData = {
       ...businessData,
+      theme: businessData.themes,
       business_settings: businessData.business_settings[0],
       profile_id: businessData.id
     };
 
     console.log('Successfully fetched business data:', formattedData);
+    console.log('Theme data:', formattedData.theme);
     console.log('Business settings:', formattedData.business_settings);
     return formattedData;
   } catch (error: any) {
