@@ -58,28 +58,24 @@ export const ValidationScenarios = () => {
     console.log('Testing scenario:', selectedScenario.name);
     
     try {
-      const { data, error } = await supabase.functions.invoke('analyze-skin', {
-        body: { 
-          images,
-          profileId: selectedScenario.profileId,
-          businessType: selectedScenario.businessType
-        }
+      const { data, error } = await supabase.functions.invoke('analyze-skin-demo', {
+        body: { images }
       });
 
       if (error) throw error;
       
-      console.log('Analysis results:', data);
+      console.log('Demo analysis results:', data);
       setAnalysis(data);
       
       toast({
         title: "Analysis Complete",
-        description: `Completed analysis for ${selectedScenario.name}`,
+        description: `Completed demo analysis for ${selectedScenario.name}`,
       });
     } catch (error) {
       console.error('Analysis error:', error);
       toast({
         title: "Analysis Failed",
-        description: "Error during analysis. Check console for details.",
+        description: "Error during demo analysis. Check console for details.",
         variant: "destructive"
       });
     } finally {
