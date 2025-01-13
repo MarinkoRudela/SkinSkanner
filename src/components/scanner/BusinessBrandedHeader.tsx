@@ -1,15 +1,13 @@
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { Picture } from "@/components/ui/picture";
+import { Theme } from "@/types/business";
 
 interface BusinessBrandedHeaderProps {
   brandName: string;
-  logoUrl: string;
-  tagline: string;
-  theme?: {
-    card_background: string;
-    text_color: string;
-  };
+  logoUrl: string | null;
+  tagline: string | null;
+  theme?: Theme | null;
 }
 
 export const BusinessBrandedHeader = ({

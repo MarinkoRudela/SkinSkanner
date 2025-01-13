@@ -14,6 +14,8 @@ export const BrandedScannerPage = () => {
   });
 
   useEffect(() => {
+    console.log('Theme data in BrandedScannerPage:', businessData?.theme);
+    
     if (businessData?.theme) {
       // Apply theme styles to body
       document.body.style.background = businessData.theme.background_gradient_start 
