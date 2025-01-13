@@ -1,34 +1,18 @@
 import { BusinessBrandedHeader } from "./BusinessBrandedHeader";
 import { ScannerSection } from "./ScannerSection";
 import { toast } from "@/hooks/use-toast";
+import { BusinessData } from "@/types/business";
 
 interface ScannerPageContainerProps {
-  businessData: {
-    brand_name: string;
-    logo_url: string;
-    tagline: string;
-    business_settings: {
-      booking_url: string;
-    } | null;
-    profile_id: string;
-    theme?: {
-      background_gradient_start: string;
-      background_gradient_end: string;
-      card_background: string;
-      button_color: string;
-      text_color: string;
-    };
-  };
+  businessData: BusinessData;
   shortCode: string;
   linkVisitId?: string;
-  profileId?: string;
 }
 
 export const ScannerPageContainer = ({ 
   businessData,
   shortCode,
-  linkVisitId,
-  profileId
+  linkVisitId
 }: ScannerPageContainerProps) => {
   console.log('ScannerPageContainer received:', {
     brandName: businessData.brand_name,

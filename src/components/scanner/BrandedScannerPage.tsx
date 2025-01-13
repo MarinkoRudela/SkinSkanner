@@ -14,9 +14,9 @@ export const BrandedScannerPage = () => {
   });
 
   useEffect(() => {
-    if (businessData?.theme_id) {
+    if (businessData?.theme) {
       // Apply theme styles to body
-      document.body.style.background = businessData.theme?.background_gradient_start 
+      document.body.style.background = businessData.theme.background_gradient_start 
         ? `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})`
         : '';
     }
