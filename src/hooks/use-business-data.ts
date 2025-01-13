@@ -1,16 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-
-interface BusinessData {
-  brand_name: string;
-  logo_url: string;
-  tagline: string;
-  business_settings: {
-    booking_url: string;
-  } | null;
-  profile_id: string;
-}
+import { BusinessData } from '@/types/business';
 
 export const useBusinessData = (shortCode?: string) => {
   const [businessData, setBusinessData] = useState<BusinessData | null>(null);
@@ -43,13 +34,25 @@ export const useBusinessData = (shortCode?: string) => {
           throw new Error('Business not found');
         }
 
-        // Then get the business data
+        // Then get the business data with theme information
         const { data, error: businessError } = await supabase
           .from('profiles')
           .select(`
+            id,
             brand_name,
             logo_url,
             tagline,
+            theme_id,
+            themes!inner (
+              id,
+              name,
+              background_gradient_start,
+              background_gradient_end,
+              card_background,
+              button_color,
+              text_color,
+              is_default
+            ),
             business_settings!inner (
               booking_url
             )
@@ -67,11 +70,14 @@ export const useBusinessData = (shortCode?: string) => {
 
         // Transform the data to match the BusinessData interface
         const transformedData: BusinessData = {
+          id: data.id,
           brand_name: data.brand_name,
           logo_url: data.logo_url,
           tagline: data.tagline,
           business_settings: data.business_settings?.[0] || null,
-          profile_id: shortCodeData.profile_id
+          profile_id: shortCodeData.profile_id,
+          theme_id: data.theme_id,
+          theme: data.themes
         };
 
         console.log('Business data fetched:', transformedData);
