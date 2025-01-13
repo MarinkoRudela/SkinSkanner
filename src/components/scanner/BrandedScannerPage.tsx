@@ -4,6 +4,7 @@ import { useBusinessData } from "@/hooks/use-business-data";
 import { ScannerPageContainer } from "./ScannerPageContainer";
 import { ErrorDisplay } from "./ErrorDisplay";
 import { useVisitorTracking } from "@/hooks/use-visitor-tracking";
+import { toast } from "@/hooks/use-toast";
 
 export const BrandedScannerPage = () => {
   const { shortCode } = useParams();
@@ -21,6 +22,8 @@ export const BrandedScannerPage = () => {
       document.body.style.background = businessData.theme.background_gradient_start 
         ? `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})`
         : '';
+    } else {
+      console.warn('No theme data available for business');
     }
 
     return () => {
@@ -30,10 +33,17 @@ export const BrandedScannerPage = () => {
   }, [businessData]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-pulse text-primary">Loading...</div>
+    </div>;
   }
 
   if (error || !businessData) {
+    toast({
+      title: "Error",
+      description: error || 'Failed to load business data',
+      variant: "destructive"
+    });
     return <ErrorDisplay error={error || 'No business data found'} />;
   }
 

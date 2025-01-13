@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { useState } from "react";
 import { Picture } from "@/components/ui/picture";
 import { Theme } from "@/types/business";
+import { toast } from "@/hooks/use-toast";
 
 interface BusinessBrandedHeaderProps {
   brandName: string;
@@ -21,6 +22,11 @@ export const BusinessBrandedHeader = ({
   const handleLogoError = () => {
     console.error('Failed to load logo');
     setLogoError(true);
+    toast({
+      title: "Logo Error",
+      description: "Failed to load business logo",
+      variant: "destructive"
+    });
   };
 
   const defaultLogo = "/lovable-uploads/779fe9aa-eef9-453e-b5da-89a3ae847a62.png";
