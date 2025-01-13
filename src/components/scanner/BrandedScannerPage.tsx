@@ -14,7 +14,17 @@ export const BrandedScannerPage = () => {
   });
 
   useEffect(() => {
-    console.log('Business data loaded:', businessData);
+    if (businessData?.theme_id) {
+      // Apply theme styles to body
+      document.body.style.background = businessData.theme?.background_gradient_start 
+        ? `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})`
+        : '';
+    }
+
+    return () => {
+      // Cleanup theme styles
+      document.body.style.background = '';
+    };
   }, [businessData]);
 
   if (isLoading) {

@@ -6,12 +6,17 @@ interface BusinessBrandedHeaderProps {
   brandName: string;
   logoUrl: string;
   tagline: string;
+  theme?: {
+    card_background: string;
+    text_color: string;
+  };
 }
 
 export const BusinessBrandedHeader = ({
   brandName,
   logoUrl,
-  tagline
+  tagline,
+  theme
 }: BusinessBrandedHeaderProps) => {
   const [logoError, setLogoError] = useState(false);
 
@@ -22,8 +27,13 @@ export const BusinessBrandedHeader = ({
 
   const defaultLogo = "/lovable-uploads/779fe9aa-eef9-453e-b5da-89a3ae847a62.png";
 
+  const cardStyle = theme ? {
+    background: theme.card_background,
+    color: theme.text_color
+  } : {};
+
   return (
-    <Card className="glass-card p-8 mb-8 text-center">
+    <Card className="glass-card p-8 mb-8 text-center" style={cardStyle}>
       <Picture
         src={logoUrl || defaultLogo}
         alt={brandName}
@@ -34,7 +44,7 @@ export const BusinessBrandedHeader = ({
       />
       <h1 className="text-2xl font-bold mb-2">{brandName}</h1>
       {tagline && (
-        <p className="text-muted-foreground">{tagline}</p>
+        <p style={{ color: theme?.text_color }}>{tagline}</p>
       )}
     </Card>
   );
