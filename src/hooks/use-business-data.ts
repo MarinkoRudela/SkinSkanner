@@ -54,7 +54,11 @@ export const useBusinessData = (shortCode?: string) => {
               is_default
             ),
             business_settings!inner (
-              booking_url
+              id,
+              profile_id,
+              booking_url,
+              created_at,
+              updated_at
             )
           `)
           .eq('id', shortCodeData.profile_id)
@@ -81,6 +85,9 @@ export const useBusinessData = (shortCode?: string) => {
         };
 
         console.log('Business data fetched:', transformedData);
+        console.log('Theme data:', transformedData.theme);
+        console.log('Business settings:', transformedData.business_settings);
+        
         setBusinessData(transformedData);
         setError(null);
       } catch (err: any) {
