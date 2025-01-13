@@ -5,7 +5,7 @@ import { BookingTab } from "../TabContent/BookingTab";
 import { AnalyticsTab } from "../TabContent/AnalyticsTab";
 import { TreatmentsTab } from "../TabContent/treatments/TreatmentsTab";
 import { SubscriptionTab } from "../TabContent/SubscriptionTab";
-import { FAQTab } from "../TabContent/FAQTab";
+import { ThemeTab } from "../TabContent/ThemeTab";
 
 interface TabsContainerProps {
   session: any;
@@ -43,7 +43,7 @@ export const TabsContainer = ({
         <TabsTrigger value="treatments">Treatments</TabsTrigger>
         <TabsTrigger value="analytics">Analytics</TabsTrigger>
         <TabsTrigger value="subscription">Subscription</TabsTrigger>
-        <TabsTrigger value="faq">FAQ</TabsTrigger>
+        <TabsTrigger value="theme">Theme</TabsTrigger>
       </TabsList>
 
       <TabsContent value="guide" className="space-y-4">
@@ -81,8 +81,8 @@ export const TabsContainer = ({
         <SubscriptionTab session={session} />
       </TabsContent>
 
-      <TabsContent value="faq" className="space-y-4">
-        <FAQTab />
+      <TabsContent value="theme" className="space-y-4">
+        <ThemeTab session={session} />
       </TabsContent>
     </Tabs>
   );
