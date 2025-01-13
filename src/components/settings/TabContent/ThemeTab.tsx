@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { ThemeList } from "./theme/ThemeList";
 
 interface Theme {
   id: string;
@@ -107,40 +108,11 @@ export const ThemeTab = ({ session }: ThemeTabProps) => {
         <CardTitle>Theme Customization</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {themes.map((theme) => (
-            <div
-              key={theme.id}
-              className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
-                selectedTheme === theme.id
-                  ? 'ring-2 ring-primary'
-                  : 'hover:shadow-lg'
-              }`}
-              style={{
-                background: `linear-gradient(135deg, ${theme.background_gradient_start}, ${theme.background_gradient_end})`,
-                color: theme.text_color,
-              }}
-              onClick={() => handleThemeSelect(theme.id)}
-            >
-              <h3 className="text-lg font-semibold mb-2">{theme.name}</h3>
-              <div
-                className="p-2 rounded"
-                style={{ backgroundColor: theme.card_background }}
-              >
-                <p className="text-sm">Preview Card</p>
-              </div>
-              <button
-                className="mt-2 px-4 py-1 rounded text-sm"
-                style={{
-                  backgroundColor: theme.button_color,
-                  color: '#FFFFFF',
-                }}
-              >
-                Sample Button
-              </button>
-            </div>
-          ))}
-        </div>
+        <ThemeList
+          themes={themes}
+          selectedTheme={selectedTheme}
+          onThemeSelect={handleThemeSelect}
+        />
       </CardContent>
     </Card>
   );
