@@ -9,6 +9,7 @@ export interface Theme {
   button_color: string;
   text_color: string;
   is_default?: boolean;
+  texture_url?: string;
 }
 
 export interface BusinessSettings {

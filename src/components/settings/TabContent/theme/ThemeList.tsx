@@ -10,6 +10,7 @@ interface Theme {
   card_background: string;
   button_color: string;
   text_color: string;
+  texture_url?: string;
 }
 
 interface ThemeListProps {
@@ -19,9 +20,8 @@ interface ThemeListProps {
 }
 
 export const ThemeList = ({ themes, selectedTheme, onThemeSelect }: ThemeListProps) => {
-  // Separate marble themes from other themes
-  const marbleThemes = themes.filter(theme => theme.name.includes('Marble'));
-  const otherThemes = themes.filter(theme => !theme.name.includes('Marble'));
+  const marbleThemes = themes.filter(theme => theme.name.toLowerCase().includes('marble'));
+  const otherThemes = themes.filter(theme => !theme.name.toLowerCase().includes('marble'));
 
   return (
     <div className="space-y-8">
@@ -31,7 +31,7 @@ export const ThemeList = ({ themes, selectedTheme, onThemeSelect }: ThemeListPro
             <CardTitle>Marble Themes</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {marbleThemes.map((theme) => (
                 <ThemePreview
                   key={theme.id}
@@ -51,7 +51,7 @@ export const ThemeList = ({ themes, selectedTheme, onThemeSelect }: ThemeListPro
             <CardTitle>Standard Themes</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {otherThemes.map((theme) => (
                 <ThemePreview
                   key={theme.id}

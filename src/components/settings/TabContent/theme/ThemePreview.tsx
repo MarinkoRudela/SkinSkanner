@@ -8,6 +8,7 @@ interface Theme {
   card_background: string;
   button_color: string;
   text_color: string;
+  texture_url?: string;
 }
 
 interface ThemePreviewProps {
@@ -17,28 +18,46 @@ interface ThemePreviewProps {
 }
 
 export const ThemePreview = ({ theme, isSelected, onSelect }: ThemePreviewProps) => {
-  const isMarbleTheme = theme.name.includes('Marble');
+  const isMarbleTheme = theme.name.toLowerCase().includes('marble');
+  
+  const backgroundStyle = isMarbleTheme && theme.texture_url
+    ? {
+        backgroundImage: `url(${theme.texture_url})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }
+    : {
+        background: `linear-gradient(135deg, ${theme.background_gradient_start}, ${theme.background_gradient_end})`,
+      };
   
   return (
     <div
-      className={`relative p-6 rounded-lg cursor-pointer transition-all duration-200 ${
+      className={`relative p-6 rounded-lg cursor-pointer transition-all duration-200 overflow-hidden ${
         isSelected ? 'ring-2 ring-primary' : 'hover:shadow-lg'
       }`}
-      style={{
-        background: `linear-gradient(135deg, ${theme.background_gradient_start}, ${theme.background_gradient_end})`,
-        color: theme.text_color,
-      }}
+      style={backgroundStyle}
       onClick={() => onSelect(theme.id)}
     >
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">{theme.name}</h3>
+      {isMarbleTheme && (
+        <div 
+          className="absolute inset-0" 
+          style={{
+            backgroundColor: `${theme.background_gradient_start}40`,
+            backdropFilter: 'blur(1px)',
+          }}
+        />
+      )}
+
+      <div className="relative space-y-4 z-10">
+        <h3 className="text-lg font-semibold" style={{ color: theme.text_color }}>
+          {theme.name}
+        </h3>
         
-        {/* Preview Card */}
         <div
           className="p-4 rounded-lg shadow-sm"
           style={{ 
-            backgroundColor: theme.card_background,
-            backdropFilter: isMarbleTheme ? 'blur(8px)' : 'none',
+            backgroundColor: `${theme.card_background}CC`,
+            backdropFilter: 'blur(8px)',
             border: isMarbleTheme ? '1px solid rgba(255, 255, 255, 0.2)' : 'none'
           }}
         >
@@ -47,7 +66,6 @@ export const ThemePreview = ({ theme, isSelected, onSelect }: ThemePreviewProps)
           </p>
         </div>
 
-        {/* Sample Button */}
         <button
           className="px-4 py-2 rounded text-sm transition-colors duration-200"
           style={{
@@ -60,7 +78,7 @@ export const ThemePreview = ({ theme, isSelected, onSelect }: ThemePreviewProps)
       </div>
 
       {isSelected && (
-        <div className="absolute top-2 right-2">
+        <div className="absolute top-2 right-2 z-20">
           <div className="bg-primary text-white text-xs px-2 py-1 rounded">
             Selected
           </div>
