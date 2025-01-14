@@ -21,7 +21,6 @@ export const ScannerPageContainer = ({
     theme: businessData.theme
   });
 
-  // Only show the setup warning if business_settings is null
   if (!businessData.business_settings) {
     console.warn('No business settings found for business');
     toast({
@@ -32,18 +31,27 @@ export const ScannerPageContainer = ({
     return null;
   }
 
-  // Get the booking URL from business settings
   const bookingUrl = businessData.business_settings.booking_url;
+  const isMarbleTheme = businessData.theme?.name.toLowerCase().includes('marble');
 
-  // Apply theme styles if available
-  const containerStyle = businessData.theme ? {
-    background: `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})`,
-    color: businessData.theme.text_color
-  } : {};
+  // Apply container styles based on theme
+  const containerStyle = isMarbleTheme ? {
+    backgroundColor: 'rgba(255, 255, 255, 0.85)', // Subtle white background for content
+    backdropFilter: 'blur(2px)', // Minimal blur for readability
+    borderRadius: '1rem',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Subtle shadow
+  } : {
+    background: businessData.theme ? 
+      `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})` : '',
+    color: businessData.theme?.text_color
+  };
 
   return (
-    <div className="min-h-screen" style={containerStyle}>
-      <div className="container max-w-4xl mx-auto px-4 py-8">
+    <div className="min-h-screen py-8">
+      <div 
+        className="container max-w-4xl mx-auto px-4 md:px-8"
+        style={containerStyle}
+      >
         <BusinessBrandedHeader
           brandName={businessData.brand_name}
           logoUrl={businessData.logo_url}

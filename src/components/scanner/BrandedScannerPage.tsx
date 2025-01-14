@@ -21,14 +21,15 @@ export const BrandedScannerPage = () => {
       const isMarbleTheme = businessData.theme.name.toLowerCase().includes('marble');
       
       if (isMarbleTheme && businessData.theme.texture_url) {
-        document.body.style.background = `url(${businessData.theme.texture_url})`;
+        // Apply marble background with proper scaling and positioning
+        document.body.style.backgroundImage = `url(${businessData.theme.texture_url})`;
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundPosition = 'center';
         document.body.style.backgroundRepeat = 'no-repeat';
-        // Remove fixed attachment to allow proper scrolling with marble texture
-        document.body.style.backgroundColor = 'transparent';
-        // Add a subtle white overlay to enhance content readability
-        document.body.style.boxShadow = 'inset 0 0 0 2000px rgba(255, 255, 255, 0.3)';
+        document.body.style.backgroundAttachment = 'scroll'; // Allow scrolling with marble texture
+        document.body.style.backgroundColor = '#ffffff'; // White base color
+        // Remove the overlay that was diluting the marble effect
+        document.body.style.boxShadow = 'none';
       } else {
         document.body.style.background = businessData.theme.background_gradient_start 
           ? `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})`
@@ -42,6 +43,11 @@ export const BrandedScannerPage = () => {
       // Cleanup theme styles
       document.body.style.background = '';
       document.body.style.backgroundColor = '';
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundSize = '';
+      document.body.style.backgroundPosition = '';
+      document.body.style.backgroundRepeat = '';
+      document.body.style.backgroundAttachment = '';
       document.body.style.boxShadow = '';
     };
   }, [businessData]);
