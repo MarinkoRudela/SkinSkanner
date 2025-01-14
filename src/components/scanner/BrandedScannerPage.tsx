@@ -18,10 +18,22 @@ export const BrandedScannerPage = () => {
     console.log('Theme data in BrandedScannerPage:', businessData?.theme);
     
     if (businessData?.theme) {
+      const isMarbleTheme = businessData.theme.name.toLowerCase().includes('marble');
+      
       // Apply theme styles to body
-      document.body.style.background = businessData.theme.background_gradient_start 
-        ? `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})`
-        : '';
+      if (isMarbleTheme && businessData.theme.texture_url) {
+        document.body.style.background = `url(${businessData.theme.texture_url})`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundAttachment = 'fixed';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        // Add a semi-transparent overlay
+        document.body.style.backgroundColor = `${businessData.theme.background_gradient_start}80`;
+      } else {
+        document.body.style.background = businessData.theme.background_gradient_start 
+          ? `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})`
+          : '';
+      }
     } else {
       console.warn('No theme data available for business');
     }
@@ -29,6 +41,7 @@ export const BrandedScannerPage = () => {
     return () => {
       // Cleanup theme styles
       document.body.style.background = '';
+      document.body.style.backgroundColor = '';
     };
   }, [businessData]);
 

@@ -25,6 +25,8 @@ export const ThemePreview = ({ theme, isSelected, onSelect }: ThemePreviewProps)
         backgroundImage: `url(${theme.texture_url})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
       }
     : {
         background: `linear-gradient(135deg, ${theme.background_gradient_start}, ${theme.background_gradient_end})`,
@@ -32,7 +34,7 @@ export const ThemePreview = ({ theme, isSelected, onSelect }: ThemePreviewProps)
   
   return (
     <div
-      className={`relative p-6 rounded-lg cursor-pointer transition-all duration-200 overflow-hidden ${
+      className={`relative p-6 rounded-lg cursor-pointer transition-all duration-200 overflow-hidden min-h-[200px] ${
         isSelected ? 'ring-2 ring-primary' : 'hover:shadow-lg'
       }`}
       style={backgroundStyle}
@@ -42,7 +44,7 @@ export const ThemePreview = ({ theme, isSelected, onSelect }: ThemePreviewProps)
         <div 
           className="absolute inset-0" 
           style={{
-            backgroundColor: `${theme.background_gradient_start}40`,
+            backgroundColor: `${theme.background_gradient_start}80`,
             backdropFilter: 'blur(1px)',
           }}
         />
@@ -56,8 +58,8 @@ export const ThemePreview = ({ theme, isSelected, onSelect }: ThemePreviewProps)
         <div
           className="p-4 rounded-lg shadow-sm"
           style={{ 
-            backgroundColor: `${theme.card_background}CC`,
-            backdropFilter: 'blur(8px)',
+            backgroundColor: isMarbleTheme ? `${theme.card_background}CC` : theme.card_background,
+            backdropFilter: isMarbleTheme ? 'blur(8px)' : 'none',
             border: isMarbleTheme ? '1px solid rgba(255, 255, 255, 0.2)' : 'none'
           }}
         >
