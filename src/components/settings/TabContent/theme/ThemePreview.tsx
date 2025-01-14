@@ -17,9 +17,11 @@ interface ThemePreviewProps {
 }
 
 export const ThemePreview = ({ theme, isSelected, onSelect }: ThemePreviewProps) => {
+  const isMarbleTheme = theme.name.includes('Marble');
+  
   return (
     <div
-      className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
+      className={`relative p-6 rounded-lg cursor-pointer transition-all duration-200 ${
         isSelected ? 'ring-2 ring-primary' : 'hover:shadow-lg'
       }`}
       style={{
@@ -28,22 +30,42 @@ export const ThemePreview = ({ theme, isSelected, onSelect }: ThemePreviewProps)
       }}
       onClick={() => onSelect(theme.id)}
     >
-      <h3 className="text-lg font-semibold mb-2">{theme.name}</h3>
-      <div
-        className="p-2 rounded"
-        style={{ backgroundColor: theme.card_background }}
-      >
-        <p className="text-sm">Preview Card</p>
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">{theme.name}</h3>
+        
+        {/* Preview Card */}
+        <div
+          className="p-4 rounded-lg shadow-sm"
+          style={{ 
+            backgroundColor: theme.card_background,
+            backdropFilter: isMarbleTheme ? 'blur(8px)' : 'none',
+            border: isMarbleTheme ? '1px solid rgba(255, 255, 255, 0.2)' : 'none'
+          }}
+        >
+          <p className="text-sm" style={{ color: theme.text_color }}>
+            Preview Card
+          </p>
+        </div>
+
+        {/* Sample Button */}
+        <button
+          className="px-4 py-2 rounded text-sm transition-colors duration-200"
+          style={{
+            backgroundColor: theme.button_color,
+            color: '#FFFFFF',
+          }}
+        >
+          Sample Button
+        </button>
       </div>
-      <button
-        className="mt-2 px-4 py-1 rounded text-sm"
-        style={{
-          backgroundColor: theme.button_color,
-          color: '#FFFFFF',
-        }}
-      >
-        Sample Button
-      </button>
+
+      {isSelected && (
+        <div className="absolute top-2 right-2">
+          <div className="bg-primary text-white text-xs px-2 py-1 rounded">
+            Selected
+          </div>
+        </div>
+      )}
     </div>
   );
 };
