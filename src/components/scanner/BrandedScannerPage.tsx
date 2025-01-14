@@ -20,15 +20,15 @@ export const BrandedScannerPage = () => {
     if (businessData?.theme) {
       const isMarbleTheme = businessData.theme.name.toLowerCase().includes('marble');
       
-      // Apply theme styles to body
       if (isMarbleTheme && businessData.theme.texture_url) {
         document.body.style.background = `url(${businessData.theme.texture_url})`;
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundPosition = 'center';
-        document.body.style.backgroundAttachment = 'fixed';
         document.body.style.backgroundRepeat = 'no-repeat';
-        // Add a semi-transparent overlay
-        document.body.style.backgroundColor = `${businessData.theme.background_gradient_start}80`;
+        // Remove fixed attachment to allow proper scrolling with marble texture
+        document.body.style.backgroundColor = 'transparent';
+        // Add a subtle white overlay to enhance content readability
+        document.body.style.boxShadow = 'inset 0 0 0 2000px rgba(255, 255, 255, 0.3)';
       } else {
         document.body.style.background = businessData.theme.background_gradient_start 
           ? `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})`
@@ -42,6 +42,7 @@ export const BrandedScannerPage = () => {
       // Cleanup theme styles
       document.body.style.background = '';
       document.body.style.backgroundColor = '';
+      document.body.style.boxShadow = '';
     };
   }, [businessData]);
 

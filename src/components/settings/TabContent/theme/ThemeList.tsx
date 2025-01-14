@@ -26,12 +26,12 @@ export const ThemeList = ({ themes, selectedTheme, onThemeSelect }: ThemeListPro
   return (
     <div className="space-y-8">
       {marbleThemes.length > 0 && (
-        <Card>
+        <Card className="bg-white/90">
           <CardHeader>
             <CardTitle>Marble Themes</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {marbleThemes.map((theme) => (
                 <ThemePreview
                   key={theme.id}
@@ -46,12 +46,12 @@ export const ThemeList = ({ themes, selectedTheme, onThemeSelect }: ThemeListPro
       )}
 
       {otherThemes.length > 0 && (
-        <Card>
+        <Card className="bg-white/90">
           <CardHeader>
             <CardTitle>Standard Themes</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {otherThemes.map((theme) => (
                 <ThemePreview
                   key={theme.id}
