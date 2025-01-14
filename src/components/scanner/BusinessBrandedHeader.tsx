@@ -31,16 +31,12 @@ export const BusinessBrandedHeader = ({
 
   const defaultLogo = "/lovable-uploads/779fe9aa-eef9-453e-b5da-89a3ae847a62.png";
 
-  const isMarbleTheme = theme?.name.toLowerCase().includes('marble');
-  
-  const cardStyle = isMarbleTheme ? {
-    background: 'white',
+  const cardStyle = {
+    background: theme?.card_background || 'white',
+    color: theme?.text_color || '#333333',
     boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)',
     borderRadius: '16px',
     padding: '2rem',
-  } : {
-    background: theme?.card_background,
-    color: theme?.text_color
   };
 
   return (

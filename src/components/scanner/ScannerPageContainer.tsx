@@ -32,20 +32,15 @@ export const ScannerPageContainer = ({
   }
 
   const bookingUrl = businessData.business_settings.booking_url;
-  const isMarbleTheme = businessData.theme?.name.toLowerCase().includes('marble');
 
-  // Apply clean, minimal container styles
-  const containerStyle = isMarbleTheme ? {
+  const containerStyle = {
     backgroundColor: 'rgba(255, 255, 255, 0.97)',
     borderRadius: '24px',
     boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
     padding: '2rem',
     margin: '2rem auto',
     maxWidth: '1000px',
-  } : {
-    background: businessData.theme ? 
-      `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})` : '',
-    color: businessData.theme?.text_color
+    color: businessData.theme?.text_color || '#333333'
   };
 
   return (

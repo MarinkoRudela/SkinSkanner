@@ -18,21 +18,7 @@ export const BrandedScannerPage = () => {
     console.log('Theme data in BrandedScannerPage:', businessData?.theme);
     
     if (businessData?.theme) {
-      const isMarbleTheme = businessData.theme.name.toLowerCase().includes('marble');
-      
-      if (isMarbleTheme && businessData.theme.texture_url) {
-        // Apply marble background with minimal styling
-        document.body.style.backgroundImage = `url(${businessData.theme.texture_url})`;
-        document.body.style.backgroundSize = '1000px'; // Fixed size for subtle repeating pattern
-        document.body.style.backgroundPosition = 'center';
-        document.body.style.backgroundColor = '#ffffff'; // White base color
-        document.body.style.backgroundRepeat = 'repeat';
-        document.body.style.backgroundAttachment = 'scroll';
-      } else {
-        document.body.style.background = businessData.theme.background_gradient_start 
-          ? `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})`
-          : '';
-      }
+      document.body.style.background = `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})`;
     } else {
       console.warn('No theme data available for business');
     }
@@ -40,12 +26,6 @@ export const BrandedScannerPage = () => {
     return () => {
       // Cleanup theme styles
       document.body.style.background = '';
-      document.body.style.backgroundColor = '';
-      document.body.style.backgroundImage = '';
-      document.body.style.backgroundSize = '';
-      document.body.style.backgroundPosition = '';
-      document.body.style.backgroundRepeat = '';
-      document.body.style.backgroundAttachment = '';
     };
   }, [businessData]);
 
