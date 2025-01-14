@@ -31,24 +31,31 @@ export const BusinessBrandedHeader = ({
 
   const defaultLogo = "/lovable-uploads/779fe9aa-eef9-453e-b5da-89a3ae847a62.png";
 
-  const cardStyle = theme ? {
-    background: theme.card_background,
-    color: theme.text_color
-  } : {};
+  const isMarbleTheme = theme?.name.toLowerCase().includes('marble');
+  
+  const cardStyle = isMarbleTheme ? {
+    background: 'white',
+    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)',
+    borderRadius: '16px',
+    padding: '2rem',
+  } : {
+    background: theme?.card_background,
+    color: theme?.text_color
+  };
 
   return (
-    <Card className="glass-card p-8 mb-8 text-center" style={cardStyle}>
+    <Card className="mb-8 text-center" style={cardStyle}>
       <Picture
         src={logoUrl || defaultLogo}
         alt={brandName}
-        className="h-32 mx-auto mb-4 object-contain"
+        className="h-32 mx-auto mb-6 object-contain"
         onError={handleLogoError}
         sizes="(max-width: 768px) 100vw, 128px"
         loading="lazy"
       />
-      <h1 className="text-2xl font-bold mb-2">{brandName}</h1>
+      <h1 className="text-2xl font-bold mb-3">{brandName}</h1>
       {tagline && (
-        <p style={{ color: theme?.text_color }}>{tagline}</p>
+        <p className="text-gray-600">{tagline}</p>
       )}
     </Card>
   );

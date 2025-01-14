@@ -34,12 +34,14 @@ export const ScannerPageContainer = ({
   const bookingUrl = businessData.business_settings.booking_url;
   const isMarbleTheme = businessData.theme?.name.toLowerCase().includes('marble');
 
-  // Apply container styles based on theme
+  // Apply clean, minimal container styles
   const containerStyle = isMarbleTheme ? {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)', // Subtle white background for content
-    backdropFilter: 'blur(2px)', // Minimal blur for readability
-    borderRadius: '1rem',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Subtle shadow
+    backgroundColor: 'rgba(255, 255, 255, 0.97)',
+    borderRadius: '24px',
+    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
+    padding: '2rem',
+    margin: '2rem auto',
+    maxWidth: '1000px',
   } : {
     background: businessData.theme ? 
       `linear-gradient(to bottom, ${businessData.theme.background_gradient_start}, ${businessData.theme.background_gradient_end})` : '',
@@ -47,9 +49,9 @@ export const ScannerPageContainer = ({
   };
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen py-12 px-4 md:px-8">
       <div 
-        className="container max-w-4xl mx-auto px-4 md:px-8"
+        className="mx-auto"
         style={containerStyle}
       >
         <BusinessBrandedHeader
