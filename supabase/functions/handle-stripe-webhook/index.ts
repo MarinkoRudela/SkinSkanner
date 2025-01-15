@@ -8,8 +8,11 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log('Webhook request received');
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -31,6 +34,9 @@ serve(async (req) => {
       );
     }
 
+    console.log('Webhook secret:', Deno.env.get('STRIPE_WEBHOOK_SECRET')?.substring(0, 10) + '...');
+    console.log('Signature:', signature);
+
     const body = await req.text();
     let event;
 
@@ -41,7 +47,7 @@ serve(async (req) => {
         Deno.env.get('STRIPE_WEBHOOK_SECRET') || ''
       );
     } catch (err) {
-      console.error(`Webhook signature verification failed: ${err.message}`);
+      console.error(`Webhook signature verification failed:`, err);
       return new Response(
         JSON.stringify({ error: `Webhook Error: ${err.message}` }), 
         { 
@@ -51,12 +57,12 @@ serve(async (req) => {
       );
     }
 
+    console.log(`Processing Stripe event: ${event.type}`);
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
-
-    console.log(`Processing Stripe event: ${event.type}`);
 
     switch (event.type) {
       case 'invoice.payment_failed': {
@@ -66,7 +72,6 @@ serve(async (req) => {
 
         console.log(`Processing payment failure for subscription: ${subscription.id}`);
 
-        // Update subscription status in database
         const { error } = await supabaseClient
           .from('subscriptions')
           .update({ 
@@ -91,7 +96,6 @@ serve(async (req) => {
 
         console.log(`Processing successful payment for subscription: ${subscription.id}`);
 
-        // Update subscription status and period end in database
         const { error } = await supabaseClient
           .from('subscriptions')
           .update({ 
@@ -115,7 +119,6 @@ serve(async (req) => {
 
         console.log(`Processing subscription cancellation: ${subscription.id}`);
 
-        // Update subscription status in database
         const { error } = await supabaseClient
           .from('subscriptions')
           .update({ 
