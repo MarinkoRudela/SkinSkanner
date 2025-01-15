@@ -8,6 +8,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -18,23 +19,44 @@ serve(async (req) => {
     });
 
     const signature = req.headers.get('stripe-signature');
+    
     if (!signature) {
-      throw new Error('No Stripe signature found');
+      console.error('No Stripe signature found');
+      return new Response(
+        JSON.stringify({ error: 'No Stripe signature found' }), 
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
     }
 
     const body = await req.text();
-    const event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      Deno.env.get('STRIPE_WEBHOOK_SECRET') || ''
-    );
+    let event;
 
-    console.log(`Processing Stripe event: ${event.type}`);
+    try {
+      event = stripe.webhooks.constructEvent(
+        body,
+        signature,
+        Deno.env.get('STRIPE_WEBHOOK_SECRET') || ''
+      );
+    } catch (err) {
+      console.error(`Webhook signature verification failed: ${err.message}`);
+      return new Response(
+        JSON.stringify({ error: `Webhook Error: ${err.message}` }), 
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
 
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
+
+    console.log(`Processing Stripe event: ${event.type}`);
 
     switch (event.type) {
       case 'invoice.payment_failed': {
@@ -51,7 +73,11 @@ serve(async (req) => {
           })
           .eq('stripe_subscription_id', subscription.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating subscription status:', error);
+          throw error;
+        }
+        
         console.log(`Updated subscription ${subscription.id} status to unpaid`);
         break;
       }
@@ -71,7 +97,11 @@ serve(async (req) => {
           })
           .eq('stripe_subscription_id', subscription.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating subscription status:', error);
+          throw error;
+        }
+
         console.log(`Updated subscription ${subscription.id} status to active`);
         break;
       }
@@ -88,20 +118,32 @@ serve(async (req) => {
           })
           .eq('stripe_subscription_id', subscription.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating subscription status:', error);
+          throw error;
+        }
+
         console.log(`Updated subscription ${subscription.id} status to cancelled`);
         break;
       }
     }
 
-    return new Response(JSON.stringify({ received: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    // Return a 200 success response
+    return new Response(
+      JSON.stringify({ received: true }), 
+      { 
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
   } catch (error) {
     console.error('Error processing webhook:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
-    });
+    return new Response(
+      JSON.stringify({ error: error.message }), 
+      { 
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
   }
 });
