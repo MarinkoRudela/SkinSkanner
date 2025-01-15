@@ -64,6 +64,8 @@ serve(async (req) => {
           event.data.object.subscription as string
         );
 
+        console.log(`Processing payment failure for subscription: ${subscription.id}`);
+
         // Update subscription status in database
         const { error } = await supabaseClient
           .from('subscriptions')
@@ -87,6 +89,8 @@ serve(async (req) => {
           event.data.object.subscription as string
         );
 
+        console.log(`Processing successful payment for subscription: ${subscription.id}`);
+
         // Update subscription status and period end in database
         const { error } = await supabaseClient
           .from('subscriptions')
@@ -108,6 +112,8 @@ serve(async (req) => {
 
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
+
+        console.log(`Processing subscription cancellation: ${subscription.id}`);
 
         // Update subscription status in database
         const { error } = await supabaseClient
