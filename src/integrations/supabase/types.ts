@@ -226,21 +226,27 @@ export type Database = {
           business_name: string
           created_at: string
           id: string
+          last_checkout_attempt: string | null
           processed: boolean | null
+          stripe_checkout_url: string | null
           user_id: string | null
         }
         Insert: {
           business_name: string
           created_at?: string
           id?: string
+          last_checkout_attempt?: string | null
           processed?: boolean | null
+          stripe_checkout_url?: string | null
           user_id?: string | null
         }
         Update: {
           business_name?: string
           created_at?: string
           id?: string
+          last_checkout_attempt?: string | null
           processed?: boolean | null
+          stripe_checkout_url?: string | null
           user_id?: string | null
         }
         Relationships: []

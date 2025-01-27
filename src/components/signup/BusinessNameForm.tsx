@@ -20,12 +20,31 @@ export const BusinessNameForm = ({ userId, onComplete }: BusinessNameFormProps) 
     setIsLoading(true);
 
     try {
-      // First store the business name
+      // Check for existing business name entry
+      const { data: existingEntry } = await supabase
+        .from('pending_business_names')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (existingEntry?.stripe_checkout_url) {
+        // If we have an existing checkout URL, redirect to it
+        window.location.href = existingEntry.stripe_checkout_url;
+        return;
+      }
+
+      // Create or update the business name entry
       const { error: nameError } = await supabase
         .from('pending_business_names')
-        .insert([
-          { user_id: userId, business_name: businessName }
-        ]);
+        .upsert([
+          { 
+            user_id: userId, 
+            business_name: businessName,
+            last_checkout_attempt: new Date().toISOString()
+          }
+        ], {
+          onConflict: 'user_id'
+        });
 
       if (nameError) throw nameError;
 
@@ -45,6 +64,17 @@ export const BusinessNameForm = ({ userId, onComplete }: BusinessNameFormProps) 
         if (session?.user?.email) {
           localStorage.setItem('pendingVerificationEmail', session.user.email);
         }
+
+        // Store the checkout URL
+        const { error: updateError } = await supabase
+          .from('pending_business_names')
+          .update({ 
+            stripe_checkout_url: checkoutData.url,
+            last_checkout_attempt: new Date().toISOString()
+          })
+          .eq('user_id', userId);
+
+        if (updateError) throw updateError;
         
         // Redirect to Stripe checkout
         window.location.href = checkoutData.url;
