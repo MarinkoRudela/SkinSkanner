@@ -684,6 +684,12 @@ export type Database = {
           avg_session_duration_today: number
         }[]
       }
+      get_user_email: {
+        Args: {
+          user_id: string
+        }
+        Returns: string
+      }
       refresh_weekly_analytics: {
         Args: {
           profile_id_param: string
