@@ -13,10 +13,32 @@ serve(async (req) => {
   }
 
   try {
-    const { email } = await req.json()
+    const { userId, planType } = await req.json()
     
-    if (!email) {
-      throw new Error('No email provided')
+    if (!userId) {
+      throw new Error('No userId provided')
+    }
+
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Missing Supabase environment variables')
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    // Fetch user's email from auth.users
+    const { data: userData, error: userError } = await supabase
+      .from('auth.users')
+      .select('email')
+      .eq('id', userId)
+      .single()
+
+    if (userError || !userData?.email) {
+      console.error('Error fetching user:', userError)
+      throw new Error('Could not fetch user email')
     }
 
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
@@ -25,7 +47,7 @@ serve(async (req) => {
 
     // Check if customer already exists
     const customers = await stripe.customers.list({
-      email: email,
+      email: userData.email,
       limit: 1
     })
 
@@ -47,13 +69,13 @@ serve(async (req) => {
     console.log('Creating payment session...')
     const session = await stripe.checkout.sessions.create({
       customer: customer_id,
-      customer_email: customer_id ? undefined : email,
+      customer_email: customer_id ? undefined : userData.email,
       line_items: [{
         price: 'price_1QfAYmFVwPZEaWtp2etKdDl5',
         quantity: 1,
       }],
       mode: 'subscription',
-      success_url: `${req.headers.get('origin')}/dashboard?payment=success&email=${encodeURIComponent(email)}`,
+      success_url: `${req.headers.get('origin')}/dashboard?payment=success&email=${encodeURIComponent(userData.email)}`,
       cancel_url: `${req.headers.get('origin')}/signup`,
     })
 
