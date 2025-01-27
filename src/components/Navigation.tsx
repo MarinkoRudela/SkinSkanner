@@ -2,11 +2,32 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { NavigationDropdown } from "./navigation/NavigationDropdown";
+import { useQuery } from "@tanstack/react-query";
 
 export const Navigation = ({ session }: { session: any }) => {
   const navigate = useNavigate();
 
+  const { data: profile } = useQuery({
+    queryKey: ['profile', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user?.id
+  });
+
   const handleScanClick = () => {
+    if (profile?.payment_status === 'pending') {
+      navigate('/signup');
+      return;
+    }
     window.location.href = '/';
   };
 
@@ -17,6 +38,10 @@ export const Navigation = ({ session }: { session: any }) => {
         description: "Please login to access settings",
       });
       navigate("/login");
+      return;
+    }
+    if (profile?.payment_status === 'pending') {
+      navigate('/signup');
       return;
     }
     window.location.href = '/?config=true';
