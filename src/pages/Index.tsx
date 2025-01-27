@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Navigation } from '@/components/Navigation';
 import { ConfigSection } from '@/components/config/ConfigSection';
 import { ScannerSection } from '@/components/scanner/ScannerSection';
@@ -11,10 +12,30 @@ import { BenefitsSection } from '@/components/home/BenefitsSection';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { CTASection } from '@/components/home/CTASection';
 import { Header } from '@/components/Header';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 const Index = () => {
+  const navigate = useNavigate();
   const { session, isInitializing } = useAuthInitialization();
   const { bookingUrl, fetchBusinessSettings, updateBookingUrl } = useBusinessSettingsManagement();
+
+  // Fetch profile data including payment status
+  const { data: profile, isLoading: isLoadingProfile } = useQuery({
+    queryKey: ['profile', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user?.id
+  });
 
   React.useEffect(() => {
     if (session?.user?.id) {
@@ -22,31 +43,57 @@ const Index = () => {
     }
   }, [session, fetchBusinessSettings]);
 
-  if (isInitializing) {
+  // Handle payment status checks
+  React.useEffect(() => {
+    if (profile && profile.payment_status === 'pending') {
+      // Check if we have a business name stored
+      const checkPendingBusinessName = async () => {
+        const { data: pendingName } = await supabase
+          .from('pending_business_names')
+          .select('business_name')
+          .eq('user_id', session?.user?.id)
+          .single();
+
+        if (pendingName) {
+          // Redirect to complete payment
+          navigate('/signup');
+        }
+      };
+
+      checkPendingBusinessName();
+    }
+  }, [profile, session?.user?.id, navigate]);
+
+  if (isInitializing || isLoadingProfile) {
     return <LoadingScreen />;
   }
 
   const isConfigMode = new URLSearchParams(window.location.search).get('config') === 'true';
   
-  // If user is logged in and in config mode, show config section
-  if (session && isConfigMode) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
-        <div className="container max-w-4xl mx-auto px-4 py-8 relative">
-          <Navigation session={session} />
-          <Header />
-          <ConfigSection 
-            session={session}
-            bookingUrl={bookingUrl}
-            updateBookingUrl={(url: string) => updateBookingUrl(url, session)}
-          />
-        </div>
-      </div>
-    );
+  // If user is logged in but payment is pending, redirect to signup
+  if (session && profile?.payment_status === 'pending') {
+    navigate('/signup');
+    return <LoadingScreen />;
   }
 
-  // If user is logged in and wants to scan, show scanner section
-  if (session && !isConfigMode) {
+  // If user is logged in and payment is completed, show appropriate section
+  if (session && profile?.payment_status === 'completed') {
+    if (isConfigMode) {
+      return (
+        <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
+          <div className="container max-w-4xl mx-auto px-4 py-8 relative">
+            <Navigation session={session} />
+            <Header />
+            <ConfigSection 
+              session={session}
+              bookingUrl={bookingUrl}
+              updateBookingUrl={(url: string) => updateBookingUrl(url, session)}
+            />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-gradient-to-b from-medspa-50 to-white">
         <div className="container max-w-4xl mx-auto px-4 py-8 relative">
