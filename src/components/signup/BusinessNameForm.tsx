@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface BusinessNameFormProps {
   userId: string;
@@ -12,21 +13,23 @@ interface BusinessNameFormProps {
 export const BusinessNameForm = ({ userId, onComplete }: BusinessNameFormProps) => {
   const [businessName, setBusinessName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const { error } = await supabase
+      // First store the business name
+      const { error: nameError } = await supabase
         .from('pending_business_names')
         .insert([
           { user_id: userId, business_name: businessName }
         ]);
 
-      if (error) throw error;
+      if (nameError) throw nameError;
 
-      // Create checkout session after business name is stored
+      // Create checkout session
       const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
         body: { 
           userId,
@@ -37,6 +40,13 @@ export const BusinessNameForm = ({ userId, onComplete }: BusinessNameFormProps) 
       if (checkoutError) throw checkoutError;
 
       if (checkoutData?.url) {
+        // Store email in localStorage to verify after payment
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.email) {
+          localStorage.setItem('pendingVerificationEmail', session.user.email);
+        }
+        
+        // Redirect to Stripe checkout
         window.location.href = checkoutData.url;
       } else {
         throw new Error('No checkout URL returned');
@@ -49,6 +59,8 @@ export const BusinessNameForm = ({ userId, onComplete }: BusinessNameFormProps) 
         description: error.message,
         variant: "destructive",
       });
+      // On error, redirect to signup page
+      navigate("/signup");
     } finally {
       setIsLoading(false);
     }

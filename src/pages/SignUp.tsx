@@ -31,22 +31,32 @@ const SignUp = () => {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       if (session?.user?.app_metadata?.provider === 'google') {
-        setShowBusinessNameForm(true);
+        // Check if payment is pending
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('payment_status')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile?.payment_status === 'pending') {
+          setShowBusinessNameForm(true);
+        } else if (profile?.payment_status === 'completed') {
+          navigate('/dashboard');
+        }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // First create the user with email confirmation disabled
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -60,7 +70,7 @@ const SignUp = () => {
 
       if (authError) throw authError;
 
-      // After successful signup, create a checkout session
+      // Create checkout session
       const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
         body: { 
           email: formData.email,
@@ -71,10 +81,7 @@ const SignUp = () => {
       if (checkoutError) throw checkoutError;
 
       if (checkoutData?.url) {
-        // Store the user's email in localStorage to verify after payment
         localStorage.setItem('pendingVerificationEmail', formData.email);
-        
-        // Open Stripe checkout in the top-level window
         window.top.location.href = checkoutData.url;
       } else {
         throw new Error('No checkout URL returned');
