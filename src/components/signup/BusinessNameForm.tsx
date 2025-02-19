@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -49,14 +50,16 @@ export const BusinessNameForm = ({ userId, onComplete }: BusinessNameFormProps) 
       if (nameError) throw nameError;
 
       // Create checkout session
-      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout-session', {
+      const response = await supabase.functions.invoke('create-checkout-session', {
         body: { 
           userId,
+          businessName,
           planType: 'monthly'
         }
       });
 
-      if (checkoutError) throw checkoutError;
+      if (response.error) throw response.error;
+      const checkoutData = response.data;
 
       if (checkoutData?.url) {
         // Store email in localStorage to verify after payment
@@ -86,11 +89,9 @@ export const BusinessNameForm = ({ userId, onComplete }: BusinessNameFormProps) 
       console.error('Error:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to process signup. Please try again.",
         variant: "destructive",
       });
-      // On error, redirect to signup page
-      navigate("/signup");
     } finally {
       setIsLoading(false);
     }

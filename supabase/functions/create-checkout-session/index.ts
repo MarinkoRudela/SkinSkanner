@@ -14,11 +14,13 @@ serve(async (req) => {
   }
 
   try {
-    const { userId, planType } = await req.json();
+    const { userId, businessName, planType } = await req.json();
     
     if (!userId) {
       throw new Error('No userId provided');
     }
+
+    console.log('Processing checkout for user:', userId, 'business:', businessName);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -39,8 +41,6 @@ serve(async (req) => {
       throw new Error('Could not fetch user email');
     }
 
-    console.log('Creating payment session for user:', userData);
-
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
       apiVersion: '2023-10-16',
     });
@@ -51,12 +51,13 @@ serve(async (req) => {
       limit: 1
     });
 
-    let customer_id = undefined;
+    let customer;
     if (customers.data.length > 0) {
-      customer_id = customers.data[0].id;
+      customer = customers.data[0];
+      
       // Check if already subscribed
       const subscriptions = await stripe.subscriptions.list({
-        customer: customers.data[0].id,
+        customer: customer.id,
         status: 'active',
         limit: 1
       });
@@ -64,12 +65,20 @@ serve(async (req) => {
       if (subscriptions.data.length > 0) {
         throw new Error("You already have an active subscription");
       }
+    } else {
+      // Create a new customer
+      customer = await stripe.customers.create({
+        email: userData,
+        metadata: {
+          business_name: businessName,
+          user_id: userId
+        }
+      });
     }
 
-    console.log('Creating payment session...');
+    console.log('Creating checkout session for customer:', customer.id);
     const session = await stripe.checkout.sessions.create({
-      customer: customer_id,
-      customer_email: customer_id ? undefined : userData,
+      customer: customer.id,
       line_items: [{
         price: 'price_1QuGKPFVwPZEaWtpBvnV9ZRh',
         quantity: 1,
@@ -77,9 +86,13 @@ serve(async (req) => {
       mode: 'subscription',
       success_url: `${req.headers.get('origin')}/dashboard?payment=success&email=${encodeURIComponent(userData)}`,
       cancel_url: `${req.headers.get('origin')}/signup`,
+      metadata: {
+        user_id: userId,
+        business_name: businessName
+      }
     });
 
-    console.log('Payment session created:', session.id);
+    console.log('Checkout session created:', session.id);
     return new Response(
       JSON.stringify({ url: session.url }),
       { 
@@ -88,7 +101,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error('Error creating payment session:', error);
+    console.error('Error creating checkout session:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
