@@ -1,3 +1,4 @@
+
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
@@ -19,7 +20,7 @@ export const PlanSelection = ({ planType, setPlanType }: PlanSelectionProps) => 
           <RadioGroupItem value="monthly" id="monthly" />
           <Label htmlFor="monthly" className="cursor-pointer">
             <div className="font-semibold">Monthly Plan</div>
-            <div className="text-sm text-gray-500">$299/month</div>
+            <div className="text-sm text-gray-500">$399/month</div>
           </Label>
         </div>
       </RadioGroup>

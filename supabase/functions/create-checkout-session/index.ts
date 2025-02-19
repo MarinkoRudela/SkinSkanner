@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from 'https://esm.sh/stripe@14.21.0';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
@@ -70,7 +71,7 @@ serve(async (req) => {
       customer: customer_id,
       customer_email: customer_id ? undefined : userData,
       line_items: [{
-        price: 'price_1QoXbuFVwPZEaWtp5eQiOnoT',
+        price: 'price_1QuGKPFVwPZEaWtpBvnV9ZRh',
         quantity: 1,
       }],
       mode: 'subscription',
