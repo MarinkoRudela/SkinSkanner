@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { features } from '@/data/features';
 import { FeatureCard } from '@/components/features/FeatureCard';
 import TreatmentDemo from '@/components/features/TreatmentDemo';
 import IntegrationProcess from '@/components/features/IntegrationProcess';
+import { SocialLinksSection } from '@/components/home/SocialLinksSection';
 
 export const Features = () => {
   const navigate = useNavigate();
@@ -65,6 +67,8 @@ export const Features = () => {
           </p>
         </div>
       </div>
+
+      <SocialLinksSection />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Navigation } from '@/components/Navigation';
@@ -11,6 +12,7 @@ import { HeroSection } from '@/components/home/HeroSection';
 import { BenefitsSection } from '@/components/home/BenefitsSection';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { CTASection } from '@/components/home/CTASection';
+import { SocialLinksSection } from '@/components/home/SocialLinksSection';
 import { Header } from '@/components/Header';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -121,6 +123,7 @@ const Index = () => {
       <BenefitsSection />
       <TestimonialsSection />
       <CTASection />
+      <SocialLinksSection />
     </div>
   );
 };
