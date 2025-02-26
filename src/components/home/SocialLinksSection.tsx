@@ -12,7 +12,7 @@ export const SocialLinksSection = () => {
         </p>
         <div className="flex items-center justify-center gap-6">
           <a
-            href="https://www.youtube.com/@SkinSkannerAI"
+            href="http://www.youtube.com/@RudisAILounge"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors"
